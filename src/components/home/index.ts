@@ -1,0 +1,9 @@
+export { default as Hero } from "./Hero";
+export { default as TrustLine } from "./TrustLine";
+export { default as USPStrip } from "./USPStrip";
+export { default as ProductRow } from "./ProductRow";
+export { default as Categories } from "./Categories";
+export { default as Lookbook } from "./Lookbook";
+export { default as Bestsellers } from "./Bestsellers";
+export { default as Instagram } from "./Instagram";
+export { default as NewsletterBand } from "./NewsletterBand";
