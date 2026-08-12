@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCart } from "../../context/CartContext";
-import { getProduct } from "../../services/productService";
 import { formatINR } from "../../utils/format";
 
-/* Cart icon par hover se quick preview dropdown (desktop only) */
-
+/**
+ * MiniCart — quick preview dropdown, desktop only.
+ * Renders from CartItem.snapshot — no mock product lookup.
+ */
 export default function MiniCart({ open }: { open: boolean }) {
   const { items, count, subtotal } = useCart();
 
@@ -34,22 +35,32 @@ export default function MiniCart({ open }: { open: boolean }) {
               <>
                 <div className="max-h-[300px] divide-y divide-softblack/8 overflow-y-auto px-5">
                   {items.map((item) => {
-                    const p = getProduct(item.productId);
-                    if (!p) return null;
+                    const snap = item.snapshot;
+                    if (!snap) {
+                      // Fallback for items without snapshot (legacy, no image to show)
+                      return (
+                        <div key={item.productId + item.size} className="flex items-center gap-3.5 py-3.5">
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[13.5px] font-medium">{item.productId}</span>
+                            <span className="label mt-0.5 block text-[9.5px] text-warmgray">Size {item.size} · Qty {item.qty}</span>
+                          </span>
+                        </div>
+                      );
+                    }
                     return (
                       <Link
-                        key={p.id + item.size}
-                        to={`/product/${p.id}`}
+                        key={item.productId + item.size}
+                        to={`/product/${item.productId}`}
                         className="flex items-center gap-3.5 py-3.5 transition-opacity hover:opacity-70"
                       >
-                        <img src={p.images[0]} alt="" className="h-14 w-11 shrink-0 rounded-lg object-cover" />
+                        <img src={snap.image} alt="" className="h-14 w-11 shrink-0 rounded-lg object-cover" />
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[13.5px] font-medium">{p.name}</span>
+                          <span className="block truncate text-[13.5px] font-medium">{snap.name}</span>
                           <span className="label mt-0.5 block text-[9.5px] text-warmgray">
                             Size {item.size} · Qty {item.qty}
                           </span>
                         </span>
-                        <span className="shrink-0 text-[13.5px] font-medium">{formatINR(p.price * item.qty)}</span>
+                        <span className="shrink-0 text-[13.5px] font-medium">{formatINR(snap.price * item.qty)}</span>
                       </Link>
                     );
                   })}

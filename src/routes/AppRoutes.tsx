@@ -14,6 +14,7 @@ import Contact from "../pages/Contact/Contact";
 import FAQ from "../pages/FAQ/FAQ";
 import SizeGuide from "../pages/SizeGuide/SizeGuide";
 import Account from "../pages/Account/Account";
+import AuthCallback from "../pages/Account/AuthCallback";
 import Policy from "../pages/Policy/Policy";
 import NotFound from "../pages/NotFound/NotFound";
 
@@ -30,6 +31,7 @@ export default function AppRoutes() {
       <Route path="/wishlist" element={<Wishlist />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/account" element={<Account />} />
+      <Route path="/account/callback" element={<AuthCallback />} />
       <Route path="/about" element={<About />} />
       <Route path="/how-we-curate" element={<HowWeCurate />} />
       <Route path="/contact" element={<Contact />} />

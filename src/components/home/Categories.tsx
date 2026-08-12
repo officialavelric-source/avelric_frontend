@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Reveal, SectionHeading } from "../common";
 import { CATEGORIES } from "../../data/products";
-import { byCategory } from "../../services/productService";
 
 /* grid-cols count adapts to how many categories are actually active in
    data/products.ts — hardcoding md:grid-cols-5 left empty tracks (a big
@@ -29,7 +28,7 @@ export default function Categories() {
         </div>
         <div className={`mt-12 grid grid-cols-2 gap-4 ${gridCols}`}>
           {CATEGORIES.map((c, i) => {
-            const count = byCategory(c.slug).length;
+            const count: number = 0; // Count shown once Shopify products load on /category/:slug
             return (
               <Reveal key={c.slug} delay={i * 0.06}>
                 <Link to={`/category/${c.slug}`} className="group relative block overflow-hidden rounded-2xl">

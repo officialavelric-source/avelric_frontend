@@ -1,11 +1,14 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Product } from "../../data/products";
+import type { AppProduct } from "../../types/app";
 import { Reveal, SectionHeading } from "../common";
 import { ProductCard } from "../product";
 
 /* layout="scroll" → horizontal snap-scroll row with arrow controls
    (Trending section), warna 4-col grid */
+
+type AnyProduct = Product | AppProduct;
 
 export default function ProductRow({
   eyebrow,
@@ -19,7 +22,7 @@ export default function ProductRow({
   eyebrow: string;
   title: string;
   sub?: string;
-  items: Product[];
+  items: AnyProduct[];
   cta?: string;
   ctaTo?: string;
   layout?: "grid" | "scroll";
@@ -71,7 +74,7 @@ export default function ProductRow({
           {items.map((p, i) => (
             <div key={p.id} className="w-[220px] shrink-0 snap-start sm:w-[250px] md:w-[280px]">
               <Reveal delay={Math.min(i, 4) * 0.06}>
-                <ProductCard product={p} />
+                <ProductCard product={p as AppProduct} />
               </Reveal>
             </div>
           ))}
@@ -80,7 +83,7 @@ export default function ProductRow({
         <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4">
           {items.slice(0, 4).map((p, i) => (
             <Reveal key={p.id} delay={i * 0.07}>
-              <ProductCard product={p} />
+              <ProductCard product={p as AppProduct} />
             </Reveal>
           ))}
         </div>

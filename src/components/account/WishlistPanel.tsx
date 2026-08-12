@@ -1,11 +1,32 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { PRODUCTS } from "../../data/products";
 import { useWishlist } from "../../context/WishlistContext";
 import { ProductCard } from "../product";
+import { getCachedProduct, getProducts } from "../../services/shopify/productService";
+import type { AppProduct } from "../../types/app";
 
+/**
+ * WishlistPanel — renders wishlisted products from Shopify product cache.
+ * No mock PRODUCTS fallback.
+ */
 export default function WishlistPanel() {
   const { ids } = useWishlist();
-  const items = PRODUCTS.filter((p) => ids.includes(p.id));
+  const [cacheReady, setCacheReady] = useState(false);
+
+  // Pre-warm the Shopify product cache so wishlisted products can be resolved
+  useEffect(() => {
+    getProducts(50).then(() => setCacheReady(true)).catch(() => setCacheReady(true));
+  }, []);
+
+  const items: AppProduct[] = ids
+    .map((id) => getCachedProduct(id))
+    .filter((p): p is AppProduct => Boolean(p));
+
+  if (!cacheReady && ids.length > 0) {
+    return (
+      <div className="py-10 text-center text-warmgray text-[14px]">Loading wishlist…</div>
+    );
+  }
 
   if (items.length === 0)
     return (

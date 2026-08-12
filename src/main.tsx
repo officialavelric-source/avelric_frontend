@@ -5,18 +5,21 @@ import App from "./App";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { ToastProvider } from "./context/ToastContext";
+import { CustomerAuthProvider } from "./context/CustomerAuthContext";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <CartProvider>
-        <WishlistProvider>
-          <ToastProvider>
-            <App />
-          </ToastProvider>
-        </WishlistProvider>
-      </CartProvider>
+      <CustomerAuthProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <ToastProvider>
+              <App />
+            </ToastProvider>
+          </WishlistProvider>
+        </CartProvider>
+      </CustomerAuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

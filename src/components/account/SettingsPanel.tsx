@@ -1,26 +1,31 @@
-import { DEMO_USER } from "../../constants/account";
+import { useCustomerAuth } from "../../context/CustomerAuthContext";
 import Field from "./Field";
 
 export default function SettingsPanel() {
+  const { customer, logout } = useCustomerAuth();
+
   return (
-    <form className="max-w-xl space-y-5" onSubmit={(e) => e.preventDefault()}>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Full name" value={DEMO_USER.name} />
-        <Field label="Phone" value={DEMO_USER.phone} />
+    <div className="max-w-xl space-y-6">
+      <h3 className="font-display text-[20px] text-softblack">Account Settings</h3>
+      <div className="space-y-4">
+        <Field label="Full name" value={customer?.displayName || ""} />
+        <Field label="Email address" value={customer?.email || ""} type="email" />
+        <Field label="Phone number" value={customer?.phone || "Not provided"} />
       </div>
-      <Field label="Email" value={DEMO_USER.email} type="email" />
-      <Field label="New password" value="" type="password" />
-      <div className="flex items-center gap-6 pt-2">
+
+      <div className="rounded-xl bg-beige/60 p-5 text-[12.5px] text-warmgray border border-warmgray/15">
+        Profile details are securely synced directly from your Shopify Customer Account.
+      </div>
+
+      <div className="pt-4 border-t border-softblack/10">
         <button
-          type="submit"
-          className="label rounded-full bg-softblack px-8 py-4 text-[11px] text-ivory transition-transform hover:scale-[1.03]"
+          type="button"
+          onClick={logout}
+          className="label rounded-full bg-softblack px-8 py-3.5 text-[11px] text-ivory transition-transform hover:scale-[1.02]"
         >
-          Save changes
-        </button>
-        <button type="button" className="label text-[10.5px] text-warmgray hover:text-softblack">
-          Sign out
+          Sign Out of AVELRIC
         </button>
       </div>
-    </form>
+    </div>
   );
 }

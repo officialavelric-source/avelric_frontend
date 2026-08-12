@@ -1,11 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
-import { getProduct } from "../../services/productService";
 import { FREE_SHIP_AT } from "../../constants/shipping";
 import { Reveal } from "../../components/common";
 import { CartItemRow, FreeShippingBar, MobileCheckoutBar, OrderSummary, SavedItemRow } from "../../components/cart";
 
+/**
+ * Cart page — all product data comes from CartItem.snapshot.
+ *
+ * PRODUCTION RULE: Cart items carry a price/image snapshot set at add-to-cart time.
+ * We do NOT call getProduct() (which previously fell back to mock data).
+ * The snapshot is always available because ProductDetails.tsx always passes it.
+ */
 export default function Cart() {
   const { items, saved, updateQty, remove, saveForLater, moveToCart, removeSaved, subtotal, mrpTotal, count } = useCart();
   const { push } = useToast();
@@ -39,22 +45,43 @@ export default function Cart() {
 
       <div className="mt-8 grid items-start gap-10 lg:grid-cols-[1.7fr_1fr]">
         <div>
-          {/* free shipping progress */}
+          {/* Free shipping progress */}
           {items.length > 0 && <FreeShippingBar subtotal={subtotal} shipping={shipping} />}
 
-          {/* item rows */}
+          {/* Item rows — rendered from CartItem.snapshot (Shopify data captured at add time) */}
           <ul className="mt-5 divide-y divide-softblack/10 rounded-2xl border border-softblack/10 bg-ivory px-5 shadow-[0_2px_16px_-6px_rgba(26,26,26,0.08)]">
             {items.map((item) => {
-              const p = getProduct(item.productId);
-              if (!p) return null;
+              if (!item.snapshot) {
+                // Item has no snapshot — added before Shopify integration or data missing
+                // Show a minimal recoverable row rather than silently hiding it
+                return (
+                  <li key={item.productId + item.size} className="flex items-center justify-between gap-4 py-5">
+                    <div>
+                      <p className="text-[14px] font-medium">{item.productId}</p>
+                      <p className="label mt-1 text-[10px] text-warmgray">Size {item.size} · Qty {item.qty}</p>
+                    </div>
+                    <button
+                      onClick={() => remove(item.productId, item.size)}
+                      className="label text-[10.5px] text-warmgray hover:text-danger"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                );
+              }
               return (
                 <CartItemRow
-                  key={p.id + item.size}
-                  product={p}
+                  key={item.productId + item.size}
                   item={item}
-                  onUpdateQty={(qty) => updateQty(p.id, item.size, qty)}
-                  onSaveForLater={() => { saveForLater(p.id, item.size); push({ message: `Saved "${p.name}" for later` }); }}
-                  onRemove={() => { remove(p.id, item.size); push({ message: `Removed "${p.name}" from cart` }); }}
+                  onUpdateQty={(qty) => updateQty(item.productId, item.size, qty)}
+                  onSaveForLater={() => {
+                    saveForLater(item.productId, item.size);
+                    push({ message: `Saved "${item.snapshot!.name}" for later` });
+                  }}
+                  onRemove={() => {
+                    remove(item.productId, item.size);
+                    push({ message: `Removed "${item.snapshot!.name}" from cart` });
+                  }}
                 />
               );
             })}
@@ -65,21 +92,35 @@ export default function Cart() {
             )}
           </ul>
 
-          {/* saved for later */}
+          {/* Saved for later */}
           {saved.length > 0 && (
             <section className="mt-10">
               <h2 className="font-display text-[22px]">Saved for later ({saved.length})</h2>
               <ul className="mt-4 divide-y divide-softblack/10 rounded-2xl border border-softblack/10 bg-beige/40 px-5">
                 {saved.map((item) => {
-                  const p = getProduct(item.productId);
-                  if (!p) return null;
+                  if (!item.snapshot) {
+                    return (
+                      <li key={item.productId + item.size} className="flex items-center justify-between gap-4 py-5">
+                        <div>
+                          <p className="text-[14px] font-medium">{item.productId}</p>
+                          <p className="label mt-1 text-[10px] text-warmgray">Size {item.size}</p>
+                        </div>
+                        <div className="flex gap-3">
+                          <button onClick={() => moveToCart(item.productId, item.size)} className="label text-[10.5px] text-softblack hover:underline">Move to cart</button>
+                          <button onClick={() => removeSaved(item.productId, item.size)} className="label text-[10.5px] text-warmgray hover:text-danger">Remove</button>
+                        </div>
+                      </li>
+                    );
+                  }
                   return (
                     <SavedItemRow
-                      key={p.id + item.size}
-                      product={p}
+                      key={item.productId + item.size}
                       item={item}
-                      onMoveToCart={() => { moveToCart(p.id, item.size); push({ message: `Moved "${p.name}" to cart`, action: { label: "Cart", to: "/cart" } }); }}
-                      onRemove={() => removeSaved(p.id, item.size)}
+                      onMoveToCart={() => {
+                        moveToCart(item.productId, item.size);
+                        push({ message: `Moved "${item.snapshot!.name}" to cart`, action: { label: "Cart", to: "/cart" } });
+                      }}
+                      onRemove={() => removeSaved(item.productId, item.size)}
                     />
                   );
                 })}
@@ -88,7 +129,7 @@ export default function Cart() {
           )}
         </div>
 
-        {/* ---------- ORDER SUMMARY ---------- */}
+        {/* Order Summary */}
         <aside className="lg:sticky" style={{ top: 96 }}>
           <OrderSummary
             count={count}

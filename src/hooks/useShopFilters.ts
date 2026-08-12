@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { CATEGORIES, Category, ColorGroup, PRODUCTS, Product } from "../data/products";
+import { CATEGORIES, Category, ColorGroup } from "../data/products";
 import { PRICE_BANDS, Sort } from "../constants/filters";
+import type { AppProduct } from "../types/app";
 
 export interface ShopFilters {
   q: string;
@@ -19,15 +20,31 @@ export interface ShopFilters {
   setSort: (s: Sort) => void;
   activeCount: number;
   clearAll: () => void;
-  items: Product[];
+  items: AppProduct[];
 }
 
 const toggleIn = <T,>(arr: T[], v: T) =>
   arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
 
-/* Saara filter/sort/search state + filtered list — Shop page isi se chalta hai.
-   q URL ke ?q= mein rehta hai taaki search shareable ho. */
-export function useShopFilters({ preset, categorySlug }: { preset?: "new"; categorySlug?: string }) {
+/**
+ * Full filter/sort/search state + filtered list.
+ *
+ * PRODUCTION RULE: Shopify is the only product source.
+ * allProducts MUST be the Shopify product list.
+ * When allProducts is undefined (loading) or empty (no Shopify products),
+ * items will be empty — no mock fallback.
+ *
+ * @param allProducts - Shopify products array (undefined = still loading)
+ */
+export function useShopFilters({
+  preset,
+  categorySlug,
+  allProducts,
+}: {
+  preset?: "new";
+  categorySlug?: string;
+  allProducts?: AppProduct[];
+}) {
   const category = CATEGORIES.find((c) => c.slug === categorySlug);
   const [params, setParams] = useSearchParams();
   const q = params.get("q") ?? "";
@@ -45,9 +62,13 @@ export function useShopFilters({ preset, categorySlug }: { preset?: "new"; categ
     setParams(next, { replace: true });
   };
 
+  // When allProducts is undefined (loading) return empty to avoid rendering mock data.
+  // When it is an empty array, show empty state.
+  const source = allProducts ?? [];
+
   const items = useMemo(() => {
     const s = q.trim().toLowerCase();
-    let list = PRODUCTS.filter((p) => {
+    let list = source.filter((p) => {
       if (preset === "new" && !p.tags.includes("new")) return false;
       if (category && p.category !== category.slug) return false;
       if (!category && cats.length && !cats.includes(p.category)) return false;
@@ -72,7 +93,7 @@ export function useShopFilters({ preset, categorySlug }: { preset?: "new"; categ
     if (sort === "newest") list = [...list].sort((a, b) => b.addedAt.localeCompare(a.addedAt));
     if (sort === "rating") list = [...list].sort((a, b) => b.rating - a.rating);
     return list;
-  }, [q, preset, category, cats, sizes, colors, priceBand, sort]);
+  }, [q, preset, category, cats, sizes, colors, priceBand, sort, source]);
 
   const activeCount = sizes.length + colors.length + cats.length + (priceBand !== null ? 1 : 0);
 

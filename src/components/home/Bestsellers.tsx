@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Category } from "../../data/products";
-import { PRODUCTS } from "../../data/products";
+import type { AppProduct } from "../../types/app";
 import { Reveal, SectionHeading } from "../common";
 import { ProductCard } from "../product";
 
@@ -11,17 +11,21 @@ const TABS: { key: string; label: string; categories: Category[] }[] = [
   { key: "outerwear", label: "Outerwear", categories: ["jackets"] },
 ];
 
-export default function Bestsellers() {
+/**
+ * Bestsellers component — requires real Shopify products.
+ * Only rendered from Home when shopifyProducts.length > 0.
+ */
+export default function Bestsellers({ allProducts }: { allProducts: AppProduct[] }) {
   const [active, setActive] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
 
   const items = useMemo(() => {
-    const cats = TABS[active].categories;
-    return [...PRODUCTS]
+    const cats = TABS[active].categories as string[];
+    return [...allProducts]
       .filter((p) => cats.includes(p.category))
-      .sort((a, b) => b.rating - a.rating || b.reviews - a.reviews)
+      .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (b.reviews ?? 0) - (a.reviews ?? 0))
       .slice(0, 6);
-  }, [active]);
+  }, [active, allProducts]);
 
   const scrollBy = (dir: number) => {
     const el = trackRef.current;
@@ -52,7 +56,7 @@ export default function Bestsellers() {
           </span>
         </div>
 
-        {/* tabs */}
+        {/* Tabs */}
         <div className="relative mt-9 flex gap-8 border-b border-softblack/10" role="tablist" aria-label="Bestseller category">
           {TABS.map((tab, i) => (
             <button
@@ -79,13 +83,17 @@ export default function Bestsellers() {
           key={active}
           className="mt-9 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {items.map((p, i) => (
-            <div key={p.id} className="w-[220px] shrink-0 snap-start sm:w-[250px] md:w-[280px]">
-              <Reveal delay={Math.min(i, 4) * 0.06}>
-                <ProductCard product={p} />
-              </Reveal>
-            </div>
-          ))}
+          {items.length === 0 ? (
+            <p className="py-12 text-[14px] text-warmgray">No products in this category yet.</p>
+          ) : (
+            items.map((p, i) => (
+              <div key={p.id} className="w-[220px] shrink-0 snap-start sm:w-[250px] md:w-[280px]">
+                <Reveal delay={Math.min(i, 4) * 0.06}>
+                  <ProductCard product={p} />
+                </Reveal>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </section>

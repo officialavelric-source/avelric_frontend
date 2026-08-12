@@ -1,13 +1,46 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { COLLECTIONS } from "../../data/collections";
-import { getProduct } from "../../services/productService";
 import { Reveal } from "../../components/common";
-import { ProductCard } from "../../components/product";
+import { ProductCard, ProductCardSkeleton } from "../../components/product";
+import { getCachedProduct, getProducts } from "../../services/shopify/productService";
+import type { AppProduct } from "../../types/app";
 
-/* Curated theme-based collections — har collection ka apna
-   banner + story + product row. New Arrivals se distinct. */
-
+/**
+ * Collections page — curated, theme-based product edits.
+ *
+ * PRODUCTION NOTE:
+ * Collections are defined in data/collections.ts with Shopify product handles.
+ * Products are resolved from the Shopify product cache.
+ *
+ * To add a product to a collection:
+ * 1. Set the product's handle in Shopify Admin
+ * 2. Update COLLECTIONS in data/collections.ts with that handle
+ *
+ * The collection banners and copy are editorial — managed in code.
+ */
 export default function Collections() {
+  const [, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    // Pre-warm the product cache so collection products can be resolved
+    getProducts(50)
+      .then(() => {
+        if (!cancelled) { setLoaded(true); setLoading(false); }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error("[Collections] Shopify fetch failed:", err);
+          setLoadError("Unable to load products. Please try again.");
+          setLoading(false);
+        }
+      });
+    return () => { cancelled = true; };
+  }, []);
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
       <Reveal>
@@ -21,7 +54,7 @@ export default function Collections() {
         </p>
       </Reveal>
 
-      {/* quick jump chips */}
+      {/* Quick jump chips */}
       <Reveal className="mt-8">
         <div className="flex flex-wrap gap-2.5">
           {COLLECTIONS.map((c) => (
@@ -36,11 +69,23 @@ export default function Collections() {
         </div>
       </Reveal>
 
+      {/* Error state */}
+      {loadError && (
+        <div className="mt-10 rounded-2xl border border-red-100 bg-red-50 px-8 py-20 text-center">
+          <p className="font-display text-2xl text-softblack">Something went wrong</p>
+          <p className="mt-3 text-[14px] text-warmgray">{loadError}</p>
+        </div>
+      )}
+
       <div className="mt-14 space-y-20 md:space-y-24">
         {COLLECTIONS.map((c, ci) => {
-          const products = c.productIds
-            .map((id) => getProduct(id))
-            .filter((p): p is NonNullable<typeof p> => Boolean(p));
+          // Resolve products from Shopify cache by handle
+          const products: AppProduct[] = loading
+            ? []
+            : c.productIds
+                .map((handle) => getCachedProduct(handle))
+                .filter((p): p is AppProduct => Boolean(p));
+
           return (
             <section key={c.slug} id={c.slug} className="scroll-mt-32">
               <Reveal>
@@ -63,13 +108,33 @@ export default function Collections() {
                 </div>
               </Reveal>
 
-              <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4">
-                {products.map((p, i) => (
-                  <Reveal key={p.id} delay={Math.min(i, 3) * 0.06}>
-                    <ProductCard product={p} />
-                  </Reveal>
-                ))}
-              </div>
+              {/* Loading skeleton */}
+              {loading && !loadError && (
+                <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4">
+                  {Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+                </div>
+              )}
+
+              {/* Products found */}
+              {!loading && products.length > 0 && (
+                <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4">
+                  {products.map((p, i) => (
+                    <Reveal key={p.id} delay={Math.min(i, 3) * 0.06}>
+                      <ProductCard product={p} />
+                    </Reveal>
+                  ))}
+                </div>
+              )}
+
+              {/* Products not found in Shopify */}
+              {!loading && !loadError && products.length === 0 && (
+                <p className="mt-6 text-[14px] text-warmgray">
+                  Products in this collection are coming soon.{" "}
+                  <Link to="/shop" className="border-b border-softblack/30 hover:border-softblack">
+                    Browse all →
+                  </Link>
+                </p>
+              )}
             </section>
           );
         })}

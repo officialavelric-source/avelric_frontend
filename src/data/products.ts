@@ -14,7 +14,7 @@ export interface Product {
   outOfStockSizes?: string[];
   soldOut?: boolean;
   images: string[];
-  tags: ("best-find" | "trending" | "best-value" | "new")[];
+  tags: string[];
   addedAt: string;
   rating: number;
   reviews: number;
