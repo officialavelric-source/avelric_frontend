@@ -1,36 +1,56 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Reveal } from "../common";
 import { u } from "../../data/products";
+import { getAllCachedProducts, getProducts } from "../../services/shopify/productService";
+import type { AppProduct } from "../../types/app";
 
-const CARDS = [
-  {
-    eyebrow: "Just In",
-    title: "Six Pieces, Zero Compromises",
-    body: "This week's arrivals — reviewed twice before they were allowed to ship.",
-    image: u("photo-1516257984-b1b4d707412e", 1000),
-    to: "/new-arrivals",
-    cta: "Shop new arrivals",
-  },
-  {
-    eyebrow: "How We Curate",
-    title: "Selected, Not Mass-Produced",
-    body: "Out of every hundred pieces we review in the market, roughly six get listed.",
-    image: u("photo-1441984904996-e0b6ba687e04", 1000),
-    to: "/shop",
-    cta: "Shop what passed",
-    secondaryTo: "/how-we-curate",
-    secondaryLabel: "See the 12-step process",
-  },
-];
+export default function Lookbook({ allProducts: initialProducts }: { allProducts?: AppProduct[] }) {
+  const [products, setProducts] = useState<AppProduct[]>(() => initialProducts ?? getAllCachedProducts());
 
-export default function Lookbook() {
+  useEffect(() => {
+    if (initialProducts && initialProducts.length > 0) {
+      setProducts(initialProducts);
+      return;
+    }
+    getProducts(50)
+      .then(({ products: fetched }) => setProducts(fetched))
+      .catch(() => {});
+  }, [initialProducts]);
+
+  const shirts = products.filter((p) => p.category === "shirts");
+  const jeans = products.filter((p) => p.category === "jeans");
+
+  const cards = [
+    {
+      eyebrow: "Shirts Curation",
+      title: shirts.length > 0 ? `${shirts.length} Curated Shirts, Zero Fluff` : "Curated Shirts, Zero Compromises",
+      body: "Hand-picked button-downs, breathable linens, and textured camp-collars — reviewed twice before being listed.",
+      image: shirts[0]?.images?.[0] || u("photo-1596755094514-f87e34085b2c", 1000),
+      to: "/category/shirts",
+      cta: "Shop shirts",
+      secondaryTo: "/new-arrivals",
+      secondaryLabel: "See new arrivals",
+    },
+    {
+      eyebrow: "Denim Curation",
+      title: jeans.length > 0 ? `${jeans.length} Tailored Cuts, Selected Denim` : "Selected Denim, Not Mass-Produced",
+      body: "Vintage washes, relaxed straight legs, and textured Japanese denim crafted for drape and everyday wear.",
+      image: jeans[0]?.images?.[0] || u("photo-1542272604-787c3835535d", 1000),
+      to: "/category/jeans",
+      cta: "Shop jeans",
+      secondaryTo: "/shop",
+      secondaryLabel: "Explore all curations",
+    },
+  ];
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-20 md:py-24">
       <div className="grid gap-5 md:grid-cols-2">
-        {CARDS.map((c, i) => (
-          <Reveal key={c.title} delay={i * 0.08}>
+        {cards.map((c, i) => (
+          <Reveal key={c.eyebrow} delay={i * 0.08}>
             <div className="group relative overflow-hidden rounded-[3px] border border-softblack/10">
-              <Link to={c.to} className="block aspect-[4/5]">
+              <Link to={c.to} className="block aspect-[4/5] bg-beige">
                 <img
                   src={c.image}
                   alt=""

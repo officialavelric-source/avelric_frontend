@@ -15,7 +15,6 @@ export const FOOTER_COLS = [
       { to: "/collections", t: "Collections" },
       { to: "/category/shirts", t: "Shirts" },
       { to: "/category/jeans", t: "Jeans" },
-      { to: "/category/jackets", t: "Jackets" },
     ],
   },
   {

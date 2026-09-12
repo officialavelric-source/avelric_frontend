@@ -2,8 +2,8 @@ import { Reveal, SectionHeading } from "../../components/common";
 import { SIZE_GUIDE_BOTTOMS, SIZE_GUIDE_TOPS } from "../../constants/sizeGuide";
 
 const TABLES = [
-  { h: "Tops — shirts, tees, jackets", cols: ["Size", "Chest", "Length", "Shoulder"], rows: SIZE_GUIDE_TOPS },
-  { h: "Bottoms — jeans, trousers", cols: ["Size", "Waist", "Length", "Rise"], rows: SIZE_GUIDE_BOTTOMS },
+  { h: "Shirts", cols: ["Size", "Chest", "Length", "Shoulder"], rows: SIZE_GUIDE_TOPS },
+  { h: "Jeans", cols: ["Size", "Waist", "Length", "Rise"], rows: SIZE_GUIDE_BOTTOMS },
 ];
 
 export default function SizeGuide() {

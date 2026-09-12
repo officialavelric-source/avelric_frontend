@@ -5,10 +5,10 @@ import type { AppProduct } from "../../types/app";
 import { Reveal, SectionHeading } from "../common";
 import { ProductCard } from "../product";
 
-const TABS: { key: string; label: string; categories: Category[] }[] = [
-  { key: "tops", label: "Tops", categories: ["shirts", "t-shirts"] },
-  { key: "bottoms", label: "Bottoms", categories: ["jeans", "trousers"] },
-  { key: "outerwear", label: "Outerwear", categories: ["jackets"] },
+const TABS: { key: string; label: string; category?: Category }[] = [
+  { key: "all", label: "All Curations" },
+  { key: "shirts", label: "Shirts", category: "shirts" },
+  { key: "jeans", label: "Jeans", category: "jeans" },
 ];
 
 /**
@@ -20,11 +20,14 @@ export default function Bestsellers({ allProducts }: { allProducts: AppProduct[]
   const trackRef = useRef<HTMLDivElement>(null);
 
   const items = useMemo(() => {
-    const cats = TABS[active].categories as string[];
-    return [...allProducts]
-      .filter((p) => cats.includes(p.category))
+    const tab = TABS[active];
+    const pool = tab.category
+      ? allProducts.filter((p) => p.category === tab.category)
+      : allProducts;
+
+    return [...pool]
       .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (b.reviews ?? 0) - (a.reviews ?? 0))
-      .slice(0, 6);
+      .slice(0, 8);
   }, [active, allProducts]);
 
   const scrollBy = (dir: number) => {

@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCart } from "../../context/CartContext";
+import { getCachedProduct } from "../../services/shopify/productService";
 import { formatINR } from "../../utils/format";
 
 /**
  * MiniCart — quick preview dropdown, desktop only.
- * Renders from CartItem.snapshot — no mock product lookup.
+ * Renders from CartItem.snapshot with fallback to getCachedProduct.
  */
 export default function MiniCart({ open }: { open: boolean }) {
   const { items, count, subtotal } = useCart();
@@ -35,32 +36,34 @@ export default function MiniCart({ open }: { open: boolean }) {
               <>
                 <div className="max-h-[300px] divide-y divide-softblack/8 overflow-y-auto px-5">
                   {items.map((item) => {
+                    const cached = getCachedProduct(item.productId);
                     const snap = item.snapshot;
-                    if (!snap) {
-                      // Fallback for items without snapshot (legacy, no image to show)
-                      return (
-                        <div key={item.productId + item.size} className="flex items-center gap-3.5 py-3.5">
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[13.5px] font-medium">{item.productId}</span>
-                            <span className="label mt-0.5 block text-[9.5px] text-warmgray">Size {item.size} · Qty {item.qty}</span>
-                          </span>
-                        </div>
-                      );
-                    }
+                    const name = snap?.name || cached?.name || item.productId.replace(/-/g, " ");
+                    const imageSrc = snap?.image || cached?.images[0] || "";
+                    const price = snap?.price || cached?.price || 0;
+
                     return (
                       <Link
                         key={item.productId + item.size}
                         to={`/product/${item.productId}`}
                         className="flex items-center gap-3.5 py-3.5 transition-opacity hover:opacity-70"
                       >
-                        <img src={snap.image} alt="" className="h-14 w-11 shrink-0 rounded-lg object-cover" />
+                        {imageSrc ? (
+                          <img src={imageSrc} alt={name} className="h-14 w-11 shrink-0 rounded-lg object-cover" />
+                        ) : (
+                          <div className="h-14 w-11 shrink-0 rounded-lg bg-beige grid place-items-center text-[9px] uppercase text-warmgray">
+                            Avelric
+                          </div>
+                        )}
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[13.5px] font-medium">{snap.name}</span>
+                          <span className="block truncate text-[13.5px] font-medium">{name}</span>
                           <span className="label mt-0.5 block text-[9.5px] text-warmgray">
                             Size {item.size} · Qty {item.qty}
                           </span>
                         </span>
-                        <span className="shrink-0 text-[13.5px] font-medium">{formatINR(snap.price * item.qty)}</span>
+                        {price > 0 && (
+                          <span className="shrink-0 text-[13.5px] font-medium">{formatINR(price * item.qty)}</span>
+                        )}
                       </Link>
                     );
                   })}

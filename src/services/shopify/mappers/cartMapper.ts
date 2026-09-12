@@ -10,7 +10,7 @@ function mapCartLine(line: ShopifyCartLine): AppCartLine {
     productTitle: merch.product.title,
     variantTitle: merch.title,
     sku: merch.sku,
-    image: merch.image?.url ?? null,
+    image: merch.image?.url ?? merch.product.featuredImage?.url ?? null,
     price: parseFloat(merch.price.amount),
     quantity: line.quantity,
   };

@@ -46,7 +46,7 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <Categories />
+      <Categories allProducts={shopifyProducts ?? undefined} />
       {hasProducts && (
         <ProductRow
           eyebrow="New arrivals"
@@ -58,7 +58,7 @@ export default function Home() {
           layout="scroll"
         />
       )}
-      <Lookbook />
+      <Lookbook allProducts={shopifyProducts ?? undefined} />
       {hasProducts && <Bestsellers allProducts={shopifyProducts!} />}
       <Instagram />
     </>

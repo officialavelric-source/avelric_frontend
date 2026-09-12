@@ -35,6 +35,10 @@ export const CART_FRAGMENT = /* GraphQL */ `
               id
               handle
               title
+              featuredImage {
+                url
+                altText
+              }
             }
           }
         }

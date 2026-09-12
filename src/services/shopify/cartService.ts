@@ -77,21 +77,48 @@ export async function createCart(lines: CartLineInput[], buyerIdentity?: CartBuy
       ...(buyerIdentity ? { buyerIdentity } : {}),
     },
   });
-  const cart = assertCart(data.cartCreate.cart, data.cartCreate.userErrors);
+
+  const errors = data.cartCreate.userErrors || [];
+  // If customerAccessToken caused "Customer is invalid", retry safely with email/phone/address only
+  const hasTokenError = errors.some((e) =>
+    e.message.toLowerCase().includes("customer") ||
+    e.field?.includes("customerAccessToken")
+  );
+  if (hasTokenError && buyerIdentity?.customerAccessToken) {
+    const { customerAccessToken: _omit, ...safeIdentity } = buyerIdentity;
+    void _omit;
+    return createCart(lines, Object.keys(safeIdentity).length > 0 ? safeIdentity : undefined);
+  }
+
+  const cart = assertCart(data.cartCreate.cart, errors);
   return mapShopifyCart(cart);
 }
 
-/** Add lines to an existing cart. */
+/** Add lines to an existing cart. If cart expired or does not exist, transparently falls back to createCart. */
 export async function addCartLines(
   cartId: string,
   lines: CartLineInput[]
 ): Promise<AppCart> {
-  const data = await shopifyFetch<CartLinesAddPayload>(
-    CART_LINES_ADD_MUTATION,
-    { cartId, lines }
-  );
-  const cart = assertCart(data.cartLinesAdd.cart, data.cartLinesAdd.userErrors);
-  return mapShopifyCart(cart);
+  try {
+    const data = await shopifyFetch<CartLinesAddPayload>(
+      CART_LINES_ADD_MUTATION,
+      { cartId, lines }
+    );
+    const errors = data.cartLinesAdd.userErrors || [];
+    const cartNotExists = errors.some((e) =>
+      e.message.toLowerCase().includes("does not exist") ||
+      e.field?.includes("cartId")
+    );
+    if (cartNotExists || !data.cartLinesAdd.cart) {
+      console.warn("[ShopifyCart] Cart expired/not found. Creating fresh cart...");
+      return createCart(lines);
+    }
+    const cart = assertCart(data.cartLinesAdd.cart, errors);
+    return mapShopifyCart(cart);
+  } catch (err) {
+    console.warn("[ShopifyCart] addCartLines error, creating fresh cart:", err);
+    return createCart(lines);
+  }
 }
 
 /** Update quantities on existing cart lines. */
@@ -135,9 +162,21 @@ export async function updateCartBuyerIdentity(
     CART_BUYER_IDENTITY_UPDATE_MUTATION,
     { cartId, buyerIdentity }
   );
+
+  const errors = data.cartBuyerIdentityUpdate.userErrors || [];
+  const hasTokenError = errors.some((e) =>
+    e.message.toLowerCase().includes("customer") ||
+    e.field?.includes("customerAccessToken")
+  );
+  if (hasTokenError && buyerIdentity?.customerAccessToken) {
+    const { customerAccessToken: _omit, ...safeIdentity } = buyerIdentity;
+    void _omit;
+    return updateCartBuyerIdentity(cartId, safeIdentity);
+  }
+
   const cart = assertCart(
     data.cartBuyerIdentityUpdate.cart,
-    data.cartBuyerIdentityUpdate.userErrors
+    errors
   );
   return mapShopifyCart(cart);
 }

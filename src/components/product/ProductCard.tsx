@@ -1,6 +1,7 @@
 import { MouseEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { Product } from "../../data/products";
+import type { AppProduct } from "../../types/app";
 import { formatINR } from "../../utils/format";
 import { discountPct } from "../../utils/product";
 import { useCart } from "../../context/CartContext";
@@ -27,11 +28,33 @@ export default function ProductCard({ product, eager = false }: { product: Produ
 
   const doAdd = (size: string) => {
     if (outOfStock.has(size)) return;
-    add(product.id, size);
+    const appProd = product as Partial<AppProduct>;
+    const variant = appProd.variants?.find(
+      (v) =>
+        v.selectedOptions?.some(
+          (o) => o.name.toLowerCase() === "size" && o.value.toLowerCase() === size.toLowerCase()
+        ) || v.title.toLowerCase() === size.toLowerCase()
+    ) ?? (appProd.variants?.length === 1 ? appProd.variants[0] : undefined);
+
+    const frontImage = product.images?.[0] ?? variant?.image ?? "";
+
+    add(
+      product.id,
+      size,
+      1,
+      variant?.id,
+      {
+        name: product.name,
+        image: frontImage,
+        colorName: product.color?.name ?? "",
+        price: variant?.price ?? product.price,
+        compareAt: variant?.compareAtPrice ?? product.compareAt,
+      }
+    );
     setPicking(false);
     push({
       message: `Added "${product.name}" (${size}) to cart`,
-      image: product.images[0],
+      image: frontImage,
       action: { label: "Cart", to: "/cart" },
     });
   };

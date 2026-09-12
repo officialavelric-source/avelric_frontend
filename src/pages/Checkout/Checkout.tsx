@@ -4,6 +4,7 @@ import { useCart } from "../../context/CartContext";
 import { useCustomerAuth } from "../../context/CustomerAuthContext";
 import { CustomerAuthService } from "../../services/shopify/customerAuthService";
 import { formatINR } from "../../utils/format";
+import { getProductByHandle } from "../../services/shopify/productService";
 import { createCart, fetchCart, updateCartBuyerIdentity } from "../../services/shopify/cartService";
 import type { CartLineInput, CartBuyerIdentityInput } from "../../services/shopify/cartService";
 
@@ -17,16 +18,37 @@ export default function Checkout() {
     setResolving(true);
     setResolveError(null);
     try {
-      const lines: CartLineInput[] = items
-        .filter((i) => i.variantId)
-        .map((i) => ({ merchandiseId: i.variantId!, quantity: i.qty }));
+      if (items.length === 0) {
+        setResolveError("Your cart is empty. Add items from the shop to proceed.");
+        setResolving(false);
+        return;
+      }
+
+      // Resolve merchandise variant IDs (from item or on-the-fly via product handle)
+      const lines: CartLineInput[] = [];
+      for (const item of items) {
+        let vId = item.variantId;
+        if (!vId) {
+          const p = await getProductByHandle(item.productId);
+          const v =
+            p?.variants.find((variant) =>
+              variant.selectedOptions.some(
+                (o) => o.name.toLowerCase() === "size" && o.value.toLowerCase() === item.size.toLowerCase()
+              )
+            ) ??
+            p?.variants.find(
+              (variant) => variant.title.toLowerCase() === item.size.toLowerCase()
+            ) ??
+            (p?.variants.length === 1 ? p.variants[0] : undefined);
+          vId = v?.id;
+        }
+        if (vId) {
+          lines.push({ merchandiseId: vId, quantity: item.qty });
+        }
+      }
 
       if (lines.length === 0) {
-        setResolveError(
-          items.length === 0
-            ? "Your cart is empty. Add items from the shop to proceed."
-            : "Some items in your cart are missing Shopify variant data. Please re-add them from the product page."
-        );
+        setResolveError("Unable to verify cart items with Shopify. Please refresh and try again.");
         setResolving(false);
         return;
       }
@@ -88,9 +110,6 @@ export default function Checkout() {
     }
   };
 
-  const itemsWithVariants = items.filter((i) => i.variantId);
-  const itemsMissingVariants = items.filter((i) => !i.variantId);
-
   return (
     <div className="mx-auto max-w-2xl px-6 py-28 text-center">
       <p className="label text-warmgray">Checkout</p>
@@ -104,14 +123,6 @@ export default function Checkout() {
         Clicking below will take you to Shopify's secure checkout — UPI, cards, and Cash on Delivery accepted.
       </p>
 
-      {/* Warning: items without variantIds can't checkout */}
-      {itemsMissingVariants.length > 0 && (
-        <p className="mt-4 rounded-xl bg-amber-50 border border-amber-200 px-5 py-3 text-[13px] text-amber-800">
-          {itemsMissingVariants.length} item{itemsMissingVariants.length > 1 ? "s" : ""} could not be verified with Shopify.
-          Please re-add them from the product page to include them in checkout.
-        </p>
-      )}
-
       {resolveError && (
         <p className="mt-4 rounded-xl bg-beige px-5 py-3 text-[13.5px] text-softblack">
           {resolveError}
@@ -122,7 +133,7 @@ export default function Checkout() {
         <button
           id="checkout-btn"
           onClick={handleRedirect}
-          disabled={resolving || itemsWithVariants.length === 0}
+          disabled={resolving || items.length === 0}
           className="label rounded-full bg-softblack px-10 py-4 text-[12px] text-ivory transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {resolving ? "Creating secure checkout…" : "Proceed to Shopify checkout →"}

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { COLLECTIONS } from "../../data/collections";
 import { Reveal } from "../../components/common";
 import { ProductCard, ProductCardSkeleton } from "../../components/product";
-import { getCachedProduct, getProducts } from "../../services/shopify/productService";
+import { getCachedProduct, getProducts, getAllCachedProducts } from "../../services/shopify/productService";
 import type { AppProduct } from "../../types/app";
 
 /**
@@ -80,11 +80,22 @@ export default function Collections() {
       <div className="mt-14 space-y-20 md:space-y-24">
         {COLLECTIONS.map((c, ci) => {
           // Resolve products from Shopify cache by handle
-          const products: AppProduct[] = loading
+          let products: AppProduct[] = loading
             ? []
             : c.productIds
                 .map((handle) => getCachedProduct(handle))
                 .filter((p): p is AppProduct => Boolean(p));
+
+          if (!loading && products.length === 0) {
+            const allCached = getAllCachedProducts();
+            if (c.slug.includes("denim")) {
+              products = allCached.filter((p) => p.category === "jeans");
+            } else if (c.slug.includes("shirt")) {
+              products = allCached.filter((p) => p.category === "shirts");
+            } else {
+              products = allCached.slice(0, 4);
+            }
+          }
 
           return (
             <section key={c.slug} id={c.slug} className="scroll-mt-32">

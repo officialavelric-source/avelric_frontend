@@ -32,12 +32,19 @@ export default function ProductDetails() {
   const [added, setAdded] = useState(false);
   const [sizeError, setSizeError] = useState(false);
 
-  // Reset selection state when navigating to a different product
+  // Auto-select first in-stock size when product loads
   useEffect(() => {
-    setSize(null);
+    if (product?.sizes && product.sizes.length > 0) {
+      const firstInStock = product.sizes.find(
+        (s) => !product.outOfStockSizes?.includes(s)
+      ) ?? product.sizes[0];
+      setSize(firstInStock);
+    } else {
+      setSize(null);
+    }
     setAdded(false);
     setSizeError(false);
-  }, [id]);
+  }, [id, product]);
 
   /* ——— Loading state ——— */
   if (loading) {
@@ -86,41 +93,46 @@ export default function ProductDetails() {
 
   /* ——— Find Shopify variant from selected size ——— */
   const findVariant = (selectedSize: string) => {
-    if (!product.variants) return null;
+    if (!product.variants || product.variants.length === 0) return null;
     return (
       product.variants.find((v) =>
         v.selectedOptions.some(
-          (o) => o.name.toLowerCase() === "size" && o.value === selectedSize
+          (o) => o.name.toLowerCase() === "size" && o.value.toLowerCase() === selectedSize.toLowerCase()
         )
       ) ??
-      product.variants.find((v) => v.title === selectedSize) ??
-      null
+      product.variants.find((v) => v.title.toLowerCase() === selectedSize.toLowerCase()) ??
+      (product.variants.length === 1 ? product.variants[0] : null)
     );
   };
 
   const handleAdd = () => {
+    const effectiveSize = size || (product.sizes.length > 0 ? (
+      product.sizes.find((s) => !product.outOfStockSizes?.includes(s)) ?? product.sizes[0]
+    ) : "One Size");
+
     if (!size) {
-      setSizeError(true);
-      return;
+      setSize(effectiveSize);
     }
 
     // Check availability from variants
-    const variant = findVariant(size);
+    const variant = findVariant(effectiveSize);
     if (variant && !variant.availableForSale) {
       push({ message: "Sorry, this size is currently out of stock." });
       return;
     }
 
+    const frontImage = product.images[0] ?? variant?.image ?? "";
+
     add(
       product.id,
-      size,
+      effectiveSize,
       1,
       variant?.id,
       // Pass snapshot so cart renders without refetching
       {
         name: product.name,
-        image: product.images[0] ?? "",
-        colorName: product.color.name,
+        image: frontImage,
+        colorName: product.color?.name ?? "",
         price: variant?.price ?? product.price,
         compareAt: variant?.compareAtPrice ?? product.compareAt,
       }
@@ -128,8 +140,8 @@ export default function ProductDetails() {
 
     setAdded(true);
     push({
-      message: `Added "${product.name}" (${size}) to cart`,
-      image: product.images[0],
+      message: `Added "${product.name}" (${effectiveSize}) to cart`,
+      image: frontImage,
       action: { label: "Cart", to: "/cart" },
     });
     setTimeout(() => setAdded(false), 2200);

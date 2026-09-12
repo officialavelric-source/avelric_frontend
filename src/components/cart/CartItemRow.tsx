@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
 import { CartItem } from "../../context/CartContext";
+import { getCachedProduct } from "../../services/shopify/productService";
 import { formatINR } from "../../utils/format";
 
 /**
- * CartItemRow — renders from CartItem.snapshot (data captured from Shopify at add-to-cart).
- * No longer depends on getProduct() or mock Product type.
- * Caller must ensure item.snapshot is defined before rendering this component.
+ * CartItemRow — renders from CartItem.snapshot with fallback to getCachedProduct.
  */
 export default function CartItemRow({
   item,
@@ -18,7 +17,15 @@ export default function CartItemRow({
   onSaveForLater: () => void;
   onRemove: () => void;
 }) {
-  const snap = item.snapshot!; // Caller guarantees snapshot exists
+  const cached = getCachedProduct(item.productId);
+  const snap = item.snapshot ?? {
+    name: cached?.name || item.productId.replace(/-/g, " "),
+    image: cached?.images[0] || "",
+    colorName: cached?.color?.name || "",
+    price: cached?.price || 0,
+    compareAt: cached?.compareAt,
+  };
+  const imageSrc = snap.image || cached?.images[0] || "";
   const price = snap.price;
   const compareAt = snap.compareAt;
   const pct = compareAt && compareAt > price ? Math.round(((compareAt - price) / compareAt) * 100) : 0;
@@ -26,7 +33,13 @@ export default function CartItemRow({
   return (
     <li className="flex gap-4 py-5 md:gap-5">
       <Link to={`/product/${item.productId}`} className="w-24 shrink-0 overflow-hidden rounded-xl bg-beige transition-opacity hover:opacity-90 md:w-32">
-        <img src={snap.image} alt={snap.name} className="aspect-[3/4] w-full object-cover" />
+        {imageSrc ? (
+          <img src={imageSrc} alt={snap.name} className="aspect-[3/4] w-full object-cover" />
+        ) : (
+          <div className="aspect-[3/4] w-full grid place-items-center bg-beige text-warmgray text-[10px] tracking-wider uppercase">
+            Avelric
+          </div>
+        )}
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-3">

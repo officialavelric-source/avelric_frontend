@@ -8,9 +8,10 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { getCachedProduct } from "../services/shopify/productService";
+import { getCachedProduct, getProductByHandle } from "../services/shopify/productService";
 import {
   createCart,
+  fetchCart,
   addCartLines,
   updateCartLines,
   removeCartLines,
@@ -137,13 +138,107 @@ export function CartProvider({ children }: { children: ReactNode }) {
     for (const line of cart.lines) {
       newMap[line.variantId] = line.id;
     }
-    setState((prev) => ({
-      ...prev,
-      shopifyCartId: cart.id,
-      checkoutUrl: cart.checkoutUrl,
-      variantLineMap: newMap,
-    }));
+    setState((prev) => {
+      // Enrich local items with image, title, price from cart lines if snapshot was incomplete
+      const updatedItems = prev.items.map((it) => {
+        const matchingLine = cart.lines.find(
+          (l) => l.variantId === it.variantId || l.productHandle === it.productId
+        );
+        if (matchingLine && (!it.snapshot || !it.snapshot.image)) {
+          return {
+            ...it,
+            variantId: it.variantId ?? matchingLine.variantId,
+            snapshot: {
+              name: it.snapshot?.name || matchingLine.productTitle,
+              image: it.snapshot?.image || matchingLine.image || "",
+              colorName: it.snapshot?.colorName || "",
+              price: it.snapshot?.price || matchingLine.price,
+              compareAt: it.snapshot?.compareAt,
+            },
+          };
+        }
+        return it;
+      });
+
+      return {
+        ...prev,
+        items: updatedItems,
+        shopifyCartId: cart.id,
+        checkoutUrl: cart.checkoutUrl,
+        variantLineMap: newMap,
+      };
+    });
   }, []);
+
+  /* ——— Validate stored cart on mount ——— */
+  useEffect(() => {
+    const initialCartId = stateRef.current.shopifyCartId;
+    if (initialCartId) {
+      fetchCart(initialCartId)
+        .then((cart) => {
+          if (cart) {
+            applyShopifyCart(cart);
+          } else {
+            // Cart expired on Shopify — reset stale ID
+            setState((prev) => ({
+              ...prev,
+              shopifyCartId: null,
+              checkoutUrl: null,
+              variantLineMap: {},
+            }));
+          }
+        })
+        .catch(() => {});
+    }
+  }, [applyShopifyCart]);
+
+  /* ——— Auto-hydrate any unhydrated items in localStorage ——— */
+  const hydratingSetRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    const unhydrated = state.items.filter(
+      (i) => !i.snapshot || !i.snapshot.image || !i.variantId
+    );
+    if (unhydrated.length === 0) return;
+
+    unhydrated.forEach((item) => {
+      const key = `${item.productId}:${item.size}`;
+      if (hydratingSetRef.current.has(key)) return;
+      hydratingSetRef.current.add(key);
+
+      getProductByHandle(item.productId).then((prod) => {
+        if (!prod) return;
+        const v =
+          prod.variants.find((variant) =>
+            variant.selectedOptions.some(
+              (o) => o.name.toLowerCase() === "size" && o.value === item.size
+            )
+          ) ??
+          prod.variants.find(
+            (variant) => variant.title.toLowerCase() === item.size.toLowerCase()
+          ) ??
+          (prod.variants.length === 1 ? prod.variants[0] : undefined);
+
+        const frontImage = prod.images[0] ?? v?.image ?? "";
+        setState((prev) => ({
+          ...prev,
+          items: prev.items.map((it) => {
+            if (!same(it, item.productId, item.size)) return it;
+            return {
+              ...it,
+              variantId: it.variantId ?? v?.id,
+              snapshot: {
+                name: it.snapshot?.name || prod.name,
+                image: it.snapshot?.image || frontImage,
+                colorName: it.snapshot?.colorName || prod.color?.name || "",
+                price: it.snapshot?.price || v?.price || prod.price,
+                compareAt: it.snapshot?.compareAt || v?.compareAtPrice || prod.compareAt,
+              },
+            };
+          }),
+        }));
+      }).catch(() => {});
+    });
+  }, [state.items]);
 
   /* ——— Synchronize Cart Buyer Identity on Login & Logout ——— */
   const syncedCustomerEmailRef = useRef<string | null>(null);
@@ -207,7 +302,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           v.selectedOptions.some(
             (o) => o.name.toLowerCase() === "size" && o.value === size
           )
-        ) ?? cached.variants.find((v) => v.title === size);
+        ) ??
+        cached.variants.find((v) => v.title.toLowerCase() === size.toLowerCase()) ??
+        (cached.variants.length === 1 ? cached.variants[0] : undefined);
       return variant?.id;
     },
     []
@@ -225,6 +322,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
     ) => {
       const resolvedVariantId = resolveVariantId(productId, size, variantId);
 
+      // If snapshot is missing or image is missing, try populating from cache
+      let initialSnapshot = snapshot;
+      const cached = getCachedProduct(productId);
+      if ((!initialSnapshot || !initialSnapshot.image) && cached) {
+        const v = cached.variants.find((variant) => variant.id === (resolvedVariantId ?? variantId));
+        const frontImage = cached.images[0] ?? v?.image ?? "";
+        initialSnapshot = {
+          name: initialSnapshot?.name || cached.name,
+          image: initialSnapshot?.image || frontImage,
+          colorName: initialSnapshot?.colorName || cached.color?.name || "",
+          price: initialSnapshot?.price || v?.price || cached.price,
+          compareAt: initialSnapshot?.compareAt || v?.compareAtPrice || cached.compareAt,
+        };
+      }
+
       // Optimistic local state update
       setState((prev) => {
         const found = prev.items.find((i) => same(i, productId, size));
@@ -233,47 +345,109 @@ export function CartProvider({ children }: { children: ReactNode }) {
           size,
           qty,
           variantId: resolvedVariantId,
-          snapshot,
+          snapshot: initialSnapshot,
         };
         const items = found
           ? prev.items.map((i) =>
-              same(i, productId, size) ? { ...i, qty: i.qty + qty, variantId: resolvedVariantId ?? i.variantId, snapshot: snapshot ?? i.snapshot } : i
+              same(i, productId, size)
+                ? {
+                    ...i,
+                    qty: i.qty + qty,
+                    variantId: resolvedVariantId ?? i.variantId,
+                    snapshot: initialSnapshot ?? i.snapshot,
+                  }
+                : i
             )
           : [...prev.items, newItem];
         return { ...prev, items };
       });
 
-      // Background Shopify sync — use stateRef to avoid stale closure
-      if (!resolvedVariantId) return;
-      const line = { merchandiseId: resolvedVariantId, quantity: qty };
+      // Helper to push line to Shopify
+      const syncLineToShopify = (merchandiseId: string, quantity: number) => {
+        const line = { merchandiseId, quantity };
+        const cartId = stateRef.current.shopifyCartId;
 
-      const cartId = stateRef.current.shopifyCartId;
-      if (!cartId) {
-        const buyerIdentity: CartBuyerIdentityInput | undefined = (isAuthenticated && customer?.email) ? {
-          email: customer.email,
-          phone: customer.phone ?? undefined,
-          deliveryAddressPreferences: customer.defaultAddress ? [{
-            deliveryAddress: {
-              firstName: customer.defaultAddress.firstName ?? undefined,
-              lastName: customer.defaultAddress.lastName ?? undefined,
-              address1: customer.defaultAddress.address1 ?? undefined,
-              address2: customer.defaultAddress.address2 ?? undefined,
-              city: customer.defaultAddress.city ?? undefined,
-              province: customer.defaultAddress.province ?? undefined,
-              zip: customer.defaultAddress.zip ?? undefined,
-              country: customer.defaultAddress.country ?? undefined,
-              phone: customer.defaultAddress.phone ?? undefined,
-            }
-          }] : undefined
-        } : undefined;
+        const buyerIdentity: CartBuyerIdentityInput | undefined =
+          isAuthenticated && customer?.email
+            ? {
+                email: customer.email,
+                phone: customer.phone ?? undefined,
+                deliveryAddressPreferences: customer.defaultAddress
+                  ? [
+                      {
+                        deliveryAddress: {
+                          firstName: customer.defaultAddress.firstName ?? undefined,
+                          lastName: customer.defaultAddress.lastName ?? undefined,
+                          address1: customer.defaultAddress.address1 ?? undefined,
+                          address2: customer.defaultAddress.address2 ?? undefined,
+                          city: customer.defaultAddress.city ?? undefined,
+                          province: customer.defaultAddress.province ?? undefined,
+                          zip: customer.defaultAddress.zip ?? undefined,
+                          country: customer.defaultAddress.country ?? undefined,
+                          phone: customer.defaultAddress.phone ?? undefined,
+                        },
+                      },
+                    ]
+                  : undefined,
+              }
+            : undefined;
 
-        createCart([line], buyerIdentity)
-          .then(applyShopifyCart)
-          .catch((err) => console.warn("[Cart] createCart failed:", err));
+        if (!cartId) {
+          createCart([line], buyerIdentity)
+            .then(applyShopifyCart)
+            .catch((err) => console.warn("[Cart] createCart failed:", err));
+        } else {
+          addCartLines(cartId, [line])
+            .then(applyShopifyCart)
+            .catch((err) => console.warn("[Cart] addCartLines failed:", err));
+        }
+      };
+
+      if (resolvedVariantId) {
+        syncLineToShopify(resolvedVariantId, qty);
       } else {
-        addCartLines(cartId, [line])
-          .then(applyShopifyCart)
-          .catch((err) => console.warn("[Cart] addCartLines failed:", err));
+        // Asynchronously resolve product & variant from Shopify if not in cache
+        getProductByHandle(productId)
+          .then((prod) => {
+            if (!prod) return;
+            const v =
+              prod.variants.find((variant) =>
+                variant.selectedOptions.some(
+                  (o) => o.name.toLowerCase() === "size" && o.value === size
+                )
+              ) ??
+              prod.variants.find(
+                (variant) => variant.title.toLowerCase() === size.toLowerCase()
+              ) ??
+              (prod.variants.length === 1 ? prod.variants[0] : undefined);
+
+            const frontImage = prod.images[0] ?? v?.image ?? "";
+            const fullSnapshot: CartItem["snapshot"] = {
+              name: prod.name,
+              image: frontImage,
+              colorName: prod.color?.name ?? "",
+              price: v?.price ?? prod.price,
+              compareAt: v?.compareAtPrice ?? prod.compareAt,
+            };
+
+            setState((prev) => ({
+              ...prev,
+              items: prev.items.map((i) =>
+                same(i, productId, size)
+                  ? {
+                      ...i,
+                      variantId: i.variantId ?? v?.id,
+                      snapshot: i.snapshot?.image ? i.snapshot : fullSnapshot,
+                    }
+                  : i
+              ),
+            }));
+
+            if (v?.id) {
+              syncLineToShopify(v.id, qty);
+            }
+          })
+          .catch((err) => console.warn("[Cart] async product fetch failed:", err));
       }
     },
     [resolveVariantId, applyShopifyCart, isAuthenticated, customer]

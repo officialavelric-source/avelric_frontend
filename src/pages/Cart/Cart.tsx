@@ -48,43 +48,23 @@ export default function Cart() {
           {/* Free shipping progress */}
           {items.length > 0 && <FreeShippingBar subtotal={subtotal} shipping={shipping} />}
 
-          {/* Item rows — rendered from CartItem.snapshot (Shopify data captured at add time) */}
+          {/* Item rows — rendered from CartItem with front images and Shopify sync */}
           <ul className="mt-5 divide-y divide-softblack/10 rounded-2xl border border-softblack/10 bg-ivory px-5 shadow-[0_2px_16px_-6px_rgba(26,26,26,0.08)]">
-            {items.map((item) => {
-              if (!item.snapshot) {
-                // Item has no snapshot — added before Shopify integration or data missing
-                // Show a minimal recoverable row rather than silently hiding it
-                return (
-                  <li key={item.productId + item.size} className="flex items-center justify-between gap-4 py-5">
-                    <div>
-                      <p className="text-[14px] font-medium">{item.productId}</p>
-                      <p className="label mt-1 text-[10px] text-warmgray">Size {item.size} · Qty {item.qty}</p>
-                    </div>
-                    <button
-                      onClick={() => remove(item.productId, item.size)}
-                      className="label text-[10.5px] text-warmgray hover:text-danger"
-                    >
-                      Remove
-                    </button>
-                  </li>
-                );
-              }
-              return (
-                <CartItemRow
-                  key={item.productId + item.size}
-                  item={item}
-                  onUpdateQty={(qty) => updateQty(item.productId, item.size, qty)}
-                  onSaveForLater={() => {
-                    saveForLater(item.productId, item.size);
-                    push({ message: `Saved "${item.snapshot!.name}" for later` });
-                  }}
-                  onRemove={() => {
-                    remove(item.productId, item.size);
-                    push({ message: `Removed "${item.snapshot!.name}" from cart` });
-                  }}
-                />
-              );
-            })}
+            {items.map((item) => (
+              <CartItemRow
+                key={item.productId + item.size}
+                item={item}
+                onUpdateQty={(qty) => updateQty(item.productId, item.size, qty)}
+                onSaveForLater={() => {
+                  saveForLater(item.productId, item.size);
+                  push({ message: `Saved "${item.snapshot?.name || item.productId}" for later` });
+                }}
+                onRemove={() => {
+                  remove(item.productId, item.size);
+                  push({ message: `Removed "${item.snapshot?.name || item.productId}" from cart` });
+                }}
+              />
+            ))}
             {items.length === 0 && (
               <li className="py-10 text-center text-warmgray">
                 Cart is empty — your saved items are below.
@@ -97,33 +77,17 @@ export default function Cart() {
             <section className="mt-10">
               <h2 className="font-display text-[22px]">Saved for later ({saved.length})</h2>
               <ul className="mt-4 divide-y divide-softblack/10 rounded-2xl border border-softblack/10 bg-beige/40 px-5">
-                {saved.map((item) => {
-                  if (!item.snapshot) {
-                    return (
-                      <li key={item.productId + item.size} className="flex items-center justify-between gap-4 py-5">
-                        <div>
-                          <p className="text-[14px] font-medium">{item.productId}</p>
-                          <p className="label mt-1 text-[10px] text-warmgray">Size {item.size}</p>
-                        </div>
-                        <div className="flex gap-3">
-                          <button onClick={() => moveToCart(item.productId, item.size)} className="label text-[10.5px] text-softblack hover:underline">Move to cart</button>
-                          <button onClick={() => removeSaved(item.productId, item.size)} className="label text-[10.5px] text-warmgray hover:text-danger">Remove</button>
-                        </div>
-                      </li>
-                    );
-                  }
-                  return (
-                    <SavedItemRow
-                      key={item.productId + item.size}
-                      item={item}
-                      onMoveToCart={() => {
-                        moveToCart(item.productId, item.size);
-                        push({ message: `Moved "${item.snapshot!.name}" to cart`, action: { label: "Cart", to: "/cart" } });
-                      }}
-                      onRemove={() => removeSaved(item.productId, item.size)}
-                    />
-                  );
-                })}
+                {saved.map((item) => (
+                  <SavedItemRow
+                    key={item.productId + item.size}
+                    item={item}
+                    onMoveToCart={() => {
+                      moveToCart(item.productId, item.size);
+                      push({ message: `Moved "${item.snapshot?.name || item.productId}" to cart`, action: { label: "Cart", to: "/cart" } });
+                    }}
+                    onRemove={() => removeSaved(item.productId, item.size)}
+                  />
+                ))}
               </ul>
             </section>
           )}

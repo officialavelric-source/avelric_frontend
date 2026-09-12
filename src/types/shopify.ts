@@ -65,7 +65,7 @@ export interface ShopifyCartLine {
     price: ShopifyMoneyV2;
     compareAtPrice: ShopifyMoneyV2 | null;
     image: ShopifyImage | null;
-    product: { id: string; handle: string; title: string };
+    product: { id: string; handle: string; title: string; featuredImage?: ShopifyImage | null };
   };
   cost: {
     totalAmount: ShopifyMoneyV2;

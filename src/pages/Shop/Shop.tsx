@@ -135,7 +135,7 @@ export default function Shop({ preset }: { preset?: "new" }) {
               {q ? `Nothing matches "${q.trim()}"` : "Nothing matches these filters"}
             </p>
             <p className="mt-3 text-warmgray">
-              {q ? "Try a category — shirts, jeans, jackets — or clear the search." : "Widen the price range or clear a size to see more."}
+              {q ? "Try a category — shirts or jeans — or clear the search." : "Widen the price range or clear a size to see more."}
             </p>
             <button onClick={clearAll} className="label mt-8 rounded-full bg-softblack px-7 py-3.5 text-[11px] text-ivory">
               Clear filters

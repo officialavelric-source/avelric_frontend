@@ -9,10 +9,7 @@ import type { AppProduct, AppVariant } from "../../../types/app";
 
 const VALID_CATEGORIES: Category[] = [
   "shirts",
-  "t-shirts",
   "jeans",
-  "trousers",
-  "jackets",
 ];
 
 const CATEGORY_MAP: Record<string, Category> = {
@@ -22,29 +19,40 @@ const CATEGORY_MAP: Record<string, Category> = {
   oxford: "shirts",
   linen: "shirts",
   flannel: "shirts",
-  "t-shirt": "t-shirts",
-  "t-shirts": "t-shirts",
-  tshirt: "t-shirts",
-  tee: "t-shirts",
   tops: "shirts",
   jean: "jeans",
   jeans: "jeans",
   denim: "jeans",
-  trouser: "trousers",
-  trousers: "trousers",
-  chino: "trousers",
-  pants: "trousers",
-  cargo: "trousers",
-  jacket: "jackets",
-  jackets: "jackets",
-  harrington: "jackets",
+  trouser: "jeans",
+  trousers: "jeans",
+  chino: "jeans",
+  pants: "jeans",
+  cargo: "jeans",
+  bottoms: "jeans",
 };
 
-function normalizeCategory(productType: string): Category {
-  const lower = productType.toLowerCase().trim();
-  if (CATEGORY_MAP[lower]) return CATEGORY_MAP[lower];
-  const found = VALID_CATEGORIES.find((c) => lower.includes(c.slice(0, -1)));
-  return found ?? "shirts";
+function normalizeCategory(sp: ShopifyProduct): Category {
+  const combined = [
+    sp.productType || "",
+    sp.title || "",
+    sp.handle || "",
+    (sp.tags || []).join(" "),
+    sp.description || "",
+  ].join(" ").toLowerCase();
+
+  // Primary check: Jeans and Denim
+  const isJeans = /\b(jean|jeans|denim|pant|pants|trouser|trousers|bottom|bottoms)\b/i.test(combined);
+  const isShirt = /\b(shirt|shirts|button-up|oxford|linen|poplin|top|tops|resort)\b/i.test(combined);
+
+  if (isJeans && !isShirt) return "jeans";
+  if (isShirt && !isJeans) return "shirts";
+
+  // Prioritize title keywords
+  const titleLower = (sp.title || "").toLowerCase();
+  if (/\b(jean|jeans|denim)\b/i.test(titleLower)) return "jeans";
+  if (/\b(shirt|shirts)\b/i.test(titleLower)) return "shirts";
+
+  return "shirts";
 }
 
 const VALID_COLOR_GROUPS: ColorGroup[] = [
@@ -206,7 +214,7 @@ export function mapShopifyProduct(sp: ShopifyProduct): AppProduct {
     // Product interface fields
     id: sp.handle,
     name: sp.title,
-    category: normalizeCategory(sp.productType),
+    category: normalizeCategory(sp),
     price,
     compareAt,
     fabric: "Premium quality fabric",
