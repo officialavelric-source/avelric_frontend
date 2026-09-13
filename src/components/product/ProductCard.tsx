@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Product } from "../../data/products";
 import type { AppProduct } from "../../types/app";
@@ -6,6 +6,7 @@ import { formatINR } from "../../utils/format";
 import { discountPct } from "../../utils/product";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
+import { getProductRatingSummary, subscribeToReviews } from "../../services/reviewService";
 import Stars from "../common/Stars";
 import WishlistHeart from "./WishlistHeart";
 
@@ -15,6 +16,14 @@ export default function ProductCard({ product, eager = false }: { product: Produ
   const [picking, setPicking] = useState(false);
   const pct = discountPct(product);
   const outOfStock = new Set(product.outOfStockSizes ?? []);
+
+  const [ratingSummary, setRatingSummary] = useState(() => getProductRatingSummary(product.id));
+
+  useEffect(() => {
+    const update = () => setRatingSummary(getProductRatingSummary(product.id));
+    update();
+    return subscribeToReviews(update);
+  }, [product.id]);
 
   // one badge only, ranked by what actually matters to a shopper
   const badge =
@@ -66,12 +75,6 @@ export default function ProductCard({ product, eager = false }: { product: Produ
     else setPicking(true);
   };
 
-  const onNotifyMe = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    push({ message: `We'll email you when "${product.name}" is back in stock` });
-  };
-
   return (
     <Link
       to={`/product/${product.id}`}
@@ -84,7 +87,7 @@ export default function ProductCard({ product, eager = false }: { product: Produ
             src={product.images[0]}
             alt={product.name}
             loading={eager ? "eager" : "lazy"}
-            className={`h-full w-full object-cover transition-opacity duration-[400ms] ease-premium group-hover:opacity-0 ${product.soldOut ? "opacity-60" : ""}`}
+            className="h-full w-full object-cover transition-opacity duration-[400ms] ease-premium group-hover:opacity-0"
           />
           <img
             src={product.images[1]}
@@ -94,12 +97,6 @@ export default function ProductCard({ product, eager = false }: { product: Produ
             className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-[400ms] ease-premium group-hover:opacity-100"
           />
         </div>
-
-        {product.soldOut && (
-          <div className="absolute inset-0 grid place-items-center">
-            <span className="label rounded-full bg-ivory/95 px-4 py-2 text-[10px] text-softblack shadow-sm">Sold Out</span>
-          </div>
-        )}
 
         {badge && !product.soldOut && (
           <span className={`label absolute left-3 top-3 rounded-full px-2.5 py-1.5 text-[10px] shadow-sm ${badge.tone}`}>
@@ -115,12 +112,9 @@ export default function ProductCard({ product, eager = false }: { product: Produ
         {/* quick add — mobile: always on, desktop: slides up from the edge on hover */}
         {product.soldOut ? (
           <div className="absolute inset-x-0 bottom-0 md:translate-y-full md:opacity-0 md:transition-all md:duration-[400ms] md:ease-premium md:group-hover:translate-y-0 md:group-hover:opacity-100">
-            <button
-              onClick={onNotifyMe}
-              className="label w-full border-t border-softblack/10 bg-ivory/95 py-3.5 text-[10.5px] text-softblack backdrop-blur transition-colors hover:bg-ivory"
-            >
-              Notify Me
-            </button>
+            <span className="label block w-full border-t border-softblack/10 bg-ivory/95 py-3.5 text-center text-[10.5px] font-medium text-softblack/60 backdrop-blur">
+              Sold Out
+            </span>
           </div>
         ) : (
           <div className="absolute inset-x-0 bottom-0 md:translate-y-full md:opacity-0 md:transition-all md:duration-[400ms] md:ease-premium md:group-hover:translate-y-0 md:group-hover:opacity-100">
@@ -170,11 +164,13 @@ export default function ProductCard({ product, eager = false }: { product: Produ
             {product.name}
           </span>
         </h3>
-        <p className="mt-1.5 flex items-center gap-1.5 text-[12.5px] text-warmgray">
-          <Stars rating={product.rating} />
-          <span className="font-medium text-softblack">{product.rating}</span>
-          <span>({product.reviews})</span>
-        </p>
+        {ratingSummary.totalReviews > 0 && (
+          <p className="mt-1.5 flex items-center gap-1.5 text-[12px] text-warmgray">
+            <Stars rating={ratingSummary.averageRating} />
+            <span className="font-medium text-softblack">{ratingSummary.averageRating.toFixed(1)}</span>
+            <span>({ratingSummary.totalReviews})</span>
+          </p>
+        )}
         <p className="mt-1.5 flex items-center gap-1.5 text-[15px] font-medium text-softblack">
           {formatINR(product.price)}
           {product.compareAt && (
@@ -184,12 +180,6 @@ export default function ProductCard({ product, eager = false }: { product: Produ
             </>
           )}
         </p>
-        <span
-          className="mt-2 inline-block h-3 w-3 rounded-full ring-1 ring-offset-2 ring-softblack/15"
-          style={{ backgroundColor: product.color.hex }}
-          title={product.color.name}
-          aria-hidden="true"
-        />
       </div>
     </Link>
   );

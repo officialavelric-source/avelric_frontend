@@ -14,8 +14,8 @@ export default {
         gold: "#B8860B",
       },
       fontFamily: {
-        display: ['"Playfair Display"', "Georgia", "serif"],
-        sans: ["Inter", "system-ui", "sans-serif"],
+        display: ['"Oswald"', "sans-serif"],
+        sans: ['"Roboto"', "sans-serif"],
       },
       letterSpacing: {
         label: "0.18em",

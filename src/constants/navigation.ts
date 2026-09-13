@@ -1,6 +1,5 @@
 export const NAV_LINKS = [
   { label: "Shop", to: "/shop" },
-  { label: "Collections", to: "/collections" },
   { label: "New Arrivals", to: "/new-arrivals" },
   { label: "About", to: "/about" },
   { label: "Contact", to: "/contact" },
@@ -12,7 +11,6 @@ export const FOOTER_COLS = [
     links: [
       { to: "/shop", t: "All products" },
       { to: "/new-arrivals", t: "New arrivals" },
-      { to: "/collections", t: "Collections" },
       { to: "/category/shirts", t: "Shirts" },
       { to: "/category/jeans", t: "Jeans" },
     ],

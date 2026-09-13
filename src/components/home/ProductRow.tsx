@@ -5,8 +5,8 @@ import type { AppProduct } from "../../types/app";
 import { Reveal, SectionHeading } from "../common";
 import { ProductCard } from "../product";
 
-/* layout="scroll" → horizontal snap-scroll row with arrow controls
-   (Trending section), warna 4-col grid */
+/* layout="scroll" → horizontal snap-scroll row with arrow controls on desktop,
+   mobile phone responsiveness: 2 rows of 2 items (4 items total) with More button linking directly to component */
 
 type AnyProduct = Product | AppProduct;
 
@@ -36,7 +36,7 @@ export default function ProductRow({
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 md:py-24">
+    <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <SectionHeading eyebrow={eyebrow} title={title} sub={sub} />
         <Reveal className="flex items-center gap-4">
@@ -59,35 +59,59 @@ export default function ProductRow({
             </span>
           )}
           {cta && (
-            <Link to={ctaTo} className="label border-b border-softblack/30 pb-1 text-[11px] transition-colors hover:border-softblack">
+            <Link to={ctaTo} className="hidden md:inline-block label border-b border-softblack/30 pb-1 text-[11px] transition-colors hover:border-softblack">
               {cta} →
             </Link>
           )}
         </Reveal>
       </div>
 
-      {layout === "scroll" ? (
-        <div
-          ref={trackRef}
-          className="mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {items.map((p, i) => (
-            <div key={p.id} className="w-[220px] shrink-0 snap-start sm:w-[250px] md:w-[280px]">
-              <Reveal delay={Math.min(i, 4) * 0.06}>
+      {/* Desktop view (md and up) */}
+      <div className="hidden md:block">
+        {layout === "scroll" ? (
+          <div
+            ref={trackRef}
+            className="mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {items.map((p, i) => (
+              <div key={p.id} className="w-[280px] shrink-0 snap-start">
+                <Reveal delay={Math.min(i, 4) * 0.06}>
+                  <ProductCard product={p as AppProduct} />
+                </Reveal>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-12 grid grid-cols-4 gap-x-5 gap-y-10">
+            {items.slice(0, 4).map((p, i) => (
+              <Reveal key={p.id} delay={i * 0.07}>
                 <ProductCard product={p as AppProduct} />
               </Reveal>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4">
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Mobile phone responsiveness: 2 rows of 2 (4 items total) with More button linking directly to component */}
+      <div className="block md:hidden mt-8">
+        <div className="grid grid-cols-2 gap-x-3.5 gap-y-6">
           {items.slice(0, 4).map((p, i) => (
-            <Reveal key={p.id} delay={i * 0.07}>
+            <Reveal key={p.id} delay={Math.min(i, 3) * 0.05}>
               <ProductCard product={p as AppProduct} />
             </Reveal>
           ))}
         </div>
-      )}
+
+        <div className="mt-8 flex justify-center">
+          <Link
+            to={ctaTo}
+            className="label inline-flex items-center justify-center gap-2 rounded-full border border-softblack/20 bg-ivory px-8 py-3.5 text-[11.5px] font-medium text-softblack transition-all hover:bg-softblack hover:text-ivory shadow-xs active:scale-95 w-full max-w-xs"
+          >
+            <span>More</span>
+            <span>→</span>
+          </Link>
+        </div>
+      </div>
     </section>
   );
 }

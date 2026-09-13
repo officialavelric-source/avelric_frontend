@@ -4,6 +4,7 @@ import type {
   ShopifyProductVariant,
 } from "../../../types/shopify";
 import type { AppProduct, AppVariant } from "../../../types/app";
+import { getProductRatingSummary } from "../../reviewService";
 
 /* ——— Helpers ——— */
 
@@ -188,15 +189,19 @@ export function mapShopifyProduct(sp: ShopifyProduct): AppProduct {
     : variants.map((v) => v.title).filter(Boolean);
 
   // Out-of-stock sizes
-  const outOfStockSizes = variants
-    .filter((v) => !v.availableForSale)
-    .map((v) => {
-      const sOpt = v.selectedOptions.find(
-        (o) => o.name.toLowerCase() === "size"
-      );
-      return sOpt ? sOpt.value : v.title;
-    })
-    .filter(Boolean);
+  const outOfStockSizes = Array.from(
+    new Set(
+      variants
+        .filter((v) => !v.availableForSale)
+        .map((v) => {
+          const sOpt = v.selectedOptions.find(
+            (o) => o.name.toLowerCase() === "size"
+          );
+          return sOpt ? sOpt.value : v.title;
+        })
+        .filter(Boolean)
+    )
+  );
 
   // Images — at least 2 for the hover effect in ProductCard
   const images = sp.images.nodes.map((img) => img.url);
@@ -209,6 +214,8 @@ export function mapShopifyProduct(sp: ShopifyProduct): AppProduct {
   const tags = sp.tags
     .map((t) => APP_TAG_MAP[t.toLowerCase()])
     .filter(Boolean) as string[];
+
+  const reviewSummary = getProductRatingSummary(sp.handle);
 
   return {
     // Product interface fields
@@ -226,8 +233,8 @@ export function mapShopifyProduct(sp: ShopifyProduct): AppProduct {
     images,
     tags,
     addedAt: sp.createdAt,
-    rating: 4.5,
-    reviews: 0,
+    rating: reviewSummary.averageRating,
+    reviews: reviewSummary.totalReviews,
     color: resolveColor(sp),
     // Shopify extras
     handle: sp.handle,

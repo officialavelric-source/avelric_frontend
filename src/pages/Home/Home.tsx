@@ -4,8 +4,6 @@ import type { AppProduct } from "../../types/app";
 import {
   Hero,
   ProductRow,
-  Categories,
-  Lookbook,
   Bestsellers,
   Instagram,
 } from "../../components/home";
@@ -40,25 +38,28 @@ export default function Home() {
   const hasProducts = (shopifyProducts?.length ?? 0) > 0;
 
   const newArrivals = hasProducts
-    ? shopifyProducts!.sort((a, b) => b.addedAt.localeCompare(a.addedAt)).slice(0, 8)
+    ? shopifyProducts!
+        .filter((p) => p.category === "shirts")
+        .sort((a, b) => b.addedAt.localeCompare(a.addedAt))
+        .slice(0, 8)
     : [];
 
   return (
     <>
       <Hero />
-      <Categories allProducts={shopifyProducts ?? undefined} />
+
       {hasProducts && (
         <ProductRow
           eyebrow="New arrivals"
           title="Just listed"
           sub="This week's arrivals — reviewed twice before they were allowed to ship."
           items={newArrivals}
-          cta="View all"
-          ctaTo="/new-arrivals"
+          cta="All shirts"
+          ctaTo="/category/shirts"
           layout="scroll"
         />
       )}
-      <Lookbook allProducts={shopifyProducts ?? undefined} />
+      <img src="/poster.png" alt="discount poster" className="w-full" />
       {hasProducts && <Bestsellers allProducts={shopifyProducts!} />}
       <Instagram />
     </>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { byCategory } from "../../services/productService";
 import { getCachedProduct, getAllCachedProducts } from "../../services/shopify/productService";
 import { formatINR } from "../../utils/format";
@@ -8,17 +9,11 @@ import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { useProduct } from "../../hooks/useProduct";
 import { Accordion, Reveal, Stars } from "../../components/common";
-import { ProductCard, ProductCardSkeleton, WishlistHeart } from "../../components/product";
+import { ProductCard, ProductCardSkeleton } from "../../components/product";
 import ProductGallery from "../../components/product/ProductGallery";
 import SizeSelector from "../../components/product/SizeSelector";
-import { REVIEWS } from "../../data/reviews";
-
-const fmtDate = (iso: string) =>
-  new Date(iso + "T00:00:00").toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+import { ProductReviewsSection } from "../../components/reviews";
+import { getProductRatingSummary, subscribeToReviews } from "../../services/reviewService";
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +26,44 @@ export default function ProductDetails() {
   const [size, setSize] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
   const [sizeError, setSizeError] = useState(false);
+
+  const [ratingSummary, setRatingSummary] = useState(() => (id ? getProductRatingSummary(id) : null));
+  const [activeImg, setActiveImg] = useState(0);
+  const [showReviews, setShowReviews] = useState(false);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+
+  const openReviewsAndScroll = () => {
+    setShowReviews(true);
+    setIsHighlighted(true);
+    setTimeout(() => {
+      const el = document.getElementById("reviews");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
+    setTimeout(() => {
+      setIsHighlighted(false);
+    }, 2500);
+  };
+
+  const toggleReviews = () => {
+    if (showReviews) {
+      setShowReviews(false);
+    } else {
+      openReviewsAndScroll();
+    }
+  };
+
+  useEffect(() => {
+    setActiveImg(0);
+  }, [id, product?.id]);
+
+  useEffect(() => {
+    if (!id) return;
+    const update = () => setRatingSummary(getProductRatingSummary(id));
+    update();
+    return subscribeToReviews(update);
+  }, [id]);
 
   // Auto-select first in-stock size when product loads
   useEffect(() => {
@@ -86,10 +119,6 @@ export default function ProductDetails() {
   const related = byCategory(product.category, allCached)
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
-
-  const productReviews = REVIEWS.filter((r) => r.productId === product.id).sort(
-    (a, b) => b.date.localeCompare(a.date)
-  );
 
   /* ——— Find Shopify variant from selected size ——— */
   const findVariant = (selectedSize: string) => {
@@ -163,7 +192,16 @@ export default function ProductDetails() {
       </p>
 
       <div className="mt-8 grid gap-12 lg:grid-cols-2">
-        <ProductGallery key={product.id} images={product.images} name={product.name} />
+        <div className="w-full lg:sticky lg:top-28 lg:self-start">
+          <ProductGallery
+            key={product.id}
+            images={product.images}
+            name={product.name}
+            activeImage={activeImg}
+            onSelectImage={setActiveImg}
+            showThumbnails={false}
+          />
+        </div>
 
         <div className="lg:pt-4">
           <div className="flex items-start justify-between gap-4">
@@ -173,26 +211,74 @@ export default function ProductDetails() {
                 {product.name}
               </h1>
             </div>
-            <WishlistHeart product={product} className="mt-1 shrink-0 ring-1 ring-softblack/10" />
+            <div className="mt-1 flex items-center gap-2 shrink-0">
+              {/* Highlighted Reviews Button */}
+              <button
+                type="button"
+                onClick={toggleReviews}
+                aria-expanded={showReviews}
+                aria-label={showReviews ? "Hide customer reviews" : "View customer reviews"}
+                className={`group flex items-center gap-1.5 h-9 px-3 rounded-full text-[11.5px] font-medium transition-all duration-300 shadow-sm backdrop-blur ${
+                  showReviews
+                    ? "bg-softblack text-ivory ring-2 ring-softblack shadow-md scale-[1.02]"
+                    : "bg-ivory/95 text-softblack ring-1 ring-softblack/15 hover:ring-gold/70 hover:bg-beige/40 hover:shadow hover:scale-[1.02]"
+                }`}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className={`h-3.5 w-3.5 transition-transform duration-300 group-hover:scale-110 ${
+                    showReviews ? "text-gold" : "text-gold"
+                  }`}
+                >
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+                <span className="tracking-wide">Reviews</span>
+                {ratingSummary && ratingSummary.totalReviews > 0 ? (
+                  <span
+                    className={`rounded-full px-1.5 py-0.2 text-[10px] font-semibold transition-colors ${
+                      showReviews
+                        ? "bg-ivory/20 text-ivory"
+                        : "bg-beige text-softblack group-hover:bg-gold/15"
+                    }`}
+                  >
+                    {ratingSummary.averageRating.toFixed(1)} ({ratingSummary.totalReviews})
+                  </span>
+                ) : (
+                  <span
+                    className={`rounded-full px-1.5 py-0.2 text-[9.5px] transition-colors ${
+                      showReviews ? "bg-ivory/20 text-ivory" : "bg-beige/80 text-warmgray"
+                    }`}
+                  >
+                    0
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
 
-          {productReviews.length > 0 ? (
-            <a
-              href="#reviews"
-              className="mt-3 flex items-center gap-2 text-[13.5px] text-warmgray transition-colors hover:text-softblack"
+          {ratingSummary && ratingSummary.totalReviews > 0 ? (
+            <button
+              type="button"
+              onClick={openReviewsAndScroll}
+              className="mt-3 flex items-center gap-2 text-[13.5px] text-warmgray transition-colors hover:text-softblack text-left cursor-pointer group"
             >
-              <Stars rating={product.rating} className="h-4 w-4" />
-              <span className="font-medium text-softblack">{product.rating}</span>
-              <span className="underline decoration-softblack/25 underline-offset-2">
-                · {product.reviews} verified reviews
+              <Stars rating={ratingSummary.averageRating} className="h-4 w-4" />
+              <span className="font-medium text-softblack">{ratingSummary.averageRating.toFixed(1)}</span>
+              <span className="underline decoration-softblack/25 underline-offset-2 group-hover:decoration-softblack">
+                · {ratingSummary.totalReviews} verified {ratingSummary.totalReviews === 1 ? "review" : "reviews"}
               </span>
-            </a>
+            </button>
           ) : (
-            <p className="mt-3 flex items-center gap-2 text-[13.5px] text-warmgray">
-              <Stars rating={product.rating} className="h-4 w-4" />
-              <span className="font-medium text-softblack">{product.rating}</span>
-              <span>· Be the first to review</span>
-            </p>
+            <button
+              type="button"
+              onClick={openReviewsAndScroll}
+              className="mt-3 flex items-center gap-2 text-[13px] text-warmgray transition-colors hover:text-softblack text-left cursor-pointer group"
+            >
+              <span className="underline decoration-softblack/25 underline-offset-2 group-hover:decoration-softblack">
+                Write a review
+              </span>
+            </button>
           )}
 
           <p className="mt-4 text-[19px] font-medium">
@@ -209,12 +295,54 @@ export default function ProductDetails() {
             )}
           </p>
 
-          <p className="mt-6 text-[15px] leading-relaxed text-warmgray">
-            {product.description}
-          </p>
+          {/* Extra product images / views above size selector */}
+          {product.images.length > 1 && (
+            <div className="mt-7 w-full">
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="label text-[10.5px] uppercase tracking-wider text-warmgray">
+                  Views ({product.images.length})
+                </span>
+                <span className="label text-[10px] text-warmgray">
+                  View {activeImg + 1} of {product.images.length}
+                </span>
+              </div>
+              <div
+                className={`grid gap-3 w-full ${
+                  product.images.length === 2
+                    ? "grid-cols-2"
+                    : product.images.length === 3
+                    ? "grid-cols-3"
+                    : product.images.length === 4
+                    ? "grid-cols-4"
+                    : "grid-cols-4 sm:grid-cols-5"
+                }`}
+              >
+                {product.images.map((src, i) => (
+                  <button
+                    key={src}
+                    type="button"
+                    onClick={() => setActiveImg(i)}
+                    aria-label={`View ${i + 1}`}
+                    aria-pressed={activeImg === i}
+                    className={`group relative aspect-[3/4] w-full overflow-hidden rounded-2xl border-2 transition-all duration-200 ${
+                      activeImg === i
+                        ? "border-softblack shadow-md ring-1 ring-softblack"
+                        : "border-softblack/15 bg-beige/30 opacity-70 hover:border-softblack/40 hover:opacity-100"
+                    }`}
+                  >
+                    <img
+                      src={src}
+                      alt={`${product.name} view ${i + 1}`}
+                      className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Size selector */}
-          <div className="mt-9">
+          <div className="mt-7">
             <SizeSelector
               sizes={availableSizes}
               selected={size}
@@ -225,9 +353,14 @@ export default function ProductDetails() {
               showError={sizeError}
             />
             {/* Show out-of-stock indicator if some sizes are unavailable */}
-            {outOfStockSizes.length > 0 && (
+            {!product.soldOut && outOfStockSizes.length > 0 && (
               <p className="mt-2.5 text-[12px] text-warmgray">
                 Sizes {outOfStockSizes.join(", ")} are currently unavailable
+              </p>
+            )}
+            {product.soldOut && (
+              <p className="mt-2.5 text-[12px] text-warmgray">
+                This item is currently sold out
               </p>
             )}
           </div>
@@ -246,7 +379,13 @@ export default function ProductDetails() {
 
           <div className="mt-10">
             <Accordion
+              key={product.id}
+              defaultOpen={null}
               items={[
+                {
+                  q: "Description",
+                  a: product.description,
+                },
                 {
                   q: "Fabric & fit",
                   a: `${product.fabric}. ${product.fit}. Measurements for every size are listed in the size guide — we measure the garment, not the body.`,
@@ -269,57 +408,24 @@ export default function ProductDetails() {
         </div>
       </div>
 
-      {/* Reviews */}
-      {productReviews.length > 0 && (
-        <section id="reviews" className="mt-24 scroll-mt-24 border-t border-softblack/10 pt-16">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <p className="label text-warmgray">Reviews</p>
-              <h2 className="mt-3 font-display text-[26px] md:text-[30px]">
-                What buyers of this piece say
-              </h2>
-            </div>
-            <Link
-              to="/reviews"
-              className="label border-b border-softblack/30 pb-1 text-[11px] transition-colors hover:border-softblack"
-            >
-              All reviews →
-            </Link>
-          </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
-            {productReviews.map((r) => (
-              <figure
-                key={r.n + r.date}
-                className="rounded-2xl border border-softblack/10 bg-beige/40 p-6"
-              >
-                <div className="flex items-center gap-3.5">
-                  <img
-                    src={r.avatar}
-                    alt=""
-                    className="h-11 w-11 rounded-full object-cover"
-                    loading="lazy"
-                  />
-                  <figcaption>
-                    <p className="text-[14px] font-semibold">{r.n}</p>
-                    <p className="label mt-0.5 text-[9px] text-warmgray">
-                      {r.c} · {fmtDate(r.date)}
-                    </p>
-                  </figcaption>
-                  <span className="label ml-auto rounded-full bg-ivory px-2.5 py-1 text-[8.5px] text-warmgray">
-                    Verified buyer
-                  </span>
-                </div>
-                <div className="mt-3.5">
-                  <Stars rating={r.rating} />
-                </div>
-                <blockquote className="mt-3 text-[14.5px] leading-relaxed text-softblack/85">
-                  "{r.q}"
-                </blockquote>
-              </figure>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Customer feedback & ratings - only shown when reviews button is clicked */}
+      <AnimatePresence>
+        {showReviews && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 24 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <ProductReviewsSection
+              productId={product.id}
+              productTitle={product.name}
+              onClose={() => setShowReviews(false)}
+              isHighlighted={isHighlighted}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Related products */}
       {related.length > 0 && (

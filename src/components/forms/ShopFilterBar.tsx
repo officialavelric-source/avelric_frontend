@@ -67,9 +67,8 @@ export default function ShopFilterBar({
                   <button
                     onClick={() => setCats([])}
                     aria-pressed={cats.length === 0}
-                    className={`label shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[11px] transition-colors ${
-                      cats.length === 0 ? "border-softblack bg-softblack text-ivory" : "border-softblack/20 hover:border-softblack"
-                    }`}
+                    className={`label shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[11px] transition-colors ${cats.length === 0 ? "border-softblack bg-softblack text-ivory" : "border-softblack/20 hover:border-softblack"
+                      }`}
                   >
                     All
                   </button>
@@ -78,9 +77,8 @@ export default function ShopFilterBar({
                       key={c.slug}
                       onClick={() => setCats(cats.includes(c.slug) ? [] : [c.slug])}
                       aria-pressed={cats.includes(c.slug)}
-                      className={`label shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[11px] transition-colors ${
-                        cats.includes(c.slug) ? "border-softblack bg-softblack text-ivory" : "border-softblack/20 hover:border-softblack"
-                      }`}
+                      className={`label shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[11px] transition-colors ${cats.includes(c.slug) ? "border-softblack bg-softblack text-ivory" : "border-softblack/20 hover:border-softblack"
+                        }`}
                     >
                       {c.name}
                     </button>

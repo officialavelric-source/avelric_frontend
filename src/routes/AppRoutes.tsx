@@ -1,11 +1,10 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "../pages/Home/Home";
 import Shop from "../pages/Shop/Shop";
 import ProductDetails from "../pages/ProductDetails/ProductDetails";
 import Cart from "../pages/Cart/Cart";
 import Checkout from "../pages/Checkout/Checkout";
 import Wishlist from "../pages/Wishlist/Wishlist";
-import Collections from "../pages/Collections/Collections";
 import NewArrivals from "../pages/NewArrivals/NewArrivals";
 import Reviews from "../pages/Reviews/Reviews";
 import About from "../pages/About/About";
@@ -24,7 +23,7 @@ export default function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/shop" element={<Shop />} />
       <Route path="/new-arrivals" element={<NewArrivals />} />
-      <Route path="/collections" element={<Collections />} />
+      <Route path="/collections" element={<Navigate to="/shop" replace />} />
       <Route path="/category/:slug" element={<Shop />} />
       <Route path="/product/:id" element={<ProductDetails />} />
       <Route path="/cart" element={<Cart />} />

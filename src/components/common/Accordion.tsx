@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function Accordion({ items }: { items: { q: string; a: string }[] }) {
-  const [open, setOpen] = useState<number | null>(0);
+interface AccordionProps {
+  items: { q: string; a: string }[];
+  defaultOpen?: number | null;
+}
+
+export default function Accordion({ items, defaultOpen = null }: AccordionProps) {
+  const [open, setOpen] = useState<number | null>(defaultOpen);
   return (
     <div className="divide-y divide-softblack/10 border-y border-softblack/10">
       {items.map((item, i) => {

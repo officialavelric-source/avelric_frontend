@@ -4,11 +4,14 @@
 
 html {
   scroll-behavior: smooth;
+  font-family: 'Roboto', sans-serif;
 }
 
 body {
   @apply bg-ivory text-softblack font-sans antialiased;
+  font-family: 'Roboto', sans-serif;
   font-size: 16px;
+  font-weight: 400;
 }
 
 ::selection {
@@ -16,8 +19,32 @@ body {
   color: #faf9f6;
 }
 
+/* Universal Titles: Oswald */
+h1, h2, h3, h4, h5, h6, .font-display, [class*="font-display"] {
+  font-family: 'Oswald', sans-serif !important;
+  letter-spacing: 0.02em;
+}
+
+/* Universal Subheadings, Descriptions, and Body: Roboto (Light 300 or Regular 400) */
+p, span, a, button, input, select, textarea, label, .label {
+  font-family: 'Roboto', sans-serif;
+}
+
+p, .subheading, .description, blockquote {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+}
+
+/* Elements with font-display keep Oswald */
+p.font-display, span.font-display, div.font-display {
+  font-family: 'Oswald', sans-serif !important;
+  font-weight: 500;
+}
+
 .label {
   @apply font-sans text-[12px] uppercase tracking-label;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
 }
 
 @media (prefers-reduced-motion: reduce) {
