@@ -24,6 +24,10 @@ export default function ShopFilterBar({
   const [modalOpen, setModalOpen] = useState(false);
   const [params, setParams] = useSearchParams();
   const searchRef = useRef<HTMLInputElement>(null);
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const modalOpenRef = useRef(modalOpen);
+  modalOpenRef.current = modalOpen;
 
   /* navbar search icon se aane par input autofocus */
   useEffect(() => {
@@ -35,9 +39,65 @@ export default function ShopFilterBar({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /* Hide when scrolling down, show when scrolling up */
+  useEffect(() => {
+    lastScrollY.current = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Always show near top of page
+      if (currentScrollY <= 60) {
+        setVisible(true);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Keep visible if search is focused or filter modal is open
+      if (modalOpenRef.current || document.activeElement === searchRef.current) {
+        setVisible(true);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Ignore bounces beyond document boundaries
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (currentScrollY > maxScroll) {
+        return;
+      }
+
+      // Small threshold to prevent jitter on micro-scrolls
+      const diff = currentScrollY - lastScrollY.current;
+      if (Math.abs(diff) < 8) {
+        return;
+      }
+
+      if (diff > 0) {
+        // Scrolling down -> hide
+        setVisible(false);
+      } else {
+        // Scrolling up -> show
+        setVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
-      <div className="sticky z-30 border-b border-softblack/10 bg-ivory/95 backdrop-blur-md" style={{ top: NAV_H }}>
+      <div
+        className={`sticky z-30 border-b border-softblack/10 bg-ivory/95 backdrop-blur-md transition-all duration-300 ease-in-out ${
+          visible ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        style={{
+          top: NAV_H,
+          transform: visible ? "translateY(0)" : "translateY(calc(-100% - 72px))",
+        }}
+      >
         <div className="mx-auto max-w-7xl px-4 py-3 md:px-6">
           {/* search row */}
           <div className="flex items-center gap-2.5 rounded-full border border-softblack/20 bg-beige/50 px-4 py-2.5 transition-colors focus-within:border-softblack">

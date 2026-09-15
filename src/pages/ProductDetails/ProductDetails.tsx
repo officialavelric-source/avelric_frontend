@@ -374,7 +374,7 @@ export default function ProductDetails() {
           </button>
 
           <p className="mt-4 text-center text-[13px] text-warmgray">
-            Ships in 24 hours from Chandigarh · COD available · 7-day exchange
+            Same day delivery in Chandigarh, Kharar, Mohali &amp; Panchkula · 7–9 working days elsewhere · Notifications via email only
           </p>
 
           <div className="mt-10">
@@ -392,11 +392,11 @@ export default function ProductDetails() {
                 },
                 {
                   q: "Delivery",
-                  a: "Tricity: 1–2 working days. Punjab & Delhi NCR: 2–4 working days. Rest of India: 4–7 working days. Free shipping on prepaid orders above ₹2,499; COD available up to ₹5,000 (₹49 fee).",
+                  a: "Chandigarh, Kharar, Mohali & Panchkula: Same day delivery. All other places across India: 7–9 working days delivery. Order updates and tracking notifications are sent exclusively to your email. Free shipping on prepaid orders above ₹2,499; COD available up to ₹5,000 (₹49 fee). Mail us at officialavelric@gmail.com for priority delivery queries.",
                 },
                 {
                   q: "Returns & exchange",
-                  a: "7 days from delivery for exchanges and returns. Tags on, unworn beyond trying. Size exchanges are free with doorstep pickup; refunds reach your account within 5–7 working days of pickup.",
+                  a: "7 days from delivery for exchanges and returns. Tags on, unworn beyond trying. Size exchanges are free with doorstep pickup; refunds reach your account within 5–7 working days of pickup. Contact us at officialavelric@gmail.com.",
                 },
                 {
                   q: "Why we picked it",

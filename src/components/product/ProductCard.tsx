@@ -8,7 +8,6 @@ import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { getProductRatingSummary, subscribeToReviews } from "../../services/reviewService";
 import Stars from "../common/Stars";
-import WishlistHeart from "./WishlistHeart";
 
 export default function ProductCard({ product, eager = false }: { product: Product; eager?: boolean }) {
   const { add } = useCart();
@@ -103,11 +102,6 @@ export default function ProductCard({ product, eager = false }: { product: Produ
             {badge.label}
           </span>
         )}
-
-        <WishlistHeart
-          product={product}
-          className="absolute right-3 top-3 opacity-100 md:opacity-0 md:group-hover:opacity-100"
-        />
 
         {/* quick add — mobile: always on, desktop: slides up from the edge on hover */}
         {product.soldOut ? (

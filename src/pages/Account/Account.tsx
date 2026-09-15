@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Reveal, BoxIcon, GridIcon, HeartIcon, MapPinIcon, UserIcon } from "../../components/common";
-import { useWishlist } from "../../context/WishlistContext";
+import { Reveal, BoxIcon, GridIcon, MapPinIcon, UserIcon } from "../../components/common";
 import { useCustomerAuth } from "../../context/CustomerAuthContext";
 import { ACCOUNT_TABS, AccountTabId } from "../../constants/account";
 import {
@@ -10,20 +9,17 @@ import {
   OrdersPanel,
   OverviewPanel,
   SettingsPanel,
-  WishlistPanel,
 } from "../../components/account";
 
 const TAB_ICONS: Record<AccountTabId, (props: { className?: string }) => JSX.Element> = {
   overview: GridIcon,
   orders: BoxIcon,
-  wishlist: HeartIcon,
   addresses: MapPinIcon,
   settings: UserIcon,
 };
 
 export default function Account() {
   const [tab, setTab] = useState<AccountTabId>("overview");
-  const { ids } = useWishlist();
   const { status, customer, login, logout } = useCustomerAuth();
 
   // Loading state
@@ -110,7 +106,6 @@ export default function Account() {
         <nav aria-label="Account sections" className="flex gap-2 overflow-x-auto pb-1 md:flex-col md:gap-1 md:pb-0">
           {ACCOUNT_TABS.map((t) => {
             const TabIcon = TAB_ICONS[t.id];
-            const count = t.id === "wishlist" ? ids.length : undefined;
             return (
               <button
                 key={t.id}
@@ -122,11 +117,6 @@ export default function Account() {
               >
                 <TabIcon className="h-4 w-4 shrink-0" />
                 {t.label}
-                {!!count && (
-                  <span className={`ml-auto rounded-full px-1.5 py-0.5 text-[9px] ${tab === t.id ? "bg-ivory/20" : "bg-softblack/10"}`}>
-                    {count}
-                  </span>
-                )}
               </button>
             );
           })}
@@ -144,7 +134,6 @@ export default function Account() {
             >
               {tab === "overview" && <OverviewPanel />}
               {tab === "orders" && <OrdersPanel />}
-              {tab === "wishlist" && <WishlistPanel />}
               {tab === "addresses" && <AddressesPanel />}
               {tab === "settings" && <SettingsPanel />}
             </motion.div>

@@ -88,10 +88,6 @@ export default function Navbar() {
             <span className={`label hidden text-[9.5px] xl:block ${hint}`}>Search</span>
           </button>
 
-          <Link to="/wishlist" className="hidden p-2 transition-opacity hover:opacity-60 sm:block" aria-label="Wishlist">
-            <Icon label="Wishlist" path="M12 20.5s-7.5-4.7-9.6-9.2C.9 8 2.7 4.5 6.2 4.5c2 0 3.5 1.1 4.3 2.6L12 8.6l1.5-1.5c.8-1.5 2.3-2.6 4.3-2.6 3.5 0 5.3 3.5 3.8 6.8-2.1 4.5-9.6 9.2-9.6 9.2Z" />
-          </Link>
-
           <div
             className="relative"
             onMouseEnter={() => setMiniCart(true)}

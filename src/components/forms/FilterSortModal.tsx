@@ -88,7 +88,7 @@ export default function FilterSortModal({
             )}
 
             <div className="mt-7">
-              <p className="label text-warmgray" id="modal-size-label">Size</p>
+              <p className="label text-warmgray" id="modal-size-label">Size <span className="text-[10px] text-warmgray/80 font-normal">(Shirts: M, L, XL · Jeans: 30, 32, 34)</span></p>
               <div className="mt-3 flex flex-wrap gap-2" role="group" aria-labelledby="modal-size-label">
                 {ALL_SIZES.map((s) => (
                   <button key={s} onClick={() => toggleSize(s)} aria-pressed={sizes.includes(s)} className={pillClasses(sizes.includes(s))}>

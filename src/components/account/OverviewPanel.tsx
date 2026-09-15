@@ -73,7 +73,7 @@ export default function OverviewPanel() {
           <p className="mt-2 font-display text-[19px]">Concierge support is available via WhatsApp.</p>
         </div>
         <Link
-          to="/contact"
+          to="/about#contact"
           className="label mt-5 inline-block rounded-full bg-ivory px-7 py-3.5 text-[11px] text-softblack transition-transform hover:scale-[1.03] sm:mt-0"
         >
           Contact Support

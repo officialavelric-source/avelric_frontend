@@ -8,7 +8,7 @@ export default function FAQ() {
       <SectionHeading
         eyebrow="FAQ"
         title="Everything people ask us"
-        sub="Grouped by topic. If your question isn't here, WhatsApp us — that's genuinely the fastest route."
+        sub="Grouped by topic. If your question isn't here, mail us at officialavelric@gmail.com — we reply within a few hours."
       />
 
       {/* topic jump chips */}
@@ -43,11 +43,11 @@ export default function FAQ() {
         <div className="flex flex-wrap items-center justify-between gap-5 rounded-2xl bg-softblack p-7 text-ivory">
           <div>
             <p className="label text-ivory/60">Still stuck?</p>
-            <p className="mt-1.5 font-display text-[19px]">A person answers on WhatsApp — usually within hours.</p>
+            <p className="mt-1.5 font-display text-[19px]">Mail us at officialavelric@gmail.com — a person answers within hours.</p>
           </div>
-          <Link to="/contact" className="label rounded-full bg-ivory px-7 py-3.5 text-[11px] text-softblack transition-transform hover:scale-[1.03]">
-            Contact us
-          </Link>
+          <a href="mailto:officialavelric@gmail.com" className="label rounded-full bg-ivory px-7 py-3.5 text-[11px] text-softblack transition-transform hover:scale-[1.03]">
+            Email us
+          </a>
         </div>
       </Reveal>
     </div>

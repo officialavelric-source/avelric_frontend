@@ -180,15 +180,21 @@ export function mapShopifyProduct(sp: ShopifyProduct): AppProduct {
       ? priceVariant.compareAtPrice
       : undefined;
 
-  // Sizes: from "Size" option, or variant titles
+  const category = normalizeCategory(sp);
+  const allowedSizes = category === "jeans" ? ["30", "32", "34"] : ["M", "L", "XL"];
+
+  // Sizes: from "Size" option, or variant titles — filtered to allowed store sizes
   const sizeOption = sp.options.find(
     (o) => o.name.toLowerCase() === "size"
   );
-  const sizes = sizeOption?.values.length
+  const rawSizes = sizeOption?.values.length
     ? sizeOption.values
     : variants.map((v) => v.title).filter(Boolean);
 
-  // Out-of-stock sizes
+  const matchedSizes = rawSizes.filter((s) => allowedSizes.includes(s));
+  const sizes = matchedSizes.length > 0 ? matchedSizes : [...allowedSizes];
+
+  // Out-of-stock sizes (filtered to allowed store sizes)
   const outOfStockSizes = Array.from(
     new Set(
       variants
@@ -199,7 +205,7 @@ export function mapShopifyProduct(sp: ShopifyProduct): AppProduct {
           );
           return sOpt ? sOpt.value : v.title;
         })
-        .filter(Boolean)
+        .filter((s) => allowedSizes.includes(s))
     )
   );
 
@@ -221,7 +227,7 @@ export function mapShopifyProduct(sp: ShopifyProduct): AppProduct {
     // Product interface fields
     id: sp.handle,
     name: sp.title,
-    category: normalizeCategory(sp),
+    category,
     price,
     compareAt,
     fabric: "Premium quality fabric",

@@ -1,6 +1,6 @@
 export type Sort = "relevance" | "newest" | "price-asc" | "price-desc" | "rating";
 
-export const ALL_SIZES = ["S", "M", "L", "XL", "XXL", "30", "32", "34", "36", "38"];
+export const ALL_SIZES = ["M", "L", "XL", "30", "32", "34"];
 
 export const PRICE_BANDS = [
   { label: "Under ₹1,000", min: 0, max: 999 },

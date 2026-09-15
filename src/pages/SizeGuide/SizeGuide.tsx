@@ -40,8 +40,7 @@ export default function SizeGuide() {
         </Reveal>
       ))}
       <p className="mt-10 text-[14.5px] leading-relaxed text-warmgray">
-        Between two sizes? For boxy and relaxed fits, take the smaller one; for regular and slim fits, the larger.
-        Or message us on WhatsApp with your measurements — we'll tell you exactly which size to order.
+        AVELRIC shirts are cut exclusively in sizes M, L, and XL. Jeans are cut in sizes 30, 32, and 34. Between two sizes? For relaxed fits, take the smaller one; for regular fits, the larger. Or email us at officialavelric@gmail.com with your measurements — we'll help you pick the perfect fit.
       </p>
     </div>
   );

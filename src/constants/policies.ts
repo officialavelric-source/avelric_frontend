@@ -12,23 +12,22 @@ export interface Policy {
 export const POLICIES: Record<string, Policy> = {
   shipping: {
     title: "Shipping & delivery policy",
-    intro: "Every order ships from our Chandigarh facility within 24 hours of confirmation (working days), with tracking shared over email and WhatsApp.",
+    intro: "Every order ships from our Chandigarh facility within 24 hours of confirmation (working days), with all order tracking and status notifications sent exclusively via email.",
     sections: [
       { h: "Delivery timelines", body: [
-        "Chandigarh, Mohali & Panchkula: 1–2 working days.",
-        "Rest of Punjab, Delhi NCR, Haryana & Himachal: 2–4 working days.",
-        "Rest of India: 4–7 working days. Remote pin codes may take up to 9 working days.",
+        "Chandigarh, Kharar, Mohali & Panchkula: Same day delivery.",
+        "All other destinations across India: 7–9 working days delivery.",
       ]},
       { h: "Shipping charges", body: [
         "Free shipping on all prepaid orders of ₹2,499 and above.",
         "Orders below ₹2,499: flat ₹79 shipping.",
         "Cash on Delivery: available on orders up to ₹5,000 with a ₹49 handling fee, in addition to any shipping charge.",
       ]},
-      { h: "Order tracking", body: [
-        "A tracking link is sent as soon as the courier scans your package. If tracking hasn't updated for 48 hours, contact us and we'll chase the courier for you.",
+      { h: "Order tracking & notifications", body: [
+        "Order notifications and tracking links are sent exclusively to your registered email as soon as the package is packed and courier-scanned. If tracking hasn't updated for 48 hours, email us at officialavelric@gmail.com.",
       ]},
       { h: "Delays", body: [
-        "Weather, festivals, and courier disruptions occasionally add 1–2 days. If your order is delayed beyond the promised window, write to care@avelric.in — we'll prioritise it and keep you posted.",
+        "Weather, festivals, and courier disruptions occasionally add 1–2 days. If your order is delayed beyond the promised window, write to officialavelric@gmail.com — we'll prioritise it and keep you posted.",
       ]},
     ],
   },
@@ -41,7 +40,7 @@ export const POLICIES: Record<string, Policy> = {
         "Items with stains, perfume, or signs of use can't be accepted — they fail the same quality check we apply before shipping.",
       ]},
       { h: "Size exchanges", body: [
-        "Free, once per order. Request via WhatsApp or the contact page with your order number; we arrange doorstep pickup and dispatch the new size once pickup is confirmed.",
+        "Free, once per order. Mail us at officialavelric@gmail.com or use the contact page with your order number; we arrange doorstep pickup and dispatch the new size once pickup is confirmed.",
       ]},
       { h: "Returns & refunds", body: [
         "Request a return within 7 days of delivery. Pickup is arranged from your address; a reverse-shipment fee of ₹99 applies to returns (not to size exchanges or our errors).",
@@ -68,7 +67,7 @@ export const POLICIES: Record<string, Policy> = {
         "If money was deducted but no order was created, the payment gateway auto-reverses it, usually within 5 working days. If it doesn't, contact us with the transaction ID and we'll escalate with the gateway.",
       ]},
       { h: "Disputes", body: [
-        "If a refund hasn't reached you within the stated window, email care@avelric.in with your order number. We respond within one working day.",
+        "If a refund hasn't reached you within the stated window, email officialavelric@gmail.com with your order number. We respond within one working day.",
       ]},
     ],
   },
@@ -88,7 +87,7 @@ export const POLICIES: Record<string, Policy> = {
         "We do not sell your personal data to anyone. Data is shared only with the services required to run the store: our courier partners, payment gateway, and analytics providers listed above.",
       ]},
       { h: "Your choices", body: [
-        "You can request a copy or deletion of your personal data by emailing care@avelric.in from your registered email. You can also block cookies in your browser; the store will still work.",
+        "You can request a copy or deletion of your personal data by emailing officialavelric@gmail.com from your registered email. You can also block cookies in your browser; the store will still work.",
       ]},
     ],
   },

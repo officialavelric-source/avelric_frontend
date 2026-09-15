@@ -51,7 +51,7 @@ export const PRODUCTS: Product[] = [
     fit: "Regular fit, structured collar",
     description:
       "Sourced from a mill that supplies export houses in Ludhiana. The collar holds its shape after a full day, and the buttons are stitched with a cross-lock so they don't loosen. We compared eleven oxford shirts before selecting this one.",
-    sizes: ["S", "M", "L", "XL"],
+    sizes: ["M", "L", "XL"],
     images: [u("photo-1598033129183-c4f50c736f10"), u("photo-1596755094514-f87e34085b2c"), u("photo-1563630423918-b58f07336ac9")],
     tags: ["best-find"],
     addedAt: "2026-06-28",
@@ -68,7 +68,7 @@ export const PRODUCTS: Product[] = [
     fit: "Relaxed fit, camp collar",
     description:
       "A summer shirt that doesn't crease into a mess by noon. The cotton blend keeps the linen texture but adds recovery. Pre-washed, so the size you buy is the size it stays.",
-    sizes: ["S", "M", "L", "XL"],
+    sizes: ["M", "L", "XL"],
     images: [u("photo-1589310243389-96a5483213a8"), u("photo-1520975954732-35dd22299614"), u("photo-1495105787522-5334e3ffa0ef")],
     tags: ["trending", "new"],
     addedAt: "2026-07-01",
@@ -104,7 +104,7 @@ export const PRODUCTS: Product[] = [
     fit: "Boxy fit, structured collar",
     description:
       "A structured utility shirt cut from premium compact cotton with clean lines and reinforced stitching. Bio-washed for a smooth drape.",
-    sizes: ["S", "M", "L", "XL", "XXL"],
+    sizes: ["M", "L", "XL"],
     images: [u("photo-1617137968427-85924c800a22"), u("photo-1521572163474-6864f9cf17ab"), u("photo-1583743814966-8936f5b7be1a")],
     tags: ["best-find", "best-value"],
     addedAt: "2026-06-20",
@@ -121,7 +121,7 @@ export const PRODUCTS: Product[] = [
     fit: "Regular relaxed fit",
     description:
       "An off-white shirt that pairs with any denim. The slub weave gives it natural texture in daylight, finished with cross-stitched buttons.",
-    sizes: ["S", "M", "L", "XL"],
+    sizes: ["M", "L", "XL"],
     images: [u("photo-1562157873-818bc0726f68"), u("photo-1603252109303-2751441dd157"), u("photo-1618354691373-d851c5c3a990")],
     tags: ["new"],
     addedAt: "2026-07-02",
@@ -138,7 +138,7 @@ export const PRODUCTS: Product[] = [
     fit: "Relaxed fit",
     description:
       "Garment-dyed after stitching, so the shade is uniform and the seams tone cleanly. Muted olive tone with easy shoulders.",
-    sizes: ["S", "M", "L", "XL"],
+    sizes: ["M", "L", "XL"],
     images: [u("photo-1576566588028-4147f3842f27"), u("photo-1550246140-29f40b909e5a"), u("photo-1523381210434-271e8be1f52b")],
     tags: ["trending"],
     addedAt: "2026-06-25",
@@ -156,7 +156,7 @@ export const PRODUCTS: Product[] = [
     fit: "Straight fit, mid rise",
     description:
       "From the same denim lines that cut for premium export labels. The stretch is minimal — enough for comfort, not enough to bag out at the knees. Chain-stitched hems.",
-    sizes: ["30", "32", "34", "36"],
+    sizes: ["30", "32", "34"],
     outOfStockSizes: ["30"],
     images: [u("photo-1542272604-787c3835535d"), u("photo-1541099649105-f69ad21f3246"), u("photo-1584370848010-d7fe6bc767ec")],
     tags: ["best-find", "trending"],
@@ -174,7 +174,7 @@ export const PRODUCTS: Product[] = [
     fit: "Tapered fit, mid rise",
     description:
       "A wash that looks earned, not painted on. Tapers below the knee so it sits clean over sneakers. YKK zip, riveted stress points.",
-    sizes: ["30", "32", "34", "36"],
+    sizes: ["30", "32", "34"],
     images: [u("photo-1624378439575-d8705ad7ae80"), u("photo-1565084888279-aca607ecce0c"), u("photo-1490114538077-0a7f8cb49891")],
     tags: ["new"],
     addedAt: "2026-07-03",
@@ -192,7 +192,7 @@ export const PRODUCTS: Product[] = [
     fit: "Tailored fit, single pleat",
     description:
       "Cut like tailoring in structured denim. The single pleat gives room through the thigh, and the denim has enough weight to fall clean without constant pressing.",
-    sizes: ["30", "32", "34", "36"],
+    sizes: ["30", "32", "34"],
     images: [u("photo-1594938298603-c8148c4dae35"), u("photo-1507680434567-5739c80be1ac"), u("photo-1529374255404-311a2a4f1fd9")],
     tags: ["best-find"],
     addedAt: "2026-06-18",
@@ -209,7 +209,7 @@ export const PRODUCTS: Product[] = [
     fit: "Relaxed straight fit",
     description:
       "Denim utility jeans without unnecessary bulk. The pockets are cut flat so they don't balloon. Heavy-duty copper rivets and zip.",
-    sizes: ["30", "32", "34", "36"],
+    sizes: ["30", "32", "34"],
     images: [u("photo-1626497764746-6dc36546b388"), u("photo-1473966968600-fa801b869a1a"), u("photo-1487222477894-8943e31ef7b2")],
     tags: ["trending", "best-value"],
     addedAt: "2026-06-22",
@@ -226,7 +226,7 @@ export const PRODUCTS: Product[] = [
     fit: "Classic straight fit",
     description:
       "The foundational straight cut that works with every shirt. Authentic 5-pocket styling with reinforced bar tacks.",
-    sizes: ["30", "32", "34", "36", "38"],
+    sizes: ["30", "32", "34"],
     images: [u("photo-1543076447-215ad9ba6923"), u("photo-1552374196-c4e7ffc6e126"), u("photo-1488161628813-04466f872be2")],
     tags: ["best-value"],
     addedAt: "2026-06-05",
@@ -278,7 +278,7 @@ export const PRODUCTS: Product[] = [
     fit: "Relaxed boxy fit",
     description:
       "Snap button casual overshirt with clean back and spread collar. Tight-woven poplin with natural breathability.",
-    sizes: ["M", "L", "XL", "XXL"],
+    sizes: ["M", "L", "XL"],
     images: [u("photo-1593030761757-71fae45fa0e7"), u("photo-1516826957135-700dedea698c"), u("photo-1445205170230-053b83016050")],
     tags: ["best-value", "new"],
     addedAt: "2026-07-04",
@@ -295,7 +295,7 @@ export const PRODUCTS: Product[] = [
     fit: "Regular fit",
     description:
       "Yarn-dyed, so the stripe is in the weave and won't fade into a blur. A working-wardrobe shirt that holds up to daily ironing.",
-    sizes: ["S", "M", "L", "XL"],
+    sizes: ["M", "L", "XL"],
     images: [u("photo-1602810318383-e386cc2a3ccf"), u("photo-1492447166138-50c3889fccb1"), u("photo-1441986300917-64674bd600d8")],
     tags: ["best-value"],
     addedAt: "2026-06-08",
@@ -312,7 +312,7 @@ export const PRODUCTS: Product[] = [
     fit: "Boxy fit, camp collar",
     description:
       "A resort silhouette featuring a discreet artistic placement print. Clean chest pocket and lightweight breathable weave.",
-    sizes: ["S", "M", "L", "XL"],
+    sizes: ["M", "L", "XL"],
     images: [u("photo-1503341504253-dff4815485f1"), u("photo-1610652492500-ded49ceeb378"), u("photo-1550995694-3f5f4a7e1bd2")],
     tags: ["trending", "new"],
     addedAt: "2026-07-05",

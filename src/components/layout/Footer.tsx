@@ -60,7 +60,15 @@ export default function Footer() {
               )}
             </form>
 
-            <div className="mt-8">
+            <div className="mt-7">
+              <p className="label text-warmgray">Mail us</p>
+              <a href="mailto:officialavelric@gmail.com" className="mt-1.5 inline-block text-[14.5px] font-medium text-softblack transition-opacity hover:opacity-70">
+                officialavelric@gmail.com
+              </a>
+              <p className="mt-1 text-[12px] text-warmgray">Notifications &amp; order updates sent exclusively via email.</p>
+            </div>
+
+            <div className="mt-7">
               <p className="label text-warmgray">Follow us</p>
               <div className="mt-3.5 flex gap-3">
                 <SocialIcon href="https://instagram.com/avelric" label="AVELRIC on Instagram">
@@ -70,7 +78,7 @@ export default function Footer() {
                     <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" />
                   </svg>
                 </SocialIcon>
-                <SocialIcon href="https://wa.me/919000000000" label="AVELRIC on WhatsApp">
+                <SocialIcon href="https://wa.me/916239038301" label="AVELRIC on WhatsApp">
                   <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5Z" />
                     <path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.5-1.5-2-1.5-1 .5c-1-.5-1.5-1-2-2l.5-1-1.5-2L9 9.5Z" />
@@ -106,7 +114,7 @@ export default function Footer() {
 
         {/* trust strip */}
         <div className="mt-14 grid gap-4 rounded-2xl bg-beige px-6 py-5 text-[13px] text-softblack/80 sm:grid-cols-2 lg:grid-cols-4">
-          <p className="flex items-center gap-2.5"><TruckIcon className="h-[18px] w-[18px] shrink-0 text-softblack/60" /> Free shipping above ₹2,499</p>
+          <p className="flex items-center gap-2.5"><TruckIcon className="h-[18px] w-[18px] shrink-0 text-softblack/60" /> Same day: Chandigarh, Kharar, Mohali, Panchkula (7–9d elsewhere)</p>
           <p className="flex items-center gap-2.5"><ReturnIcon className="h-[18px] w-[18px] shrink-0 text-softblack/60" /> 7-day easy returns</p>
           <p className="flex items-center gap-2.5"><CashIcon className="h-[18px] w-[18px] shrink-0 text-softblack/60" /> COD available across India</p>
           <p className="flex items-center gap-2.5"><ShieldCheckIcon className="h-[18px] w-[18px] shrink-0 text-softblack/60" /> Quality-checked twice before dispatch</p>

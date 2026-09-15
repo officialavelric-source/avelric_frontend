@@ -4,12 +4,10 @@ import Shop from "../pages/Shop/Shop";
 import ProductDetails from "../pages/ProductDetails/ProductDetails";
 import Cart from "../pages/Cart/Cart";
 import Checkout from "../pages/Checkout/Checkout";
-import Wishlist from "../pages/Wishlist/Wishlist";
 import NewArrivals from "../pages/NewArrivals/NewArrivals";
 import Reviews from "../pages/Reviews/Reviews";
 import About from "../pages/About/About";
 import HowWeCurate from "../pages/HowWeCurate/HowWeCurate";
-import Contact from "../pages/Contact/Contact";
 import FAQ from "../pages/FAQ/FAQ";
 import SizeGuide from "../pages/SizeGuide/SizeGuide";
 import Account from "../pages/Account/Account";
@@ -27,13 +25,13 @@ export default function AppRoutes() {
       <Route path="/category/:slug" element={<Shop />} />
       <Route path="/product/:id" element={<ProductDetails />} />
       <Route path="/cart" element={<Cart />} />
-      <Route path="/wishlist" element={<Wishlist />} />
+      <Route path="/wishlist" element={<Navigate to="/shop" replace />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/account" element={<Account />} />
       <Route path="/account/callback" element={<AuthCallback />} />
       <Route path="/about" element={<About />} />
       <Route path="/how-we-curate" element={<HowWeCurate />} />
-      <Route path="/contact" element={<Contact />} />
+      <Route path="/contact" element={<Navigate to="/about#contact" replace />} />
       <Route path="/faq" element={<FAQ />} />
       <Route path="/reviews" element={<Reviews />} />
       <Route path="/size-guide" element={<SizeGuide />} />

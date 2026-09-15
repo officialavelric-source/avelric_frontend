@@ -35,7 +35,7 @@ export default function Policy() {
       </div>
       <Reveal className="mt-14 rounded-2xl bg-beige p-7">
         <p className="text-[15px]">
-          Questions about this policy? <Link to="/contact" className="underline underline-offset-4">Contact us</Link> — a person replies, usually within a few hours.
+          Questions about this policy? <Link to="/about#contact" className="underline underline-offset-4">Contact us</Link> — a person replies, usually within a few hours.
         </p>
       </Reveal>
     </div>

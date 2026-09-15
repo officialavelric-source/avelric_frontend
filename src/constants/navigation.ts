@@ -2,7 +2,6 @@ export const NAV_LINKS = [
   { label: "Shop", to: "/shop" },
   { label: "New Arrivals", to: "/new-arrivals" },
   { label: "About", to: "/about" },
-  { label: "Contact", to: "/contact" },
 ];
 
 export const FOOTER_COLS = [
@@ -22,7 +21,7 @@ export const FOOTER_COLS = [
       { to: "/policy/returns", t: "Returns & exchange" },
       { to: "/policy/shipping", t: "Shipping & delivery" },
       { to: "/size-guide", t: "Size guide" },
-      { to: "/contact", t: "Contact us" },
+      { to: "/about#contact", t: "Contact us" },
     ],
   },
   {
@@ -31,7 +30,6 @@ export const FOOTER_COLS = [
       { to: "/about", t: "About us" },
       { to: "/how-we-curate", t: "How we curate" },
       { to: "/reviews", t: "Customer reviews" },
-      { to: "/wishlist", t: "Your wishlist" },
       { to: "/account", t: "Your account" },
     ],
   },

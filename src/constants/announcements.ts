@@ -1,7 +1,8 @@
 export const ANNOUNCEMENT_MESSAGES = [
+  "Same-day delivery: Chandigarh, Kharar, Mohali, Panchkula | 7–9 working days for other places",
+  "Order notifications sent via email  |  Mail us: officialavelric@gmail.com",
   "Free shipping on orders above ₹2499  |  Easy returns & exchanges",
-  "New arrivals every Friday  |  Small batches, quality-checked twice",
-  "COD available across India  |  7-day easy returns",
+  "New arrivals every Friday  |  Quality-checked twice",
 ];
 
 export const MARQUEE_PHRASES = [

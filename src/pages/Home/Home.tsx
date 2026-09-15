@@ -3,6 +3,7 @@ import { getProducts } from "../../services/shopify/productService";
 import type { AppProduct } from "../../types/app";
 import {
   Hero,
+  Lookbook,
   ProductRow,
   Bestsellers,
   Instagram,
@@ -39,14 +40,15 @@ export default function Home() {
 
   const newArrivals = hasProducts
     ? shopifyProducts!
-        .filter((p) => p.category === "shirts")
-        .sort((a, b) => b.addedAt.localeCompare(a.addedAt))
-        .slice(0, 8)
+      .filter((p) => p.category === "shirts")
+      .sort((a, b) => b.addedAt.localeCompare(a.addedAt))
+      .slice(0, 8)
     : [];
 
   return (
     <>
       <Hero />
+      <Lookbook allProducts={shopifyProducts ?? undefined} />
 
       {hasProducts && (
         <ProductRow

@@ -1,6 +1,6 @@
 const ITEMS = [
   {
-    t: "Free shipping above ₹2,499",
+    t: "Same-day delivery in Tricity & Kharar",
     icon: (
       <svg viewBox="0 0 24 24" className="h-[15px] w-[15px]" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M3 7h11v9H3z" />

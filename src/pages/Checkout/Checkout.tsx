@@ -147,6 +147,8 @@ export default function Checkout() {
       </div>
 
       <ul className="mt-10 space-y-2 text-[13px] text-warmgray">
+        <li>⚡ Same-day delivery in Chandigarh, Kharar, Mohali &amp; Panchkula (7–9 working days for other places)</li>
+        <li>✉ Order updates &amp; tracking sent exclusively via email · Mail us: officialavelric@gmail.com</li>
         <li>🔒 Payments secured by Shopify Payments</li>
         <li>📦 COD available on orders up to ₹5,000</li>
         <li>↩ 7-day easy size exchange</li>
