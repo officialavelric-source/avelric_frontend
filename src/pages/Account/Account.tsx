@@ -46,7 +46,7 @@ export default function Account() {
               Access your order history, saved shipping addresses, and personal recommendations securely via Shopify Customer Accounts.
             </p>
             <button
-              onClick={login}
+              onClick={() => login()}
               className="label mt-8 inline-flex items-center gap-2 rounded-full bg-softblack px-9 py-4 text-[11px] text-ivory transition-transform hover:scale-[1.03] active:scale-[0.98]"
             >
               Sign In with Shopify

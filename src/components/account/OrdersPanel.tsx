@@ -13,7 +13,7 @@ export default function OrdersPanel() {
     CustomerAuthService.getCustomerOrders(20)
       .then((data) => {
         if (active) {
-          setOrders(data);
+          setOrders(data.orders);
           setLoading(false);
         }
       })
@@ -69,7 +69,19 @@ export default function OrdersPanel() {
 
   return (
     <div className="space-y-6">
-      <h3 className="font-display text-[20px] text-softblack">Order History ({orders.length})</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-display text-[20px] text-softblack">Order History ({orders.length})</h3>
+        <Link
+          to="/account/orders"
+          className="label inline-flex items-center gap-1.5 text-[11px] text-warmgray transition-colors hover:text-softblack"
+        >
+          <span>View Full Archive</span>
+          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </Link>
+      </div>
+
       <div className="space-y-4">
         {orders.map((order) => (
           <div
@@ -116,12 +128,23 @@ export default function OrdersPanel() {
               ))}
             </div>
 
-            {/* Total */}
-            <div className="flex items-center justify-between border-t border-softblack/10 pt-3 text-[14px]">
-              <span className="label text-warmgray">Order Total</span>
-              <span className="font-display text-[16px] text-softblack">
-                {order.currencyCode} {parseFloat(order.totalAmount).toFixed(2)}
-              </span>
+            {/* Total and Dossier Link */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-softblack/10 pt-4">
+              <div>
+                <span className="label text-[11px] text-warmgray">Order Total: </span>
+                <span className="font-display text-[16px] text-softblack">
+                  {order.currencyCode} {parseFloat(order.totalAmount).toFixed(2)}
+                </span>
+              </div>
+              <Link
+                to={`/account/orders/${order.id.split("/").pop() || encodeURIComponent(order.id)}`}
+                className="label inline-flex items-center gap-1.5 rounded-full border border-softblack/15 px-4 py-2 text-[10.5px] text-softblack transition-all hover:bg-softblack hover:text-ivory"
+              >
+                <span>View Details & Tracking</span>
+                <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </Link>
             </div>
           </div>
         ))}

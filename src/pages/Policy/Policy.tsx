@@ -4,7 +4,13 @@ import { POLICIES } from "../../constants/policies";
 
 export default function Policy() {
   const { slug } = useParams<{ slug: string }>();
-  const policy = slug ? POLICIES[slug] : undefined;
+
+  const normalizedKey = slug
+    ?.toLowerCase()
+    .replace(/-policy$/, "")
+    .replace(/^(terms-of-service|terms-and-conditions|legal-notice)$/, "terms");
+
+  const policy = (normalizedKey && POLICIES[normalizedKey]) || (slug && POLICIES[slug]) || undefined;
 
   if (!policy)
     return (

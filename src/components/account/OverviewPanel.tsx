@@ -16,7 +16,7 @@ export default function OverviewPanel() {
     CustomerAuthService.getCustomerOrders(5)
       .then((data) => {
         if (active) {
-          setOrders(data);
+          setOrders(data.orders);
           setLoadingOrders(false);
         }
       })

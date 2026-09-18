@@ -38,9 +38,10 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     refreshCustomerState();
   }, [refreshCustomerState]);
 
-  const login = useCallback(async () => {
+  const login = useCallback(async (returnTo?: string) => {
     try {
-      await CustomerAuthService.login();
+      const dest = typeof returnTo === "string" ? returnTo : undefined;
+      await CustomerAuthService.login(dest);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to initiate login");
     }

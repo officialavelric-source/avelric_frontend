@@ -77,17 +77,33 @@ export async function getProducts(
 export async function getProductByHandle(
   handle: string
 ): Promise<AppProduct | null> {
-  const cached = productCache.get(handle);
+  let clean = handle.trim().replace(/\/+$/, "");
+  try {
+    clean = decodeURIComponent(clean);
+  } catch {
+    // keep as-is
+  }
+
+  const cached = productCache.get(clean) || productCache.get(clean.toLowerCase());
   if (cached) return cached;
 
-  const data = await shopifyFetch<{ product: ShopifyProduct | null }>(
+  let data = await shopifyFetch<{ product: ShopifyProduct | null }>(
     PRODUCT_BY_HANDLE_QUERY,
-    { handle }
+    { handle: clean }
   );
+
+  // Fallback to lowercase handle if initial query returned nothing
+  if (!data.product && clean !== clean.toLowerCase()) {
+    data = await shopifyFetch<{ product: ShopifyProduct | null }>(
+      PRODUCT_BY_HANDLE_QUERY,
+      { handle: clean.toLowerCase() }
+    );
+  }
 
   if (!data.product) return null;
 
   const product = mapShopifyProduct(data.product);
   productCache.set(product.handle, product);
+  productCache.set(clean, product);
   return product;
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { useCart } from "../../context/CartContext";
+import { useCustomerAuth } from "../../context/CustomerAuthContext";
 import { NAV_LINKS } from "../../constants/navigation";
 import { NAV_H } from "../../constants/layout";
 import Icon from "../common/Icon";
@@ -11,6 +12,7 @@ import MobileMenu from "./MobileMenu";
 export default function Navbar() {
   const reduce = useReducedMotion();
   const { count } = useCart();
+  const { isAuthenticated, customer } = useCustomerAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
@@ -102,9 +104,20 @@ export default function Navbar() {
             <MiniCart open={miniCart} />
           </div>
 
-          <Link to="/account" className="hidden items-center gap-2 p-2 transition-opacity hover:opacity-60 md:flex" aria-label="Account">
-            <Icon label="Account" path="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 10a8 8 0 0 1 16 0" />
-            <span className="label text-[10px]">Account</span>
+          <Link
+            to="/account"
+            className="hidden items-center gap-2 p-2 transition-opacity hover:opacity-60 md:flex"
+            aria-label={isAuthenticated ? `Account (${customer?.displayName || "Active"})` : "Sign In"}
+          >
+            <div className="relative">
+              <Icon label="Account" path="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 10a8 8 0 0 1 16 0" />
+              {isAuthenticated && (
+                <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+              )}
+            </div>
+            <span className="label text-[10px] max-w-[85px] truncate">
+              {isAuthenticated ? customer?.firstName || "Account" : "Sign In"}
+            </span>
           </Link>
         </div>
       </div>

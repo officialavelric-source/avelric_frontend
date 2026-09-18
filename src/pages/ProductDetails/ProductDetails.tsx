@@ -106,9 +106,9 @@ export default function ProductDetails() {
         </p>
         <Link
           to="/shop"
-          className="label mt-8 inline-block rounded-full bg-softblack px-7 py-3.5 text-[11px] text-ivory"
+          className="label mt-8 inline-block rounded-full bg-softblack px-8 py-4 text-[12px] text-ivory transition-transform hover:scale-[1.02]"
         >
-          Back to shop
+          Return to store
         </Link>
       </div>
     );
@@ -392,7 +392,7 @@ export default function ProductDetails() {
                 },
                 {
                   q: "Delivery",
-                  a: "Chandigarh, Kharar, Mohali & Panchkula: Same day delivery. All other places across India: 7–9 working days delivery. Order updates and tracking notifications are sent exclusively to your email. Free shipping on prepaid orders above ₹2,499; COD available up to ₹5,000 (₹49 fee). Mail us at officialavelric@gmail.com for priority delivery queries.",
+                  a: "Chandigarh, Kharar, Mohali & Panchkula: Same day delivery. All other places across India: 7–9 working days delivery. Order updates and tracking notifications are sent exclusively to your email. Free shipping on prepaid orders above ₹1,500; COD available up to ₹5,000 (₹49 fee). Mail us at officialavelric@gmail.com for priority delivery queries.",
                 },
                 {
                   q: "Returns & exchange",
@@ -419,6 +419,7 @@ export default function ProductDetails() {
           >
             <ProductReviewsSection
               productId={product.id}
+              shopifyProductId={product.shopifyId}
               productTitle={product.name}
               onClose={() => setShowReviews(false)}
               isHighlighted={isHighlighted}

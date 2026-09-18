@@ -29,6 +29,18 @@ export interface OrderLineItem {
   imageAlt: string | null;
 }
 
+/* ——— Fulfillment / Tracking ——— */
+export interface FulfillmentTracking {
+  company: string | null;
+  number: string | null;
+  url: string | null;
+}
+
+export interface OrderFulfillment {
+  status: string;
+  tracking: FulfillmentTracking[];
+}
+
 /* ——— Order ——— */
 export interface CustomerOrder {
   id: string;
@@ -39,6 +51,27 @@ export interface CustomerOrder {
   totalAmount: string;
   currencyCode: string;
   lineItems: OrderLineItem[];
+}
+
+/* ——— Single Detailed Order Dossier ——— */
+export interface CustomerOrderDetail extends CustomerOrder {
+  subtotalAmount: string | null;
+  totalTaxAmount: string | null;
+  totalShippingAmount: string | null;
+  statusPageUrl: string | null;
+  shippingAddress: CustomerAddress | null;
+  fulfillments: OrderFulfillment[];
+}
+
+/* ——— Cursor pagination ——— */
+export interface OrdersPagination {
+  hasNextPage: boolean;
+  endCursor: string | null;
+}
+
+export interface CustomerOrdersResult {
+  orders: CustomerOrder[];
+  pagination: OrdersPagination;
 }
 
 /* ——— Customer profile ——— */
@@ -78,8 +111,8 @@ export interface CustomerAuthContextValue {
   isAuthenticated: boolean;
   customer: CustomerProfile | null;
   error: string | null;
-  /** Redirect to Shopify-hosted login UI */
-  login: () => Promise<void>;
+  /** Redirect to Shopify-hosted login UI with optional post-login destination */
+  login: (returnTo?: string) => Promise<void>;
   /** Terminate session on Shopify and clear local state */
   logout: () => void;
   /**

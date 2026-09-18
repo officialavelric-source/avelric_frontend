@@ -5,6 +5,7 @@ import { Reveal, Stars } from "../../components/common";
 import { getAllCachedProducts } from "../../services/shopify/productService";
 import {
   ClientReview,
+  fetchGlobalReviews,
   getAllReviews,
   getGlobalRatingSummary,
   subscribeToReviews,
@@ -42,9 +43,15 @@ export default function Reviews() {
 
   const allProducts = getAllCachedProducts();
 
-  const refresh = () => {
-    setAllReviews(getAllReviews());
-    setSummary(getGlobalRatingSummary());
+  const refresh = async () => {
+    try {
+      const data = await fetchGlobalReviews();
+      setAllReviews(data.reviews);
+      setSummary(data.summary);
+    } catch {
+      setAllReviews(getAllReviews());
+      setSummary(getGlobalRatingSummary());
+    }
   };
 
   useEffect(() => {

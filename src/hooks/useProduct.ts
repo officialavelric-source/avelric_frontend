@@ -5,15 +5,26 @@ import {
 } from "../services/shopify/productService";
 import type { AppProduct } from "../types/app";
 
+function cleanHandle(raw: string | undefined): string | undefined {
+  if (!raw) return undefined;
+  try {
+    const decoded = decodeURIComponent(raw);
+    return decoded.trim().replace(/\/+$/, "");
+  } catch {
+    return raw.trim().replace(/\/+$/, "");
+  }
+}
+
 /**
  * Async hook for loading a single product by Shopify handle.
  * Checks the module-level product cache first for instant renders.
  */
-export function useProduct(handle: string | undefined): {
+export function useProduct(rawHandle: string | undefined): {
   product: AppProduct | null;
   loading: boolean;
   error: string | null;
 } {
+  const handle = cleanHandle(rawHandle);
   const [product, setProduct] = useState<AppProduct | null>(
     () => (handle ? getCachedProduct(handle) ?? null : null)
   );

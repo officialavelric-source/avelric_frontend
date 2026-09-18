@@ -2,11 +2,13 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Icon from "../common/Icon";
 import { NAV_LINKS } from "../../constants/navigation";
+import { useCustomerAuth } from "../../context/CustomerAuthContext";
 
 /* Mobile drawer — hamesha solid softblack, navbar tone se independent */
 
 export default function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
   const reduce = useReducedMotion();
+  const { isAuthenticated, customer } = useCustomerAuth();
 
   return (
     <AnimatePresence>
@@ -47,10 +49,17 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
                 </motion.div>
               ))}
             </div>
-            <div className="mt-auto border-t border-ivory/10 pt-6">
-              <Link to="/account" onClick={onClose} className="label text-[11px] text-ivory/70">
-                Account →
+            <div className="mt-auto border-t border-ivory/10 pt-6 space-y-3">
+              <Link to="/account" onClick={onClose} className="label flex items-center justify-between text-[11px] text-ivory/80 hover:text-ivory">
+                <span>{isAuthenticated ? `Account (${customer?.displayName || "Active"})` : "Sign In / Account"}</span>
+                <span>→</span>
               </Link>
+              {isAuthenticated && (
+                <Link to="/account/orders" onClick={onClose} className="label flex items-center justify-between text-[10.5px] text-ivory/50 hover:text-ivory/80">
+                  <span>Order History & Tracking</span>
+                  <span>→</span>
+                </Link>
+              )}
             </div>
           </motion.nav>
         </motion.div>

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
-import { FREE_SHIP_AT } from "../../constants/shipping";
+import { FREE_SHIPPING_THRESHOLD, STANDARD_SHIPPING } from "../../constants/shipping";
 import { Reveal } from "../../components/common";
 import { CartItemRow, FreeShippingBar, MobileCheckoutBar, OrderSummary, SavedItemRow } from "../../components/cart";
 
@@ -17,7 +17,7 @@ export default function Cart() {
   const { push } = useToast();
   const navigate = useNavigate();
 
-  const shipping = subtotal >= FREE_SHIP_AT || subtotal === 0 ? 0 : 79;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || items.length === 0 ? 0 : STANDARD_SHIPPING;
   const discount = mrpTotal - subtotal;
   const total = subtotal + shipping;
 

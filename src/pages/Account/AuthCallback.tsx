@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { CustomerAuthService } from "../../services/shopify/customerAuthService";
+
+// Module-level guard: prevents duplicate window navigation across React renders/remounts
+let hasTriggeredRedirect = false;
 
 export default function AuthCallback() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -16,26 +18,20 @@ export default function AuthCallback() {
       return;
     }
 
-    let isMounted = true;
-
+    // Call the idempotent service handler (keyed by authorization code at module & session level)
     CustomerAuthService.handleCallback(code, state)
       .then(() => {
-        if (isMounted) {
-          // Refresh session & redirect to main account dashboard
-          window.location.href = "/account";
+        if (!hasTriggeredRedirect) {
+          hasTriggeredRedirect = true;
+          const destination = CustomerAuthService.getReturnToDestination();
+          window.location.href = destination;
         }
       })
       .catch((err) => {
-        if (isMounted) {
-          console.error("[AuthCallback] Exchange failed:", err);
-          setError(err instanceof Error ? err.message : "Authentication failed. Please try again.");
-        }
+        console.error("[AuthCallback] Exchange failed:", err);
+        setError(err instanceof Error ? err.message : "Authentication failed. Please try again.");
       });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [searchParams, navigate]);
+  }, [searchParams]);
 
   if (error) {
     return (

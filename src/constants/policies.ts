@@ -19,8 +19,8 @@ export const POLICIES: Record<string, Policy> = {
         "All other destinations across India: 7–9 working days delivery.",
       ]},
       { h: "Shipping charges", body: [
-        "Free shipping on all prepaid orders of ₹2,499 and above.",
-        "Orders below ₹2,499: flat ₹79 shipping.",
+        "Free shipping on all prepaid orders of ₹1,500 and above.",
+        "Orders below ₹1,500: flat ₹79 shipping.",
         "Cash on Delivery: available on orders up to ₹5,000 with a ₹49 handling fee, in addition to any shipping charge.",
       ]},
       { h: "Order tracking & notifications", body: [

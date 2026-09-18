@@ -1,4 +1,4 @@
-import { FREE_SHIP_AT } from "../../constants/shipping";
+import { FREE_SHIPPING_THRESHOLD } from "../../constants/shipping";
 import { formatINR } from "../../utils/format";
 import { LockIcon, ReturnIcon, TruckIcon } from "../common";
 
@@ -61,7 +61,7 @@ export default function OrderSummary({
       <ul className="mt-5 space-y-2.5 text-[12.5px] text-warmgray">
         <li className="flex items-center gap-2.5"><LockIcon className="h-4 w-4 shrink-0 text-softblack/50" /> Secure checkout — UPI, cards &amp; COD</li>
         <li className="flex items-center gap-2.5"><ReturnIcon className="h-4 w-4 shrink-0 text-softblack/50" /> 7-day easy returns &amp; size exchange</li>
-        <li className="flex items-center gap-2.5"><TruckIcon className="h-4 w-4 shrink-0 text-softblack/50" /> Free shipping above {formatINR(FREE_SHIP_AT)}</li>
+        <li className="flex items-center gap-2.5"><TruckIcon className="h-4 w-4 shrink-0 text-softblack/50" /> Free shipping above {formatINR(FREE_SHIPPING_THRESHOLD)}</li>
       </ul>
     </div>
   );
