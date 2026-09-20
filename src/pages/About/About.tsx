@@ -218,10 +218,8 @@ const COMPARISONS = [
    FOUNDERS
    ============================================================ */
 const FOUNDERS = [
-  { name: "Govind Singh", age: 22, role: "Full Stack Developer" },
-  { name: "Dhruv Mishra", age: 20, role: "Full Stack Developer" },
-  { name: "Roshan", age: 23, role: "Business Owner" },
-  { name: "Sumit", age: 22, role: "Business Owner" },
+  { name: "Roshan", age: 23, role: "Co-Founder & Lead Full Stack Developer" },
+  { name: "Sumit", age: 22, role: "Co-Founder & Principal Freelance Consultant" },
 ];
 
 const initials = (name: string) =>
@@ -770,26 +768,29 @@ export default function About() {
           <SectionHeading
             eyebrow="The People Behind It"
             title="MEET THE FOUNDERS"
-            sub="Four BCA graduates who got tired of guessing at fabric quality online — so they built the filter themselves."
+            sub="The minds behind AVELRIC who got tired of guessing at fabric quality online — so they built the curation standard themselves."
           />
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2">
             {FOUNDERS.map((f, i) => (
-              <Reveal key={f.name} delay={i * 0.08}>
-                <div className="group relative flex h-full flex-col items-center rounded-3xl border border-softblack/10 bg-ivory p-7 text-center transition-all duration-300 hover:-translate-y-2 hover:border-gold/60 hover:shadow-xl">
+              <Reveal key={f.name} delay={i * 0.1}>
+                <div className="group relative flex h-full flex-col items-center rounded-3xl border border-softblack/10 bg-ivory p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:border-gold/60 hover:shadow-xl">
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-softblack text-ivory font-display text-[18px] tracking-wide transition-colors group-hover:bg-gold">
                     {initials(f.name)}
                   </div>
 
-                  <h3 className="mt-5 font-display text-[17px] uppercase leading-snug text-softblack">
+                  <h3 className="mt-5 font-display text-[18px] uppercase leading-snug text-softblack">
                     {f.name}
                   </h3>
-                  <p className="mt-1 text-[12.5px] font-medium text-warmgray">
-                    {f.role} · Age {f.age}
+                  <p className="mt-1.5 text-[13px] font-semibold text-gold">
+                    {f.role}
+                  </p>
+                  <p className="mt-1 text-[12px] text-warmgray">
+                    Age {f.age}
                   </p>
 
-                  <span className="label mt-4 rounded-full bg-beige px-3 py-1 text-[9.5px] font-semibold uppercase tracking-wider text-warmgray group-hover:bg-softblack group-hover:text-ivory transition-colors">
-                    BCA Graduate
+                  <span className="label mt-4 rounded-full bg-beige px-3.5 py-1 text-[9.5px] font-semibold uppercase tracking-wider text-warmgray group-hover:bg-softblack group-hover:text-ivory transition-colors">
+                    Co-Founder
                   </span>
                 </div>
               </Reveal>
@@ -855,7 +856,7 @@ export default function About() {
 
                 <div className="mt-7 border-t border-softblack/10 pt-6">
                   <a
-                    href="https://wa.me/916239038301?text=Hi%20AVELRIC,%20I%20have%20a%20query%20regarding..."
+                    href="https://wa.me/916239195030?text=Hi%20AVELRIC,%20I%20have%20a%20query%20regarding..."
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-white shadow-md transition-all hover:bg-[#1fa851] active:scale-98"

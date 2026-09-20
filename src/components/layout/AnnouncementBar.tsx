@@ -28,31 +28,42 @@ export default function AnnouncementBar() {
 
   return (
     <div className="relative z-50 bg-softblack text-ivory">
-      <div className="mx-auto flex h-9 max-w-[1600px] items-center justify-between px-3 md:px-5">
-        <button onClick={() => go(-1)} aria-label="Previous announcement" className="p-1.5 text-ivory/70 transition-colors hover:text-ivory">
+      <div className="mx-auto flex min-h-[36px] max-w-[1600px] items-center justify-between px-2 py-1.5 sm:h-9 sm:px-5 sm:py-0">
+        <button
+          onClick={() => go(-1)}
+          aria-label="Previous announcement"
+          className="flex-shrink-0 p-1.5 text-ivory/70 transition-colors hover:text-ivory"
+        >
           <Chevron dir="left" />
         </button>
 
-        <div className="relative h-full flex-1 overflow-hidden">
+        <div className="relative flex min-h-[24px] flex-1 items-center justify-center overflow-hidden px-2">
           <AnimatePresence mode="wait" initial={false}>
             <motion.p
               key={index}
-              initial={reduce ? {} : { y: dir * 14, opacity: 0 }}
+              initial={reduce ? {} : { y: dir * 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={reduce ? {} : { y: dir * -14, opacity: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="label absolute inset-0 flex items-center justify-center text-center text-[10px] text-ivory/90"
+              exit={reduce ? {} : { y: dir * -10, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="label text-center text-[9.5px] leading-snug tracking-wider text-ivory/90 sm:text-[10px] sm:leading-normal sm:tracking-label"
             >
               {ANNOUNCEMENT_MESSAGES[index]}
             </motion.p>
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center gap-1">
-          <button className="label hidden items-center gap-1 text-[10px] text-ivory/80 transition-colors hover:text-ivory sm:flex" aria-label="Change region, currently India INR">
+        <div className="flex flex-shrink-0 items-center gap-1">
+          <button
+            className="label hidden items-center gap-1 text-[10px] text-ivory/80 transition-colors hover:text-ivory sm:flex"
+            aria-label="Change region, currently India INR"
+          >
             India (INR ₹)
           </button>
-          <button onClick={() => go(1)} aria-label="Next announcement" className="p-1.5 text-ivory/70 transition-colors hover:text-ivory">
+          <button
+            onClick={() => go(1)}
+            aria-label="Next announcement"
+            className="p-1.5 text-ivory/70 transition-colors hover:text-ivory"
+          >
             <Chevron dir="right" />
           </button>
         </div>

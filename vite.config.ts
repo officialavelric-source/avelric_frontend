@@ -98,6 +98,9 @@ export default defineConfig(({ mode }) => {
         "localhost",
       ],
     },
+    ssr: {
+      external: ["mongodb", "@vercel/blob"],
+    },
   };
 });
 

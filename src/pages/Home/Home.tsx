@@ -61,7 +61,20 @@ export default function Home() {
           layout="scroll"
         />
       )}
-      <img src="/poster.png" alt="discount poster" className="w-full" />
+
+      {/* Mobile poster */}
+      <img
+        src="/Poster-ForMobile.png"
+        alt="discount poster"
+        className="block h-auto w-full md:hidden"
+      />
+      {/* Desktop & tablet poster */}
+      <img
+        src="/poster.png"
+        alt="discount poster"
+        className="hidden h-auto w-full md:block"
+      />
+
       {hasProducts && <Bestsellers allProducts={shopifyProducts!} />}
       <Instagram />
     </>

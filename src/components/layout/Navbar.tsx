@@ -52,7 +52,7 @@ export default function Navbar() {
       } ${scrolled ? "backdrop-blur-md" : ""}`}
       style={{ height: NAV_H }}
     >
-      <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-4 md:px-8">
+      <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-3 sm:px-4 md:px-8">
         {/* left: desktop nav */}
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
           {NAV_LINKS.map((n) => (
@@ -70,20 +70,28 @@ export default function Navbar() {
         </nav>
 
         {/* mobile hamburger */}
-        <button className="justify-self-start p-2 lg:hidden" onClick={() => setMenu(true)} aria-label="Open menu">
+        <button
+          className="justify-self-start -ml-1 p-2 text-current transition-opacity hover:opacity-60 focus:outline-none lg:hidden"
+          onClick={() => setMenu(true)}
+          aria-label="Open menu"
+        >
           <Icon label="Menu" path="M4 7h16M4 12h16M4 17h16" />
         </button>
 
         {/* center: wordmark */}
-        <Link to="/" className="justify-self-center font-display text-[24px] tracking-[0.32em] md:text-[28px]" aria-label="AVELRIC home">
+        <Link
+          to="/"
+          className="justify-self-center font-display text-[20px] tracking-[0.24em] transition-all sm:text-[24px] sm:tracking-[0.32em] md:text-[28px]"
+          aria-label="AVELRIC home"
+        >
           AVELRIC
         </Link>
 
         {/* right: icons */}
-        <div className="flex items-center justify-self-end gap-1 md:gap-2">
+        <div className="flex items-center justify-self-end gap-0.5 sm:gap-1 md:gap-2">
           <button
             onClick={() => navigate("/shop?focus=search")}
-            className="flex items-center gap-2 p-2 transition-opacity hover:opacity-60"
+            className="flex items-center gap-2 p-1.5 sm:p-2 transition-opacity hover:opacity-60 focus:outline-none"
             aria-label="Search the collection"
           >
             <Icon label="Search" path="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm10 2-4.35-4.35" />
@@ -95,11 +103,13 @@ export default function Navbar() {
             onMouseEnter={() => setMiniCart(true)}
             onMouseLeave={() => setMiniCart(false)}
           >
-            <Link to="/cart" className="relative block p-2 transition-opacity hover:opacity-60" aria-label={`Cart, ${count} items`}>
+            <Link to="/cart" className="relative block p-1.5 sm:p-2 transition-opacity hover:opacity-60" aria-label={`Cart, ${count} items`}>
               <Icon label="Cart" path="M6 8h12l-1 12H7L6 8Zm3 0V6a3 3 0 0 1 6 0v2" />
-              <span className={`absolute -right-0.5 top-0 flex h-[15px] min-w-[15px] items-center justify-center rounded-full px-[3px] text-[9px] font-semibold transition-colors duration-500 ${badge}`}>
-                {count}
-              </span>
+              {count > 0 && (
+                <span className={`absolute -right-0.5 top-0 flex h-[15px] min-w-[15px] items-center justify-center rounded-full px-[3px] text-[9px] font-semibold transition-colors duration-500 ${badge}`}>
+                  {count}
+                </span>
+              )}
             </Link>
             <MiniCart open={miniCart} />
           </div>
