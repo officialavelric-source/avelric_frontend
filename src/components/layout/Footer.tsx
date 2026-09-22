@@ -3,14 +3,26 @@ import { Link } from "react-router-dom";
 import StitchDivider from "../common/StitchDivider";
 import { CashIcon, ReturnIcon, ShieldCheckIcon, TruckIcon } from "../common/TrustIcons";
 import { FOOTER_COLS } from "../../constants/navigation";
+import { analyticsService } from "../../services/analytics";
 
-function SocialIcon({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
+function SocialIcon({
+  href,
+  label,
+  children,
+  onClick,
+}: {
+  href: string;
+  label: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+}) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noreferrer"
       aria-label={label}
+      onClick={onClick}
       className="grid h-10 w-10 place-items-center rounded-full border border-softblack/20 text-softblack transition-colors hover:bg-softblack hover:text-ivory"
     >
       {children}
@@ -23,7 +35,13 @@ export default function Footer() {
   const [done, setDone] = useState(false);
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    if (email.includes("@")) setDone(true);
+    if (email.includes("@")) {
+      analyticsService.trackNewsletterSignup({
+        method: "newsletter_footer",
+        placement: "footer",
+      });
+      setDone(true);
+    }
   };
 
   return (
@@ -62,7 +80,11 @@ export default function Footer() {
 
             <div className="mt-7">
               <p className="label text-warmgray">Mail us</p>
-              <a href="mailto:officialavelric@gmail.com" className="mt-1.5 inline-block text-[14.5px] font-medium text-softblack transition-opacity hover:opacity-70">
+              <a
+                href="mailto:officialavelric@gmail.com"
+                onClick={() => analyticsService.trackContactEmail({ placement: "footer" })}
+                className="mt-1.5 inline-block text-[14.5px] font-medium text-softblack transition-opacity hover:opacity-70"
+              >
                 officialavelric@gmail.com
               </a>
               <p className="mt-1 text-[12px] text-warmgray">Notifications &amp; order updates sent exclusively via email.</p>
@@ -78,7 +100,16 @@ export default function Footer() {
                     <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" />
                   </svg>
                 </SocialIcon>
-                <SocialIcon href="https://wa.me/916239195030" label="AVELRIC on WhatsApp">
+                <SocialIcon
+                  href="https://wa.me/916239195030"
+                  label="AVELRIC on WhatsApp"
+                  onClick={() =>
+                    analyticsService.trackLead({
+                      lead_type: "whatsapp",
+                      placement: "footer_social",
+                    })
+                  }
+                >
                   <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.6L3 21l1.9-5.6A8.5 8.5 0 1 1 21 11.5Z" />
                     <path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.5-1.5-2-1.5-1 .5c-1-.5-1.5-1-2-2l.5-1-1.5-2L9 9.5Z" />

@@ -3,6 +3,7 @@ import { submitReview, uploadReviewImage } from "../../services/reviewService";
 import { useCustomerAuth } from "../../context/CustomerAuthContext";
 import { useToast } from "../../context/ToastContext";
 import { compressImage } from "../../utils/image";
+import { analyticsService } from "../../services/analytics";
 
 interface WriteReviewModalProps {
   isOpen: boolean;
@@ -166,6 +167,13 @@ export default function WriteReviewModal({
         headline: trimmedHeadline,
         comment: trimmedComment,
         photos: photos.length > 0 ? photos : undefined,
+      });
+
+      // Track submit_review event in GA4
+      analyticsService.trackSubmitReview({
+        product_id: shopifyProductId || productId,
+        rating,
+        has_photo: photos.length > 0,
       });
 
       push({ message: "Thank you! Your review has been submitted." });

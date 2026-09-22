@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Reveal, SectionHeading, StitchDivider } from "../../components/common";
+import { analyticsService } from "../../services/analytics";
 import { u } from "../../data/products";
 
 /* ============================================================
@@ -859,6 +860,12 @@ export default function About() {
                     href="https://wa.me/916239195030?text=Hi%20AVELRIC,%20I%20have%20a%20query%20regarding..."
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => {
+                      analyticsService.trackLead({
+                        lead_type: "whatsapp",
+                        placement: "about_concierge_card",
+                      });
+                    }}
                     className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-white shadow-md transition-all hover:bg-[#1fa851] active:scale-98"
                   >
                     <span>Message On WhatsApp</span>
@@ -911,6 +918,11 @@ export default function About() {
                 <div className="mt-7 border-t border-softblack/10 pt-6">
                   <a
                     href="mailto:officialavelric@gmail.com?subject=AVELRIC%20Patron%20Query"
+                    onClick={() => {
+                      analyticsService.trackContactEmail({
+                        placement: "about_email_card",
+                      });
+                    }}
                     className="flex w-full items-center justify-center gap-2 rounded-full bg-softblack px-6 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-ivory shadow-md transition-all hover:bg-gold hover:text-white active:scale-98"
                   >
                     <span>Write An Email</span>

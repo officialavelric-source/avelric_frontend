@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useCustomerAuth } from "../../context/CustomerAuthContext";
 import { Reveal, BoxIcon } from "../../components/common";
+import { analyticsService } from "../../services/analytics";
 
 export default function OrderSuccess() {
   const { clear } = useCart();
@@ -38,6 +39,43 @@ export default function OrderSuccess() {
       // ignore
     }
   }, [clear]);
+
+  // Track purchase event in GA4 with deduplication guard
+  useEffect(() => {
+    const STORAGE_KEY = "avelric_processed_orders";
+    try {
+      const processed: string[] = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      if (!processed.includes(orderNumber)) {
+        const storedValue = parseFloat(sessionStorage.getItem("avelric_last_checkout_value") || "0");
+        const rawItems = sessionStorage.getItem("avelric_last_checkout_items");
+        const storedItems = rawItems ? JSON.parse(rawItems) : [];
+
+        analyticsService.trackPurchase({
+          transaction_id: orderNumber,
+          value: storedValue > 0 ? storedValue : 2499,
+          currency: "INR",
+          tax: 0,
+          shipping: 0,
+          items: storedItems.length > 0 ? storedItems : [
+            {
+              item_id: orderNumber,
+              item_name: "AVELRIC Bespoke Garment",
+              item_brand: "AVELRIC",
+              price: storedValue > 0 ? storedValue : 2499,
+              quantity: 1,
+              currency: "INR",
+            },
+          ],
+        });
+
+        processed.push(orderNumber);
+        if (processed.length > 100) processed.shift();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(processed));
+      }
+    } catch {
+      // fail-safe
+    }
+  }, [orderNumber]);
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-16 sm:py-24 text-center">

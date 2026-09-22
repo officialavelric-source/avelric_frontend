@@ -4,6 +4,7 @@ import { CATEGORIES } from "../../data/products";
 import { SORT_LABELS } from "../../constants/filters";
 import { NAV_H } from "../../constants/layout";
 import { ShopFilters } from "../../hooks/useShopFilters";
+import { analyticsService } from "../../services/analytics";
 import Icon from "../common/Icon";
 import FilterSortModal from "./FilterSortModal";
 
@@ -28,6 +29,19 @@ export default function ShopFilterBar({
   const lastScrollY = useRef(0);
   const modalOpenRef = useRef(modalOpen);
   modalOpenRef.current = modalOpen;
+
+  // Track search queries in GA4 with debounce
+  useEffect(() => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    const timer = setTimeout(() => {
+      analyticsService.trackSearch({
+        search_term: trimmed,
+        results_count: items.length,
+      });
+    }, 750);
+    return () => clearTimeout(timer);
+  }, [q, items.length]);
 
   /* navbar search icon se aane par input autofocus */
   useEffect(() => {
@@ -125,7 +139,13 @@ export default function ShopFilterBar({
               {showCategoryPill && (
                 <>
                   <button
-                    onClick={() => setCats([])}
+                    onClick={() => {
+                      setCats([]);
+                      analyticsService.trackFilterProducts({
+                        filter_category: "all",
+                        results_count: items.length,
+                      });
+                    }}
                     aria-pressed={cats.length === 0}
                     className={`label shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[11px] transition-colors ${cats.length === 0 ? "border-softblack bg-softblack text-ivory" : "border-softblack/20 hover:border-softblack"
                       }`}
@@ -135,7 +155,14 @@ export default function ShopFilterBar({
                   {CATEGORIES.map((c) => (
                     <button
                       key={c.slug}
-                      onClick={() => setCats(cats.includes(c.slug) ? [] : [c.slug])}
+                      onClick={() => {
+                        const next = cats.includes(c.slug) ? [] : [c.slug];
+                        setCats(next);
+                        analyticsService.trackFilterProducts({
+                          filter_category: next.length > 0 ? c.slug : "all",
+                          results_count: items.length,
+                        });
+                      }}
                       aria-pressed={cats.includes(c.slug)}
                       className={`label shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[11px] transition-colors ${cats.includes(c.slug) ? "border-softblack bg-softblack text-ivory" : "border-softblack/20 hover:border-softblack"
                         }`}

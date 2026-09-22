@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { CATEGORIES } from "../../data/products";
 import { Reveal } from "../../components/common";
@@ -6,6 +6,7 @@ import { ProductCard, ProductCardSkeleton } from "../../components/product";
 import { ShopFilterBar } from "../../components/forms";
 import { useShopFilters } from "../../hooks/useShopFilters";
 import { getProducts } from "../../services/shopify/productService";
+import { analyticsService, mapAppProductToGA4Item } from "../../services/analytics";
 import type { AppProduct } from "../../types/app";
 
 export default function Shop({ preset }: { preset?: "new" }) {
@@ -14,6 +15,7 @@ export default function Shop({ preset }: { preset?: "new" }) {
   // Shopify product data — null = loading, [] = empty, array = loaded
   const [shopifyProducts, setShopifyProducts] = useState<AppProduct[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const lastTrackedList = useRef<string>("");
 
   useEffect(() => {
     let cancelled = false;
@@ -57,6 +59,20 @@ export default function Shop({ preset }: { preset?: "new" }) {
       : category
         ? category.name
         : "The Collection";
+
+  useEffect(() => {
+    if (!loading && items.length > 0) {
+      const listKey = `${slug || "all"}-${q}-${items.length}`;
+      if (lastTrackedList.current !== listKey) {
+        lastTrackedList.current = listKey;
+        analyticsService.trackViewItemList({
+          item_list_id: slug || "clothing_collection",
+          item_list_name: title,
+          items: items.map((p, idx) => mapAppProductToGA4Item(p, idx + 1, title)),
+        });
+      }
+    }
+  }, [loading, items, slug, q, title]);
 
   const crumb = preset === "new" ? "New Arrivals" : category ? category.name : "Shop";
 

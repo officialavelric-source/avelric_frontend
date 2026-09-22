@@ -1,4 +1,14 @@
+import { useEffect } from "react";
+import { analyticsService } from "../../services/analytics";
+
 export default function NotFound() {
+  useEffect(() => {
+    analyticsService.trackErrorPageView({
+      error_type: "404",
+      attempted_path: window.location.pathname,
+    });
+  }, []);
+
   return (
     <div className="mx-auto max-w-3xl px-6 py-32 text-center">
       <p className="label text-warmgray">404</p>

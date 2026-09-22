@@ -1,6 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { AnnouncementBar, Footer, Navbar } from "../components/layout";
+import { usePageTracking } from "../hooks/usePageTracking";
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -21,6 +22,8 @@ function ScrollToTop() {
 
 /* Site-wide chrome: announcement bar + navbar upar, footer neeche */
 export default function MainLayout({ children }: { children: ReactNode }) {
+  usePageTracking();
+
   return (
     <div className="flex min-h-screen flex-col">
       <ScrollToTop />

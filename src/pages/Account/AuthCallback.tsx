@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CustomerAuthService } from "../../services/shopify/customerAuthService";
+import { analyticsService } from "../../services/analytics";
 
 // Module-level guard: prevents duplicate window navigation across React renders/remounts
 let hasTriggeredRedirect = false;
@@ -23,6 +24,7 @@ export default function AuthCallback() {
       .then(() => {
         if (!hasTriggeredRedirect) {
           hasTriggeredRedirect = true;
+          analyticsService.trackLogin({ method: "shopify_customer_account" });
           const destination = CustomerAuthService.getReturnToDestination();
           window.location.href = destination;
         }

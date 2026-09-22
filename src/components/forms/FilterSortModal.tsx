@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CATEGORIES, COLOR_FILTERS } from "../../data/products";
 import { ALL_SIZES, PRICE_BANDS, SORT_LABELS, Sort } from "../../constants/filters";
 import { ShopFilters } from "../../hooks/useShopFilters";
+import { analyticsService } from "../../services/analytics";
 import Icon from "../common/Icon";
 
 /* Filter & Sort — bottom sheet on mobile, centered dialog on md+.
@@ -132,7 +133,18 @@ export default function FilterSortModal({
               <button onClick={clearAll} className="label shrink-0 text-[11px] text-warmgray underline-offset-4 hover:text-softblack hover:underline">
                 Reset
               </button>
-              <button onClick={onClose} className="label flex-1 rounded-full bg-softblack py-3.5 text-[11px] text-ivory transition-transform hover:scale-[1.01] active:scale-[0.99]">
+              <button
+                onClick={() => {
+                  analyticsService.trackFilterProducts({
+                    filter_category: cats.length > 0 ? cats.join(",") : undefined,
+                    filter_price_range: priceBand !== null ? PRICE_BANDS[priceBand]?.label : undefined,
+                    filter_sort: sort,
+                    results_count: items.length,
+                  });
+                  onClose();
+                }}
+                className="label flex-1 rounded-full bg-softblack py-3.5 text-[11px] text-ivory transition-transform hover:scale-[1.01] active:scale-[0.99]"
+              >
                 Show {items.length} result{items.length === 1 ? "" : "s"}
               </button>
             </div>

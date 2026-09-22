@@ -1,9 +1,11 @@
+import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { FREE_SHIPPING_THRESHOLD, STANDARD_SHIPPING } from "../../constants/shipping";
 import { Reveal } from "../../components/common";
 import { CartItemRow, FreeShippingBar, MobileCheckoutBar, OrderSummary, SavedItemRow } from "../../components/cart";
+import { analyticsService } from "../../services/analytics";
 
 /**
  * Cart page — all product data comes from CartItem.snapshot.
@@ -16,10 +18,52 @@ export default function Cart() {
   const { items, saved, updateQty, remove, saveForLater, moveToCart, removeSaved, subtotal, mrpTotal, count } = useCart();
   const { push } = useToast();
   const navigate = useNavigate();
+  const lastTrackedCart = useRef<string>("");
 
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || items.length === 0 ? 0 : STANDARD_SHIPPING;
   const discount = mrpTotal - subtotal;
   const total = subtotal + shipping;
+
+  // Track view_cart in GA4
+  useEffect(() => {
+    if (items.length > 0) {
+      const cartKey = `${items.length}-${subtotal}`;
+      if (lastTrackedCart.current !== cartKey) {
+        lastTrackedCart.current = cartKey;
+        analyticsService.trackViewCart({
+          value: subtotal,
+          free_shipping_gap: Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal),
+          items: items.map((it, idx) => ({
+            item_id: it.variantId || it.productId,
+            item_name: it.snapshot?.name || it.productId,
+            item_brand: "AVELRIC",
+            item_variant: it.size,
+            price: it.snapshot?.price || 0,
+            quantity: it.qty,
+            currency: "INR",
+            index: idx + 1,
+          })),
+        });
+      }
+    }
+  }, [items, subtotal]);
+
+  const handleCheckoutClick = () => {
+    analyticsService.trackBeginCheckout({
+      value: subtotal,
+      items: items.map((it, idx) => ({
+        item_id: it.variantId || it.productId,
+        item_name: it.snapshot?.name || it.productId,
+        item_brand: "AVELRIC",
+        item_variant: it.size,
+        price: it.snapshot?.price || 0,
+        quantity: it.qty,
+        currency: "INR",
+        index: idx + 1,
+      })),
+    });
+    navigate("/checkout");
+  };
 
   if (items.length === 0 && saved.length === 0)
     return (
@@ -60,6 +104,20 @@ export default function Cart() {
                   push({ message: `Saved "${item.snapshot?.name || item.productId}" for later` });
                 }}
                 onRemove={() => {
+                  analyticsService.trackRemoveFromCart({
+                    value: (item.snapshot?.price || 0) * item.qty,
+                    items: [
+                      {
+                        item_id: item.variantId || item.productId,
+                        item_name: item.snapshot?.name || item.productId,
+                        item_brand: "AVELRIC",
+                        item_variant: item.size,
+                        price: item.snapshot?.price || 0,
+                        quantity: item.qty,
+                        currency: "INR",
+                      },
+                    ],
+                  });
                   remove(item.productId, item.size);
                   push({ message: `Removed "${item.snapshot?.name || item.productId}" from cart` });
                 }}
@@ -102,13 +160,13 @@ export default function Cart() {
             shipping={shipping}
             total={total}
             checkoutDisabled={items.length === 0}
-            onCheckout={() => navigate("/checkout")}
+            onCheckout={handleCheckoutClick}
           />
         </aside>
       </div>
 
       {items.length > 0 && (
-        <MobileCheckoutBar total={total} discount={discount} onCheckout={() => navigate("/checkout")} />
+        <MobileCheckoutBar total={total} discount={discount} onCheckout={handleCheckoutClick} />
       )}
     </div>
   );

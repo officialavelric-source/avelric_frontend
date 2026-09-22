@@ -12,6 +12,23 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap"
     rel="stylesheet" />
+
+  <!-- Google Analytics 4 (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA4_MEASUREMENT_ID%"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag = gtag;
+    gtag('js', new Date());
+
+    gtag('config', '%VITE_GA4_MEASUREMENT_ID%', {
+      send_page_view: false,
+      linker: {
+        domains: ['avelric.in', 'www.avelric.in', 'avelric-2.myshopify.com'],
+        decorate_forms: true
+      }
+    });
+  </script>
 </head>
 
 <body>

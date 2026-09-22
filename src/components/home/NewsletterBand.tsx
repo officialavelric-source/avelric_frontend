@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { Reveal } from "../common";
+import { analyticsService } from "../../services/analytics";
 
 export default function NewsletterBand() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,13 @@ export default function NewsletterBand() {
       return;
     }
     setStatus("submitting");
+
+    // Track newsletter signup in GA4 (zero email PII)
+    analyticsService.trackNewsletterSignup({
+      method: "newsletter_band",
+      placement: "homepage",
+    });
+
     setTimeout(() => setStatus("done"), 700);
   };
 

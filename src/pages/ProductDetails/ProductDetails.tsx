@@ -14,6 +14,7 @@ import ProductGallery from "../../components/product/ProductGallery";
 import SizeSelector from "../../components/product/SizeSelector";
 import { ProductReviewsSection } from "../../components/reviews";
 import { getProductRatingSummary, subscribeToReviews } from "../../services/reviewService";
+import { analyticsService } from "../../services/analytics";
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +32,27 @@ export default function ProductDetails() {
   const [activeImg, setActiveImg] = useState(0);
   const [showReviews, setShowReviews] = useState(false);
   const [isHighlighted, setIsHighlighted] = useState(false);
+
+  // Track view_item in GA4 when product resolves
+  useEffect(() => {
+    if (product) {
+      analyticsService.trackViewItem({
+        currency: "INR",
+        value: product.price,
+        items: [
+          {
+            item_id: (product as any).shopifyId || product.id,
+            item_name: product.name,
+            item_brand: "AVELRIC",
+            item_category: typeof product.category === "string" ? product.category : "Clothing",
+            price: product.price,
+            quantity: 1,
+            currency: "INR",
+          },
+        ],
+      });
+    }
+  }, [product?.id]);
 
   const openReviewsAndScroll = () => {
     setShowReviews(true);
@@ -166,6 +188,23 @@ export default function ProductDetails() {
         compareAt: variant?.compareAtPrice ?? product.compareAt,
       }
     );
+
+    const finalPrice = variant?.price ?? product.price;
+    analyticsService.trackAddToCart({
+      value: finalPrice,
+      items: [
+        {
+          item_id: (product as any).shopifyId || product.id,
+          item_name: product.name,
+          item_brand: "AVELRIC",
+          item_category: typeof product.category === "string" ? product.category : "Clothing",
+          item_variant: effectiveSize,
+          price: finalPrice,
+          quantity: 1,
+          currency: "INR",
+        },
+      ],
+    });
 
     setAdded(true);
     push({
@@ -349,6 +388,13 @@ export default function ProductDetails() {
               onSelect={(s) => {
                 setSize(s);
                 setSizeError(false);
+                const isAvailable = !outOfStockSizes.includes(s);
+                analyticsService.trackSelectSize({
+                  item_id: (product as any).shopifyId || product.id,
+                  item_name: product.name,
+                  size: s,
+                  is_available: isAvailable,
+                });
               }}
               showError={sizeError}
             />

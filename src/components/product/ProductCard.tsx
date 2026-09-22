@@ -7,6 +7,7 @@ import { discountPct } from "../../utils/product";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { getProductRatingSummary, subscribeToReviews } from "../../services/reviewService";
+import { analyticsService, mapAppProductToGA4Item } from "../../services/analytics";
 import Stars from "../common/Stars";
 
 export default function ProductCard({ product, eager = false }: { product: Product; eager?: boolean }) {
@@ -45,6 +46,7 @@ export default function ProductCard({ product, eager = false }: { product: Produ
     ) ?? (appProd.variants?.length === 1 ? appProd.variants[0] : undefined);
 
     const frontImage = product.images?.[0] ?? variant?.image ?? "";
+    const finalPrice = variant?.price ?? product.price;
 
     add(
       product.id,
@@ -55,10 +57,31 @@ export default function ProductCard({ product, eager = false }: { product: Produ
         name: product.name,
         image: frontImage,
         colorName: product.color?.name ?? "",
-        price: variant?.price ?? product.price,
+        price: finalPrice,
         compareAt: variant?.compareAtPrice ?? product.compareAt,
       }
     );
+
+    // Track add_to_cart event in GA4
+    analyticsService.trackAddToCart({
+      value: finalPrice,
+      items: [
+        {
+          item_id: (product as any).shopifyId || product.id,
+          item_name: product.name,
+          item_brand: "AVELRIC",
+          item_category:
+            typeof product.category === "string"
+              ? product.category
+              : (product.category as any)?.name || "Clothing",
+          item_variant: size,
+          price: finalPrice,
+          quantity: 1,
+          currency: "INR",
+        },
+      ],
+    });
+
     setPicking(false);
     push({
       message: `Added "${product.name}" (${size}) to cart`,
@@ -74,10 +97,17 @@ export default function ProductCard({ product, eager = false }: { product: Produ
     else setPicking(true);
   };
 
+  const handleCardClick = () => {
+    analyticsService.trackSelectItem({
+      items: [mapAppProductToGA4Item(product)],
+    });
+  };
+
   return (
     <Link
       to={`/product/${product.id}`}
       className="group block"
+      onClick={handleCardClick}
       onMouseLeave={() => setPicking(false)}
     >
       <div className="relative overflow-hidden rounded-2xl border border-softblack/10 bg-beige">

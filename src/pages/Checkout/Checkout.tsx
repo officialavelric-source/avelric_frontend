@@ -6,6 +6,7 @@ import { CustomerAuthService } from "../../services/shopify/customerAuthService"
 import { formatINR } from "../../utils/format";
 import { getProductByHandle } from "../../services/shopify/productService";
 import { createCart, fetchCart, updateCartBuyerIdentity } from "../../services/shopify/cartService";
+import { analyticsService } from "../../services/analytics";
 import type { CartLineInput, CartBuyerIdentityInput } from "../../services/shopify/cartService";
 
 export default function Checkout() {
@@ -98,6 +99,28 @@ export default function Checkout() {
       }
 
       if (finalCheckoutUrl) {
+        const checkoutItems = items.map((it, idx) => ({
+          item_id: it.variantId || it.productId,
+          item_name: it.snapshot?.name || it.productId,
+          item_brand: "AVELRIC",
+          item_variant: it.size,
+          price: it.snapshot?.price || 0,
+          quantity: it.qty,
+          currency: "INR",
+          index: idx + 1,
+        }));
+
+        try {
+          sessionStorage.setItem("avelric_last_checkout_value", String(subtotal));
+          sessionStorage.setItem("avelric_last_checkout_items", JSON.stringify(checkoutItems));
+        } catch {
+          // ignore
+        }
+
+        analyticsService.trackBeginCheckout({
+          value: subtotal,
+          items: checkoutItems,
+        });
         window.location.href = finalCheckoutUrl;
       } else {
         setResolveError("Unable to create checkout session. Please try again.");
