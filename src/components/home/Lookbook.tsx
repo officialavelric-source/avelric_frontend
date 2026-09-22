@@ -45,12 +45,12 @@ export default function Lookbook({ allProducts: initialProducts }: { allProducts
   ];
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20 md:py-24">
-      <div className="grid gap-5 md:grid-cols-2">
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-20 md:py-24">
+      <div className="grid grid-cols-2 gap-3 sm:gap-5">
         {cards.map((c, i) => (
           <Reveal key={c.eyebrow} delay={i * 0.08}>
             <div className="group relative overflow-hidden rounded-[3px] border border-softblack/10">
-              <Link to={c.to} className="block aspect-[4/5] bg-beige">
+              <Link to={c.to} className="block aspect-[3/4] sm:aspect-[4/5] bg-beige">
                 <img
                   src={c.image}
                   alt=""
@@ -58,19 +58,19 @@ export default function Lookbook({ allProducts: initialProducts }: { allProducts
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-[600ms] ease-premium group-hover:scale-[1.06]"
                 />
-                <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-softblack/85 via-softblack/20 to-transparent" />
+                <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-softblack/90 via-softblack/30 to-transparent" />
               </Link>
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 p-7 text-ivory md:p-8">
-                <p className="label text-ivory/70">{c.eyebrow}</p>
-                <h3 className="mt-2 max-w-xs font-display text-[26px] leading-[1.1] tracking-[-0.02em] md:text-[30px]">{c.title}</h3>
-                <p className="mt-2.5 max-w-xs text-[13.5px] leading-relaxed text-ivory/75">{c.body}</p>
-                <div className="pointer-events-auto mt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
-                  <Link to={c.to} className="label inline-flex items-center gap-2 border-b border-ivory/50 pb-1 text-[11px] transition-colors hover:border-ivory">
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3.5 sm:p-7 text-ivory md:p-8">
+                <p className="label text-[9px] tracking-wider text-ivory/70 sm:text-[11px]">{c.eyebrow}</p>
+                <h3 className="mt-1 sm:mt-2 max-w-xs font-display text-[15px] leading-[1.12] tracking-[-0.02em] sm:text-[24px] md:text-[30px]">{c.title}</h3>
+                <p className="mt-1 sm:mt-2.5 max-w-xs text-[11px] leading-snug text-ivory/75 line-clamp-2 sm:line-clamp-none sm:text-[13.5px] sm:leading-relaxed">{c.body}</p>
+                <div className="pointer-events-auto mt-2.5 sm:mt-5 flex flex-wrap items-center gap-x-3 sm:gap-x-6 gap-y-1 sm:gap-y-2">
+                  <Link to={c.to} className="label inline-flex items-center gap-1 sm:gap-2 border-b border-ivory/50 pb-0.5 sm:pb-1 text-[10px] sm:text-[11px] transition-colors hover:border-ivory">
                     {c.cta}
                     <span aria-hidden="true">→</span>
                   </Link>
                   {c.secondaryTo && (
-                    <Link to={c.secondaryTo} className="label text-[11px] text-ivory/60 transition-colors hover:text-ivory">
+                    <Link to={c.secondaryTo} className="label text-[10px] sm:text-[11px] text-ivory/60 transition-colors hover:text-ivory hidden xs:inline-block sm:inline-block">
                       {c.secondaryLabel}
                     </Link>
                   )}

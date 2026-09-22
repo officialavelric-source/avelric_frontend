@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Reveal } from "../../components/common";
+import { PosterBanner, Reveal } from "../../components/common";
 import { ProductCard, ProductCardSkeleton } from "../../components/product";
 import { getProducts } from "../../services/shopify/productService";
 import { u } from "../../data/products";
@@ -107,6 +107,9 @@ export default function NewArrivals() {
           </div>
         )}
       </div>
+
+      {/* Poster banner before footer */}
+      <PosterBanner />
     </div>
   );
 }

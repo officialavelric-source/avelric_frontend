@@ -69,6 +69,10 @@ function apiDevMiddleware(): Plugin {
             const { default: imageHandler } = await server.ssrLoadModule("/api/reviews/image.ts");
             await imageHandler(vercelReq, vercelRes);
             return;
+          } else if (pathname === "/api/instagram/media") {
+            const { default: instagramMediaHandler } = await server.ssrLoadModule("/api/instagram/media.ts");
+            await instagramMediaHandler(vercelReq, vercelRes);
+            return;
           }
 
           next();
