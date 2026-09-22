@@ -6,3 +6,4 @@ export { default as SectionHeading } from "./SectionHeading";
 export { default as Icon } from "./Icon";
 export { CashIcon, LockIcon, ReturnIcon, ShieldCheckIcon, TruckIcon } from "./TrustIcons";
 export { BoxIcon, CoinIcon, GridIcon, HeartIcon, MapPinIcon, UserIcon } from "./AccountIcons";
+export { default as PosterBanner } from "./PosterBanner";

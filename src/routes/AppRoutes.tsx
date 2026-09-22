@@ -6,6 +6,7 @@ import ProductDetails from "../pages/ProductDetails/ProductDetails";
 import Cart from "../pages/Cart/Cart";
 import Checkout from "../pages/Checkout/Checkout";
 import NewArrivals from "../pages/NewArrivals/NewArrivals";
+import Collections from "../pages/Collections/Collections";
 import Reviews from "../pages/Reviews/Reviews";
 import About from "../pages/About/About";
 import HowWeCurate from "../pages/HowWeCurate/HowWeCurate";
@@ -68,7 +69,7 @@ export default function AppRoutes() {
       <Route path="/new-arrivals" element={<NewArrivals />} />
 
       {/* Collections & Clothing Aliases */}
-      <Route path="/collections" element={<Navigate to="/shop" replace />} />
+      <Route path="/collections" element={<Collections />} />
       <Route path="/collections/:slug" element={<Shop />} />
       <Route path="/category/:slug" element={<Shop />} />
       <Route path="/clothing" element={<Navigate to="/shop" replace />} />

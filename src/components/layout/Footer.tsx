@@ -93,7 +93,7 @@ export default function Footer() {
             <div className="mt-7">
               <p className="label text-warmgray">Follow us</p>
               <div className="mt-3.5 flex gap-3">
-                <SocialIcon href="https://instagram.com/avelric" label="AVELRIC on Instagram">
+                <SocialIcon href="https://instagram.com/avelricindia" label="AVELRIC on Instagram">
                   <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <rect x="3" y="3" width="18" height="18" rx="5" />
                     <circle cx="12" cy="12" r="4" />
