@@ -179,6 +179,7 @@ export default function Instagram() {
   const [items, setItems] = useState<InstagramMediaItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
+  const [isFallback, setIsFallback] = useState<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -202,6 +203,7 @@ export default function Instagram() {
           // Backend always returns success=true + data (live or fallback)
           if (data.success && Array.isArray(data.data) && data.data.length > 0) {
             setItems(data.data);
+            setIsFallback(data.fallback === true);
           } else {
             setHasError(true);
           }
@@ -225,38 +227,17 @@ export default function Instagram() {
   // ── Desktop/Tablet: up to 6 items (images, carousels, reels) ─────────────
   const desktopItems = useMemo(() => items.slice(0, 6), [items]);
 
-  // ── Mobile: prioritise reels/videos; backfill with latest posts ───────────
-  // This guarantees mobile is NEVER empty — even if there are no videos.
+  // ── Mobile: Reels ONLY — newest-first, max 4. No image backfill. ─────────
+  // If zero reels exist, mobileItems is empty and a graceful empty state
+  // is rendered instead of showing image posts as fake reels.
   const mobileItems = useMemo(() => {
     const reels = items.filter(
       (item) =>
         item.mediaType === "VIDEO" || item.mediaProductType === "REELS"
     );
-    // Sort reels newest-first; take up to 4
-    const sortedReels = [...reels].sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-    const topReels = sortedReels.slice(0, 4);
-
-    // If we have fewer than 4 reels, backfill with the latest non-reel posts
-    if (topReels.length < 4) {
-      const nonReels = items
-        .filter(
-          (item) =>
-            item.mediaType !== "VIDEO" && item.mediaProductType !== "REELS"
-        )
-        .sort(
-          (a, b) =>
-            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        );
-      const needed = 4 - topReels.length;
-      topReels.push(...nonReels.slice(0, needed));
-    }
-
-    // Final sort: newest first
-    return topReels.sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
+    return [...reels]
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, 4);
   }, [items]);
 
   const desktopCount = desktopItems.length;
@@ -335,18 +316,36 @@ export default function Instagram() {
             </div>
 
             {/* ════════════════════════════════════════════════════════════ */}
-            {/* MOBILE — Reels first, backfilled with latest posts (max 4)  */}
+            {/* MOBILE — Reels only (max 4). Empty state if no reels exist. */}
             {/* ════════════════════════════════════════════════════════════ */}
             <div className="block sm:hidden">
-              <div className="mt-8 grid grid-cols-2 gap-3">
-                {mobileItems.map((item, index) => (
-                  <InstagramCard
-                    key={`mobile-${item.id}`}
-                    item={item}
-                    index={index}
-                  />
-                ))}
-              </div>
+              {mobileItems.length > 0 ? (
+                <div className="mt-8 grid grid-cols-2 gap-3">
+                  {mobileItems.map((item, index) => (
+                    <InstagramCard
+                      key={`mobile-${item.id}`}
+                      item={item}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              ) : (
+                // Zero reels — show a minimal prompt to visit the profile
+                <div className="mt-8 rounded-2xl border border-dashed border-warmgray/30 bg-warmgray/5 p-6 text-center">
+                  <p className="text-xs text-warmgray">
+                    Visit{" "}
+                    <a
+                      href={INSTAGRAM_PROFILE_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-2 text-softblack"
+                    >
+                      {INSTAGRAM_USERNAME}
+                    </a>{" "}
+                    to see our latest reels.
+                  </p>
+                </div>
+              )}
             </div>
           </>
         )}
