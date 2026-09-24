@@ -30,10 +30,76 @@ interface CacheStore {
   username?: string;
 }
 
-// 10-minute in-memory cache
-const CACHE_TTL_MS = 10 * 60 * 1000;
+// ─── Cache config ──────────────────────────────────────────────────────────
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 let memoryCache: CacheStore | null = null;
 
+// ─── Static brand fallback (served when Meta API is unavailable) ───────────
+// Uses real brand images from /public/images/ and permalinks to @avelricindia
+const STATIC_FALLBACK: InstagramMediaItem[] = [
+  {
+    id: "fallback-1",
+    caption: "Fit check. 🖤 New arrivals dropping soon — @avelricindia",
+    mediaType: "IMAGE",
+    mediaProductType: "",
+    mediaUrl: "/images/instagram-1.jpg",
+    thumbnailUrl: "/images/instagram-1.jpg",
+    permalink: "https://www.instagram.com/avelricindia/",
+    timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "fallback-2",
+    caption: "Drop preview. The new collection is almost here. 🕶️",
+    mediaType: "IMAGE",
+    mediaProductType: "",
+    mediaUrl: "/images/instagram-2.jpg",
+    thumbnailUrl: "/images/instagram-2.jpg",
+    permalink: "https://www.instagram.com/avelricindia/",
+    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "fallback-3",
+    caption: "Behind the scenes. The looks that didn't make the cut — almost.",
+    mediaType: "IMAGE",
+    mediaProductType: "",
+    mediaUrl: "/images/instagram-3.jpg",
+    thumbnailUrl: "/images/instagram-3.jpg",
+    permalink: "https://www.instagram.com/avelricindia/",
+    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "fallback-4",
+    caption: "Editorial. Monochrome season. 🌑",
+    mediaType: "IMAGE",
+    mediaProductType: "",
+    mediaUrl: "/images/instagram-4.jpg",
+    thumbnailUrl: "/images/instagram-4.jpg",
+    permalink: "https://www.instagram.com/avelricindia/",
+    timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "fallback-5",
+    caption: "Clean cuts. Premium fabrics. Built to last.",
+    mediaType: "IMAGE",
+    mediaProductType: "",
+    mediaUrl: "/images/instagram-5.jpg",
+    thumbnailUrl: "/images/instagram-5.jpg",
+    permalink: "https://www.instagram.com/avelricindia/",
+    timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "fallback-6",
+    caption: "Follow @avelricindia for the latest drops. 🖤",
+    mediaType: "IMAGE",
+    mediaProductType: "",
+    mediaUrl: "/images/instagram-6.jpg",
+    thumbnailUrl: "/images/instagram-6.jpg",
+    permalink: "https://www.instagram.com/avelricindia/",
+    timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+];
+
+// ─── Helpers ───────────────────────────────────────────────────────────────
 function setCors(res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -47,108 +113,144 @@ function normalizeApiVersion(rawVersion?: string): string {
   return trimmed.startsWith("v") ? trimmed : `v${trimmed}`;
 }
 
-/**
- * Primary flow: Directly fetch from Instagram Graph API (graph.instagram.com)
- * Verified for Instagram Business/User access tokens (e.g. IGAA...)
- */
-async function fetchDirectInstagramGraph(token: string, version: string): Promise<{ data: InstagramMediaItem[]; username?: string } | null> {
-  const prefix = version ? `${version}/` : "";
-  const fields = "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp";
-  const endpoint = `https://graph.instagram.com/${prefix}me/media?fields=${encodeURIComponent(fields)}&limit=12&access_token=${encodeURIComponent(token)}`;
-
-  const res = await fetch(endpoint);
-  const json = await res.json();
-
-  if (!res.ok || json.error || !Array.isArray(json.data)) {
-    // Log sanitized error without exposing token
-    console.warn("[Instagram API] Direct graph.instagram.com fetch failed:", {
-      status: res.status,
-      code: json?.error?.code,
-      type: json?.error?.type,
-      message: json?.error?.message,
-    });
-    return null;
-  }
-
-  const items: InstagramMediaItem[] = json.data.map((item: any) => ({
+function mapRawItems(rawData: any[]): InstagramMediaItem[] {
+  return rawData.map((item: any) => ({
     id: String(item.id),
     caption: item.caption || "",
     mediaType: item.media_type as InstagramMediaType,
     mediaProductType: item.media_product_type || "",
     mediaUrl: item.media_url || item.thumbnail_url || "",
     thumbnailUrl: item.thumbnail_url || item.media_url || "",
-    permalink: item.permalink || "https://instagram.com/avelricindia",
+    permalink: item.permalink || "https://www.instagram.com/avelricindia/",
     timestamp: item.timestamp || new Date().toISOString(),
   }));
-
-  return { data: items, username: "avelricindia" };
 }
 
-/**
- * Fallback flow: Facebook Graph API (/me/accounts -> instagram_business_account.id -> /{id}/media)
- * Used if a Facebook Page / System User access token is configured.
- */
-async function fetchFacebookGraphFallback(token: string, version: string): Promise<{ data: InstagramMediaItem[]; username?: string } | null> {
-  const prefix = version ? `${version}/` : "";
+// ─── Strategy 1: Direct Instagram Graph API ────────────────────────────────
+// Works for long-lived tokens generated via Meta for Developers → Instagram Graph API
+async function fetchDirectInstagramGraph(
+  token: string,
+  version: string
+): Promise<{ data: InstagramMediaItem[]; username?: string } | null> {
+  const fields = "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp";
+  const endpoint = `https://graph.instagram.com/${version}/me/media?fields=${encodeURIComponent(fields)}&limit=12&access_token=${encodeURIComponent(token)}`;
 
-  // 1. Resolve connected Instagram Business Account
-  const accountsUrl = `https://graph.facebook.com/${prefix}me/accounts?fields=id,name,instagram_business_account&access_token=${encodeURIComponent(token)}`;
-  const accRes = await fetch(accountsUrl);
-  const accJson = await accRes.json();
+  try {
+    const res = await fetch(endpoint);
+    const json = await res.json();
 
-  if (!accRes.ok || accJson.error || !Array.isArray(accJson.data)) {
-    console.warn("[Instagram API] Facebook Graph /me/accounts fallback failed:", {
-      status: accRes.status,
-      code: accJson?.error?.code,
-      type: accJson?.error?.type,
-      message: accJson?.error?.message,
-    });
-    return null;
-  }
-
-  let igUserId: string | null = null;
-  for (const page of accJson.data) {
-    if (page.instagram_business_account?.id) {
-      igUserId = page.instagram_business_account.id;
-      break;
+    if (!res.ok || json.error || !Array.isArray(json.data)) {
+      console.warn("[Instagram] ❌ Strategy 1 (direct graph.instagram.com) failed:", {
+        status: res.status,
+        errorCode: json?.error?.code,
+        errorType: json?.error?.type,
+        errorMessage: json?.error?.message,
+        hint: json?.error?.code === 200
+          ? "Token may be from the sunset Basic Display API. Regenerate via Meta for Developers → Instagram Graph API."
+          : "Check token scopes: instagram_basic, pages_show_list, business_management.",
+      });
+      return null;
     }
-  }
 
-  if (!igUserId) {
-    console.warn("[Instagram API] No instagram_business_account found under connected Facebook Pages.");
+    console.info("[Instagram] ✅ Strategy 1 succeeded — fetched", json.data.length, "items via graph.instagram.com");
+    return { data: mapRawItems(json.data), username: "avelricindia" };
+  } catch (err: any) {
+    console.warn("[Instagram] ❌ Strategy 1 network error:", err?.message);
     return null;
   }
-
-  // 2. Fetch media from IG Business Account ID
-  const fields = "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp";
-  const mediaUrl = `https://graph.facebook.com/${prefix}${igUserId}/media?fields=${encodeURIComponent(fields)}&limit=12&access_token=${encodeURIComponent(token)}`;
-  const mediaRes = await fetch(mediaUrl);
-  const mediaJson = await mediaRes.json();
-
-  if (!mediaRes.ok || mediaJson.error || !Array.isArray(mediaJson.data)) {
-    console.warn("[Instagram API] Facebook Graph /{igUserId}/media fetch failed:", {
-      status: mediaRes.status,
-      code: mediaJson?.error?.code,
-      type: mediaJson?.error?.type,
-      message: mediaJson?.error?.message,
-    });
-    return null;
-  }
-
-  const items: InstagramMediaItem[] = mediaJson.data.map((item: any) => ({
-    id: String(item.id),
-    caption: item.caption || "",
-    mediaType: item.media_type as InstagramMediaType,
-    mediaProductType: item.media_product_type || "",
-    mediaUrl: item.media_url || item.thumbnail_url || "",
-    thumbnailUrl: item.thumbnail_url || item.media_url || "",
-    permalink: item.permalink || "https://instagram.com/avelricindia",
-    timestamp: item.timestamp || new Date().toISOString(),
-  }));
-
-  return { data: items, username: "avelricindia" };
 }
 
+// ─── Strategy 2: Facebook Graph API via /me/accounts ──────────────────────
+// Works for Facebook User / Page tokens connected to an IG Business account
+async function fetchViaFacebookPageAccounts(
+  token: string,
+  version: string
+): Promise<{ data: InstagramMediaItem[]; username?: string } | null> {
+  try {
+    const accountsUrl = `https://graph.facebook.com/${version}/me/accounts?fields=id,name,instagram_business_account&access_token=${encodeURIComponent(token)}`;
+    const accRes = await fetch(accountsUrl);
+    const accJson = await accRes.json();
+
+    if (!accRes.ok || accJson.error || !Array.isArray(accJson.data)) {
+      console.warn("[Instagram] ❌ Strategy 2 (FB /me/accounts) failed:", {
+        status: accRes.status,
+        errorCode: accJson?.error?.code,
+        errorMessage: accJson?.error?.message,
+        hint: "This strategy requires a Facebook Page access token or System User token connected to a Facebook Page.",
+      });
+      return null;
+    }
+
+    let igUserId: string | null = null;
+    for (const page of accJson.data) {
+      if (page.instagram_business_account?.id) {
+        igUserId = page.instagram_business_account.id;
+        break;
+      }
+    }
+
+    if (!igUserId) {
+      console.warn("[Instagram] ❌ Strategy 2: No instagram_business_account found under connected Pages.");
+      return null;
+    }
+
+    console.info("[Instagram] ↪️ Strategy 2: Found IG Business Account ID:", igUserId);
+
+    const fields = "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp";
+    const mediaUrl = `https://graph.facebook.com/${version}/${igUserId}/media?fields=${encodeURIComponent(fields)}&limit=12&access_token=${encodeURIComponent(token)}`;
+    const mediaRes = await fetch(mediaUrl);
+    const mediaJson = await mediaRes.json();
+
+    if (!mediaRes.ok || mediaJson.error || !Array.isArray(mediaJson.data)) {
+      console.warn("[Instagram] ❌ Strategy 2: IG Business media fetch failed:", {
+        status: mediaRes.status,
+        errorCode: mediaJson?.error?.code,
+        errorMessage: mediaJson?.error?.message,
+      });
+      return null;
+    }
+
+    console.info("[Instagram] ✅ Strategy 2 succeeded — fetched", mediaJson.data.length, "items via graph.facebook.com");
+    return { data: mapRawItems(mediaJson.data), username: "avelricindia" };
+  } catch (err: any) {
+    console.warn("[Instagram] ❌ Strategy 2 network error:", err?.message);
+    return null;
+  }
+}
+
+// ─── Strategy 3: Direct IG Business Account ID from env ───────────────────
+// Works when INSTAGRAM_BUSINESS_ACCOUNT_ID is set in .env (fastest path)
+async function fetchViaDirectBusinessAccountId(
+  token: string,
+  version: string,
+  igAccountId: string
+): Promise<{ data: InstagramMediaItem[]; username?: string } | null> {
+  try {
+    const fields = "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp";
+    const url = `https://graph.facebook.com/${version}/${igAccountId}/media?fields=${encodeURIComponent(fields)}&limit=12&access_token=${encodeURIComponent(token)}`;
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if (!res.ok || json.error || !Array.isArray(json.data)) {
+      console.warn("[Instagram] ❌ Strategy 3 (direct IG account ID) failed:", {
+        status: res.status,
+        errorCode: json?.error?.code,
+        errorMessage: json?.error?.message,
+        igAccountId,
+        hint: "Ensure INSTAGRAM_BUSINESS_ACCOUNT_ID is the numeric ID of the IG Professional account.",
+      });
+      return null;
+    }
+
+    console.info("[Instagram] ✅ Strategy 3 succeeded — fetched", json.data.length, "items via direct IG Account ID");
+    return { data: mapRawItems(json.data), username: "avelricindia" };
+  } catch (err: any) {
+    console.warn("[Instagram] ❌ Strategy 3 network error:", err?.message);
+    return null;
+  }
+}
+
+// ─── Main handler ──────────────────────────────────────────────────────────
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(res);
 
@@ -158,19 +260,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method !== "GET") {
-    res.status(405).json({
-      success: false,
-      error: "Method not allowed. Only GET is supported.",
-    });
+    res.status(405).json({ success: false, error: "Method not allowed. Only GET is supported." });
     return;
   }
 
-  // Set HTTP caching headers (10 minutes fresh, 5 minutes stale-while-revalidate)
+  // HTTP caching headers (10 min fresh, 5 min SWR)
   res.setHeader("Cache-Control", "public, s-maxage=600, stale-while-revalidate=300");
 
-  // Check in-memory cache first
+  // ── Serve memory cache if fresh ──────────────────────────────────────────
   const now = Date.now();
   if (memoryCache && now - memoryCache.timestamp < CACHE_TTL_MS) {
+    console.info("[Instagram] ⚡ Serving from in-memory cache");
     res.status(200).json({
       success: true,
       data: memoryCache.data,
@@ -182,75 +282,44 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const token = (process.env.INSTAGRAM_ACCESS_TOKEN || "").trim();
   const apiVersion = normalizeApiVersion(process.env.META_GRAPH_API_VERSION);
+  const igAccountId = (process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID || "").trim();
 
+  // ── No token → serve static fallback immediately ─────────────────────────
   if (!token) {
-    console.warn("[Instagram API] INSTAGRAM_ACCESS_TOKEN is not configured in server environment.");
+    console.warn("[Instagram] ⚠️  INSTAGRAM_ACCESS_TOKEN not configured. Serving static brand fallback.");
     res.status(200).json({
-      success: false,
-      data: [],
-      error: "Instagram integration is not configured on the server.",
+      success: true,
+      data: STATIC_FALLBACK,
+      username: "avelricindia",
+      cached: false,
+      fallback: true,
     });
     return;
   }
 
-  try {
-    // 1. Prioritize direct Instagram Graph API flow (native for IG tokens)
-    let result = await fetchDirectInstagramGraph(token, apiVersion);
+  // ── Attempt live Meta API strategies in order ────────────────────────────
+  let result: { data: InstagramMediaItem[]; username?: string } | null = null;
 
-    // 2. Fallback to Facebook Graph flow if direct Instagram Graph didn't succeed
-    if (!result) {
-      result = await fetchFacebookGraphFallback(token, apiVersion);
-    }
+  // Strategy 3 (fastest) — direct IG account ID, if configured in env
+  if (igAccountId) {
+    result = await fetchViaDirectBusinessAccountId(token, apiVersion, igAccountId);
+  }
 
-    if (!result || !result.data) {
-      // If cached data is available (even if expired), serve it during upstream downtime
-      if (memoryCache && memoryCache.data.length > 0) {
-        res.status(200).json({
-          success: true,
-          data: memoryCache.data,
-          username: memoryCache.username || "avelricindia",
-          cached: true,
-          stale: true,
-        });
-        return;
-      }
+  // Strategy 1 — direct Instagram Graph API token
+  if (!result) {
+    result = await fetchDirectInstagramGraph(token, apiVersion);
+  }
 
-      res.status(200).json({
-        success: false,
-        data: [],
-        error: "Unable to retrieve Instagram media from Meta API at this time.",
-      });
-      return;
-    }
+  // Strategy 2 — Facebook Page token → IG Business Account
+  if (!result) {
+    result = await fetchViaFacebookPageAccounts(token, apiVersion);
+  }
 
-    // Sort latest first by timestamp
-    const sorted = result.data.sort((a, b) => {
-      const timeA = new Date(a.timestamp).getTime();
-      const timeB = new Date(b.timestamp).getTime();
-      return timeB - timeA;
-    });
-
-    // Select latest 6 items
-    const latest6 = sorted.slice(0, 6);
-
-    // Save to memory cache
-    memoryCache = {
-      timestamp: now,
-      data: latest6,
-      username: result.username || "avelricindia",
-    };
-
-    res.status(200).json({
-      success: true,
-      data: latest6,
-      username: memoryCache.username,
-      cached: false,
-    });
-  } catch (err: any) {
-    // Ensure no sensitive data is leaked
-    console.error("[Instagram API] Internal handler exception:", err?.message || "Unknown error");
-
+  // ── All strategies failed ────────────────────────────────────────────────
+  if (!result || !result.data || result.data.length === 0) {
+    // Serve stale cache if available
     if (memoryCache && memoryCache.data.length > 0) {
+      console.warn("[Instagram] ⚠️  All strategies failed — serving stale in-memory cache.");
       res.status(200).json({
         success: true,
         data: memoryCache.data,
@@ -261,10 +330,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    res.status(500).json({
-      success: false,
-      data: [],
-      error: "An unexpected error occurred while fetching Instagram media.",
+    // Serve static brand fallback — website is NEVER blank
+    console.warn("[Instagram] ⚠️  All strategies failed and no cache. Serving static brand fallback.");
+    res.status(200).json({
+      success: true,
+      data: STATIC_FALLBACK,
+      username: "avelricindia",
+      cached: false,
+      fallback: true,
     });
+    return;
   }
+
+  // ── Success: sort latest-first, take top 6, cache and serve ─────────────
+  const sorted = result.data.sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+  const latest6 = sorted.slice(0, 6);
+
+  memoryCache = {
+    timestamp: now,
+    data: latest6,
+    username: result.username || "avelricindia",
+  };
+
+  console.info("[Instagram] ✅ Serving", latest6.length, "live items from Meta API.");
+  res.status(200).json({
+    success: true,
+    data: latest6,
+    username: memoryCache.username,
+    cached: false,
+  });
 }
