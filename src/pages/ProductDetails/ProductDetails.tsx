@@ -220,7 +220,7 @@ export default function ProductDetails() {
   const outOfStockSizes = product.outOfStockSizes ?? [];
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12 md:py-16 pb-28 md:pb-16">
       <p className="label text-warmgray">
         <Link to="/" className="hover:text-softblack">Home</Link>{" "}
         /{" "}
@@ -346,7 +346,7 @@ export default function ProductDetails() {
                 </span>
               </div>
               <div
-                className={`grid gap-3 w-full ${
+                className={`grid gap-2 sm:gap-3 w-full ${
                   product.images.length === 2
                     ? "grid-cols-2"
                     : product.images.length === 3
@@ -414,7 +414,7 @@ export default function ProductDetails() {
           <button
             onClick={handleAdd}
             disabled={product.soldOut}
-            className="label mt-9 w-full rounded-full bg-softblack py-5 text-[12px] text-ivory transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+            className="label mt-8 sm:mt-9 w-full rounded-full bg-softblack py-4 sm:py-5 text-[11.5px] sm:text-[12px] text-ivory transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {product.soldOut ? "Sold out" : added ? "Added to cart ✓" : "Add to cart"}
           </button>
@@ -476,18 +476,42 @@ export default function ProductDetails() {
 
       {/* Related products */}
       {related.length > 0 && (
-        <section className="mt-24">
+        <section className="mt-16 sm:mt-24">
           <Reveal>
             <p className="label text-warmgray">You may also like</p>
-            <h2 className="mt-3 font-display text-[26px] md:text-[30px]">From the same shelf</h2>
+            <h2 className="mt-3 font-display text-[24px] sm:text-[26px] md:text-[30px]">From the same shelf</h2>
           </Reveal>
-          <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4">
+          <div className="mt-8 sm:mt-10 grid grid-cols-2 gap-x-3 sm:gap-x-5 gap-y-6 sm:gap-y-10 lg:grid-cols-4">
             {related.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
         </section>
       )}
+
+      {/* Mobile Sticky Add-to-Cart Bar */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-softblack/10 bg-ivory/95 px-4 py-3 backdrop-blur-md md:hidden pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_16px_rgba(26,26,26,0.08)]">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] font-semibold text-softblack">{product.name}</p>
+            <p className="text-[14px] font-bold text-softblack">
+              {formatINR(product.price)}
+              {product.compareAt && (
+                <span className="ml-1.5 text-[11px] font-normal text-warmgray line-through">
+                  {formatINR(product.compareAt)}
+                </span>
+              )}
+            </p>
+          </div>
+          <button
+            onClick={handleAdd}
+            disabled={product.soldOut}
+            className="label shrink-0 rounded-full bg-softblack px-6 py-3 text-[11px] text-ivory transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
+          >
+            {product.soldOut ? "Sold out" : added ? "Added ✓" : "Add to Cart"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

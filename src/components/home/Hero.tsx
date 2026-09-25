@@ -25,7 +25,7 @@ export default function Hero() {
   return (
     /* -mt-[72px] → navbar (sticky, transparent) ke NICHE hero slide
        karta hai. Navbar height change karo to yeh bhi update karna. */
-    <section className="relative -mt-[72px] h-[calc(100svh-36px)] min-h-[600px] overflow-hidden bg-softblack text-ivory">
+    <section className="relative -mt-[72px] h-[calc(100svh-36px)] min-h-[520px] sm:min-h-[600px] overflow-hidden bg-softblack text-ivory">
       {/* background — Mobile-Compatible-HeroImage below md, Laptop-Compatible-HeroImage md+ */}
       <motion.img
         src="/Mobile-Compatible-HeroImage.png"
@@ -45,19 +45,19 @@ export default function Hero() {
       />
 
       {/* overlays — just enough for text legibility, real image stays visible */}
-      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-softblack/70 via-softblack/15 to-transparent" />
+      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-softblack/75 via-softblack/25 to-transparent" />
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-softblack/35 to-transparent" />
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-softblack/35 to-transparent" />
 
       {/* content — hero ke andar vertically centered */}
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1600px] items-center px-6 pt-[72px] md:px-12">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-[1600px] items-center px-4 sm:px-6 pt-[72px] pb-12 sm:pb-0 md:px-12">
         <div className="max-w-2xl">
-          <motion.p {...fadeUp(0.15)} className="text-[11px] font-medium uppercase tracking-[0.34em] text-ivory/80">
+          <motion.p {...fadeUp(0.15)} className="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.28em] sm:tracking-[0.34em] text-ivory/80">
             Premium Curated Fashion
           </motion.p>
 
-          {/* headline — line-by-line mask reveal */}
-          <h1 className="mt-5 font-['Oswald','Archivo_Narrow',sans-serif] text-[clamp(38px,5.4vw,62px)] font-semibold uppercase leading-[1.05] tracking-[-0.01em]">
+          {/* headline — line-by-line mask reveal with responsive clamp */}
+          <h1 className="mt-3.5 sm:mt-5 font-['Oswald','Archivo_Narrow',sans-serif] text-[clamp(30px,7.2vw,62px)] font-semibold uppercase leading-[1.05] tracking-[-0.01em]">
             {HEADLINE_LINES.map((line, i) => (
               <span key={line} className="block overflow-hidden">
                 <motion.span
@@ -72,15 +72,15 @@ export default function Hero() {
             ))}
           </h1>
 
-          <motion.p {...fadeUp(0.85)} className="mt-5 max-w-sm text-[14.5px] leading-relaxed text-ivory/70">
+          <motion.p {...fadeUp(0.85)} className="mt-3.5 sm:mt-5 max-w-sm text-[13.5px] sm:text-[14.5px] leading-relaxed text-ivory/70">
             Handpicked pieces that blend timeless elegance with modern aesthetics —
             quality-checked twice before they reach you.
           </motion.p>
 
-          <motion.div {...fadeUp(1)} className="mt-8 flex flex-wrap items-center gap-7">
+          <motion.div {...fadeUp(1)} className="mt-6 sm:mt-8 flex flex-wrap items-center gap-4 sm:gap-7">
             <Link
               to="/shop"
-              className="group label inline-flex items-center gap-3 rounded-[3px] bg-ivory px-7 py-[15px] text-[11px] text-softblack transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98]"
+              className="group label inline-flex items-center justify-center gap-2.5 rounded-[3px] bg-ivory px-6 py-3.5 sm:px-7 sm:py-[15px] text-[10.5px] sm:text-[11px] text-softblack transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98]"
             >
               Shop Now
               <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -88,7 +88,7 @@ export default function Hero() {
 
             <Link
               to="/new-arrivals"
-              className="group label inline-flex items-center gap-2 border-b border-ivory/40 pb-1.5 text-[11px] text-ivory/90 transition-colors hover:border-ivory hover:text-ivory"
+              className="group label inline-flex items-center gap-2 border-b border-ivory/40 pb-1.5 text-[10.5px] sm:text-[11px] text-ivory/90 transition-colors hover:border-ivory hover:text-ivory"
             >
               Shop New Arrivals
               <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -97,16 +97,16 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* bottom-left: scroll to discover */}
-      <motion.div {...fadeUp(1.25)} className="absolute bottom-6 left-6 z-10 flex items-center gap-4 md:left-12">
-        <span className="relative block h-10 w-px overflow-hidden bg-ivory/20">
+      {/* bottom-left: scroll to discover (hidden on very small viewports to prevent overlap) */}
+      <motion.div {...fadeUp(1.25)} className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-10 hidden xs:flex sm:flex items-center gap-3 sm:gap-4 md:left-12">
+        <span className="relative block h-8 sm:h-10 w-px overflow-hidden bg-ivory/20">
           <motion.span
             className="absolute left-0 top-0 h-1/2 w-full bg-ivory"
             animate={reduce ? {} : { y: ["-100%", "220%"] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
           />
         </span>
-        <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-ivory/70">Scroll to Discover</span>
+        <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-[0.24em] sm:tracking-[0.28em] text-ivory/70">Scroll to Discover</span>
       </motion.div>
     </section>
   );

@@ -144,11 +144,21 @@ export default function ProductCard({ product, eager = false }: { product: Produ
           <div className="absolute inset-x-0 bottom-0 md:translate-y-full md:opacity-0 md:transition-all md:duration-[400ms] md:ease-premium md:group-hover:translate-y-0 md:group-hover:opacity-100">
             {picking ? (
               <div
-                className="border-t border-softblack/10 bg-ivory/95 p-3 shadow-[0_-8px_24px_-12px_rgba(26,26,26,0.18)] backdrop-blur"
+                className="border-t border-softblack/10 bg-ivory/95 p-2.5 sm:p-3 shadow-[0_-8px_24px_-12px_rgba(26,26,26,0.18)] backdrop-blur"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
-                <p className="label px-0.5 text-[9.5px] text-warmgray">Select size</p>
-                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                <div className="flex items-center justify-between px-0.5">
+                  <p className="label text-[9.5px] text-warmgray">Select size</p>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPicking(false); }}
+                    className="text-warmgray hover:text-softblack text-[12px] p-0.5 leading-none"
+                    aria-label="Close size picker"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="mt-1.5 flex flex-wrap gap-1 sm:gap-1.5">
                   {product.sizes.map((s) => {
                     const disabled = outOfStock.has(s);
                     return (
@@ -157,7 +167,7 @@ export default function ProductCard({ product, eager = false }: { product: Produ
                         disabled={disabled}
                         aria-disabled={disabled}
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); doAdd(s); }}
-                        className={`min-w-[36px] rounded-[2px] border px-2 py-1.5 text-[12.5px] transition-colors ${
+                        className={`min-w-[32px] sm:min-w-[36px] rounded-[2px] border px-1.5 sm:px-2 py-1 sm:py-1.5 text-[11.5px] sm:text-[12.5px] transition-colors ${
                           disabled
                             ? "cursor-not-allowed border-softblack/10 text-softblack/30 line-through"
                             : "border-softblack/20 hover:border-softblack hover:bg-softblack hover:text-ivory"
@@ -172,7 +182,7 @@ export default function ProductCard({ product, eager = false }: { product: Produ
             ) : (
               <button
                 onClick={onQuickAdd}
-                className="label w-full border-t border-softblack/10 bg-ivory/95 py-3.5 text-[10.5px] text-softblack backdrop-blur transition-colors hover:bg-softblack hover:text-ivory"
+                className="label w-full border-t border-softblack/10 bg-ivory/95 py-2.5 sm:py-3.5 text-[10px] sm:text-[10.5px] text-softblack backdrop-blur transition-colors hover:bg-softblack hover:text-ivory"
               >
                 Quick Add
               </button>
@@ -181,26 +191,26 @@ export default function ProductCard({ product, eager = false }: { product: Produ
         )}
       </div>
 
-      <div className="pt-4">
+      <div className="pt-3 sm:pt-4">
         <p className="label text-warmgray">{product.category.replace("-", " ")}</p>
-        <h3 className="mt-1 truncate font-display text-[16px] leading-snug tracking-[-0.01em]">
+        <h3 className="mt-1 truncate font-display text-[15px] sm:text-[16px] leading-snug tracking-[-0.01em]">
           <span className="bg-gradient-to-r from-softblack to-softblack bg-[length:0%_1px] bg-left-bottom bg-no-repeat transition-[background-size] duration-[400ms] ease-premium group-hover:bg-[length:100%_1px]">
             {product.name}
           </span>
         </h3>
         {ratingSummary.totalReviews > 0 && (
-          <p className="mt-1.5 flex items-center gap-1.5 text-[12px] text-warmgray">
-            <Stars rating={ratingSummary.averageRating} />
+          <p className="mt-1.5 flex items-center gap-1.5 text-[11.5px] sm:text-[12px] text-warmgray">
+            <Stars rating={ratingSummary.averageRating} className="h-3.5 w-3.5" />
             <span className="font-medium text-softblack">{ratingSummary.averageRating.toFixed(1)}</span>
             <span>({ratingSummary.totalReviews})</span>
           </p>
         )}
-        <p className="mt-1.5 flex items-center gap-1.5 text-[15px] font-medium text-softblack">
+        <p className="mt-1.5 flex items-center gap-1.5 text-[14px] sm:text-[15px] font-medium text-softblack">
           {formatINR(product.price)}
           {product.compareAt && (
             <>
-              <span className="font-normal text-warmgray line-through">{formatINR(product.compareAt)}</span>
-              <span className="text-[13px] font-semibold text-danger">{pct}% off</span>
+              <span className="font-normal text-warmgray line-through text-[12.5px] sm:text-[14px]">{formatINR(product.compareAt)}</span>
+              <span className="text-[12px] sm:text-[13px] font-semibold text-danger">{pct}% off</span>
             </>
           )}
         </p>

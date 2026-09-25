@@ -78,10 +78,10 @@ export default function OrderSuccess() {
   }, [orderNumber]);
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16 sm:py-24 text-center">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-12 sm:py-24 text-center">
       <Reveal>
         {/* Status Emblem */}
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 border border-emerald-200/80 shadow-xs mb-6">
+        <div className="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-emerald-50 border border-emerald-200/80 shadow-xs mb-5 sm:mb-6">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -89,7 +89,7 @@ export default function OrderSuccess() {
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="h-9 w-9 text-emerald-700 animate-fade-in"
+            className="h-8 w-8 sm:h-9 sm:w-9 text-emerald-700 animate-fade-in"
           >
             <polyline points="20 6 9 17 4 12" />
           </svg>
@@ -98,17 +98,17 @@ export default function OrderSuccess() {
         {/* Brand Tagline */}
         <div className="flex items-center justify-center gap-2 mb-2">
           <span className="h-1.5 w-1.5 rounded-full bg-[#B8860B]" />
-          <p className="text-[11.5px] uppercase tracking-[0.25em] font-medium text-neutral-500">
+          <p className="text-[11px] sm:text-[11.5px] uppercase tracking-[0.25em] font-medium text-neutral-500">
             Avelric Atelier · Order Confirmed
           </p>
         </div>
 
         {/* Title */}
-        <h1 className="font-display text-[32px] sm:text-[42px] leading-tight text-neutral-900 font-semibold tracking-tight">
+        <h1 className="font-display text-[26px] sm:text-[42px] leading-tight text-neutral-900 font-semibold tracking-tight">
           Thank You For Your Patronage
         </h1>
 
-        <p className="mt-3 text-[15px] sm:text-[16px] text-neutral-600 font-light max-w-lg mx-auto leading-relaxed">
+        <p className="mt-3 text-[14px] sm:text-[16px] text-neutral-600 font-light max-w-lg mx-auto leading-relaxed">
           Your order has been recorded. Our craftsmen are preparing your garment with the highest care.
         </p>
 

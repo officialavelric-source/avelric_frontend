@@ -15,7 +15,7 @@ export default function TrustLine() {
   return (
     <Link
       to="/reviews"
-      className="group flex items-center justify-center gap-2.5 border-b border-softblack/10 bg-ivory py-3 text-[12px] text-warmgray transition-colors hover:text-softblack"
+      className="group flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 border-b border-softblack/10 bg-ivory px-3 py-2.5 sm:py-3 text-center text-[11px] sm:text-[12px] text-warmgray transition-colors hover:text-softblack"
     >
       {summary.totalReviews > 0 ? (
         <>

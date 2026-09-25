@@ -28,9 +28,20 @@ export default function MiniCart({ open }: { open: boolean }) {
               <div className="px-6 py-8 text-center">
                 <p className="font-display text-[18px]">Your cart is empty</p>
                 <p className="mt-1.5 text-[13px] text-warmgray">Add something from the collection.</p>
-                <Link to="/shop" className="label mt-5 inline-block rounded-full bg-softblack px-6 py-3 text-[10.5px] text-ivory">
-                  Start shopping
-                </Link>
+                <div className="mt-5 flex items-center justify-center gap-2">
+                  <Link
+                    to="/category/shirts"
+                    className="label rounded-full bg-softblack px-4 py-2 text-[10px] text-ivory transition-opacity hover:opacity-85"
+                  >
+                    Shirts →
+                  </Link>
+                  <Link
+                    to="/category/jeans"
+                    className="label rounded-full border border-softblack/20 bg-ivory px-4 py-2 text-[10px] text-softblack transition-colors hover:bg-softblack hover:text-ivory"
+                  >
+                    Jeans →
+                  </Link>
+                </div>
               </div>
             ) : (
               <>

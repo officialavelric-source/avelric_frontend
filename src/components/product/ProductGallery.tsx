@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
-/* Interactive scrollable product gallery with smooth scrolling animation,
-   wheel/swipe support, luxury navigation controls, and bidirectional sync
-   with external view selectors across all clothing and product pages. */
+/* Interactive luxury product gallery with smooth CSS transform transitions,
+   wheel/swipe/drag support, floating luxury controls, and instant bidirectional
+   sync with external view selectors. */
 
 export default function ProductGallery({
   images,
@@ -17,93 +17,36 @@ export default function ProductGallery({
   onSelectImage?: (index: number) => void;
   showThumbnails?: boolean;
 }) {
-  const [internalImg, setInternalImg] = useState(0);
-  const currentIndex = activeImage !== undefined ? activeImage : internalImg;
+  const [internalIndex, setInternalIndex] = useState(0);
+  const currentIndex = activeImage !== undefined ? activeImage : internalIndex;
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const isProgrammaticScrollRef = useRef(false);
-  const programmaticTimeoutRef = useRef<number | null>(null);
   const currentIndexRef = useRef(currentIndex);
+  currentIndexRef.current = currentIndex;
+
+  const containerRef = useRef<HTMLDivElement>(null);
   const wheelCooldownRef = useRef(0);
 
-  // Drag-to-scroll state
-  const isDraggingRef = useRef(false);
-  const startXRef = useRef(0);
-  const startScrollLeftRef = useRef(0);
+  // Drag & Touch Swipe State
   const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
+  const startXRef = useRef(0);
+  const isPointerDownRef = useRef(false);
 
-  // Keep ref synchronized with state
-  useEffect(() => {
-    currentIndexRef.current = currentIndex;
-  }, [currentIndex]);
-
-  const updateIndex = useCallback(
+  const goToIndex = useCallback(
     (index: number) => {
       const clamped = Math.max(0, Math.min(images.length - 1, index));
-      setInternalImg(clamped);
-      currentIndexRef.current = clamped;
+      setInternalIndex(clamped);
       onSelectImage?.(clamped);
     },
     [images.length, onSelectImage]
   );
 
-  const scrollToIndex = useCallback(
-    (index: number) => {
-      const container = scrollContainerRef.current;
-      if (!container) return;
-
-      const clamped = Math.max(0, Math.min(images.length - 1, index));
-      updateIndex(clamped);
-
-      isProgrammaticScrollRef.current = true;
-      const targetLeft = clamped * container.clientWidth;
-      container.scrollTo({
-        left: targetLeft,
-        behavior: "smooth",
-      });
-
-      if (programmaticTimeoutRef.current) {
-        window.clearTimeout(programmaticTimeoutRef.current);
-      }
-      programmaticTimeoutRef.current = window.setTimeout(() => {
-        isProgrammaticScrollRef.current = false;
-      }, 450);
-    },
-    [images.length, updateIndex]
-  );
-
-  // Synchronize when parent changes activeImage (e.g. user clicked right-side thumbnail)
+  // Mouse wheel navigation
   useEffect(() => {
-    if (activeImage !== undefined && activeImage !== currentIndexRef.current) {
-      scrollToIndex(activeImage);
-    }
-  }, [activeImage, scrollToIndex]);
-
-  // Handle manual scroll (trackpad, touch swipe, drag)
-  const handleScroll = () => {
-    const container = scrollContainerRef.current;
-    if (!container || isProgrammaticScrollRef.current) return;
-
-    const width = container.clientWidth;
-    if (width <= 0) return;
-
-    const nextIndex = Math.round(container.scrollLeft / width);
-    if (
-      nextIndex !== currentIndexRef.current &&
-      nextIndex >= 0 &&
-      nextIndex < images.length
-    ) {
-      updateIndex(nextIndex);
-    }
-  };
-
-  // Mouse wheel scrolling over the gallery with smooth transitions and page-boundary pass-through
-  useEffect(() => {
-    const container = scrollContainerRef.current;
+    const container = containerRef.current;
     if (!container || images.length <= 1) return;
 
     const onWheel = (e: WheelEvent) => {
-      // If predominantly horizontal, let native horizontal scroll operate
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
 
       const now = Date.now();
@@ -113,91 +56,123 @@ export default function ProductGallery({
       const canScrollDown = currentIndexRef.current < images.length - 1;
       const canScrollUp = currentIndexRef.current > 0;
 
-      // Only intercept if we have a valid next/prev view to navigate to
       if ((isScrollingDown && canScrollDown) || (isScrollingUp && canScrollUp)) {
         e.preventDefault();
-
-        // Throttle wheel ticks so user flips 1 image at a time
         if (now - wheelCooldownRef.current < 380) return;
         wheelCooldownRef.current = now;
 
         const target = isScrollingDown
           ? currentIndexRef.current + 1
           : currentIndexRef.current - 1;
-        scrollToIndex(target);
+        goToIndex(target);
       }
-      // If at boundary (first image scrolling up, or last image scrolling down),
-      // allow default behavior so user can scroll up/down the page naturally!
     };
 
     container.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       container.removeEventListener("wheel", onWheel);
     };
-  }, [images.length, scrollToIndex]);
+  }, [images.length, goToIndex]);
 
-  // Mouse drag-to-scroll handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!scrollContainerRef.current) return;
-    isDraggingRef.current = true;
+  // Touch swipe handling
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (images.length <= 1) return;
+    isPointerDownRef.current = true;
+    startXRef.current = e.touches[0].clientX;
     setIsDragging(true);
-    startXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
-    startScrollLeftRef.current = scrollContainerRef.current.scrollLeft;
+    setDragOffset(0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isPointerDownRef.current) return;
+    const delta = e.touches[0].clientX - startXRef.current;
+    // Add dampening at edges
+    const atLeftEdge = currentIndexRef.current === 0 && delta > 0;
+    const atRightEdge = currentIndexRef.current === images.length - 1 && delta < 0;
+    setDragOffset(atLeftEdge || atRightEdge ? delta * 0.3 : delta);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isPointerDownRef.current) return;
+    isPointerDownRef.current = false;
+    setIsDragging(false);
+
+    if (dragOffset < -50 && currentIndexRef.current < images.length - 1) {
+      goToIndex(currentIndexRef.current + 1);
+    } else if (dragOffset > 50 && currentIndexRef.current > 0) {
+      goToIndex(currentIndexRef.current - 1);
+    }
+    setDragOffset(0);
+  };
+
+  // Mouse drag handling
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (images.length <= 1) return;
+    isPointerDownRef.current = true;
+    startXRef.current = e.clientX;
+    setIsDragging(true);
+    setDragOffset(0);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDraggingRef.current || !scrollContainerRef.current) return;
+    if (!isPointerDownRef.current) return;
     e.preventDefault();
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startXRef.current) * 1.3;
-    scrollContainerRef.current.scrollLeft = startScrollLeftRef.current - walk;
+    const delta = e.clientX - startXRef.current;
+    const atLeftEdge = currentIndexRef.current === 0 && delta > 0;
+    const atRightEdge = currentIndexRef.current === images.length - 1 && delta < 0;
+    setDragOffset(atLeftEdge || atRightEdge ? delta * 0.3 : delta);
   };
 
   const handleMouseUpOrLeave = () => {
-    if (!isDraggingRef.current || !scrollContainerRef.current) return;
-    isDraggingRef.current = false;
+    if (!isPointerDownRef.current) return;
+    isPointerDownRef.current = false;
     setIsDragging(false);
 
-    // Snap to closest image
-    const container = scrollContainerRef.current;
-    const width = container.clientWidth;
-    if (width > 0) {
-      const targetIndex = Math.round(container.scrollLeft / width);
-      scrollToIndex(targetIndex);
+    if (dragOffset < -50 && currentIndexRef.current < images.length - 1) {
+      goToIndex(currentIndexRef.current + 1);
+    } else if (dragOffset > 50 && currentIndexRef.current > 0) {
+      goToIndex(currentIndexRef.current - 1);
     }
+    setDragOffset(0);
   };
 
   return (
     <div className="w-full">
       {/* Main Image Gallery Viewport */}
-      <div className="group relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-softblack/10 bg-beige select-none shadow-sm">
-        {/* Scrollable Container */}
+      <div
+        ref={containerRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUpOrLeave}
+        onMouseLeave={handleMouseUpOrLeave}
+        className={`group relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-softblack/10 bg-beige select-none shadow-sm ${
+          isDragging ? "cursor-grabbing" : "cursor-grab"
+        }`}
+      >
+        {/* Animated Slide Track */}
         <div
-          ref={scrollContainerRef}
-          onScroll={handleScroll}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUpOrLeave}
-          onMouseLeave={handleMouseUpOrLeave}
-          className={`flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar ${
-            isDragging ? "cursor-grabbing" : "cursor-grab"
-          }`}
+          className="flex h-full w-full will-change-transform"
           style={{
-            WebkitOverflowScrolling: "touch",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
+            transform: isDragging
+              ? `translateX(calc(-${currentIndex * 100}% + ${dragOffset}px))`
+              : `translateX(-${currentIndex * 100}%)`,
+            transition: isDragging ? "none" : "transform 450ms cubic-bezier(0.22, 1, 0.36, 1)",
           }}
         >
           {images.map((src, i) => (
             <div
               key={src + i}
-              className="relative h-full w-full min-w-full shrink-0 snap-center overflow-hidden bg-beige"
+              className="relative h-full w-full min-w-full shrink-0 overflow-hidden bg-beige"
             >
               <img
                 src={src}
                 alt={`${name}, view ${i + 1}`}
                 draggable={false}
-                className="h-full w-full object-cover object-center transition-transform duration-500 will-change-transform"
+                className="h-full w-full object-cover object-center pointer-events-none select-none"
                 loading={i === 0 ? "eager" : "lazy"}
               />
             </div>
@@ -213,7 +188,7 @@ export default function ProductGallery({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  scrollToIndex(currentIndex - 1);
+                  goToIndex(currentIndex - 1);
                 }}
                 aria-label="Previous view"
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-ivory/85 text-softblack shadow-md backdrop-blur-md transition-all duration-200 hover:bg-ivory hover:scale-110 active:scale-95 border border-softblack/10 opacity-80 group-hover:opacity-100"
@@ -236,7 +211,7 @@ export default function ProductGallery({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  scrollToIndex(currentIndex + 1);
+                  goToIndex(currentIndex + 1);
                 }}
                 aria-label="Next view"
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-ivory/85 text-softblack shadow-md backdrop-blur-md transition-all duration-200 hover:bg-ivory hover:scale-110 active:scale-95 border border-softblack/10 opacity-80 group-hover:opacity-100"
@@ -254,7 +229,7 @@ export default function ProductGallery({
             )}
 
             {/* Luxury Bottom Floating Pill (View Counter & Interactive Indicator Dots) */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 rounded-full bg-softblack/60 px-3.5 py-1.5 backdrop-blur-md border border-ivory/15 shadow-lg">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 rounded-full bg-softblack/65 px-3.5 py-1.5 backdrop-blur-md border border-ivory/15 shadow-lg pointer-events-auto">
               <span className="text-[11px] font-medium tracking-widest text-ivory/90 font-mono">
                 {String(currentIndex + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
               </span>
@@ -266,7 +241,7 @@ export default function ProductGallery({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      scrollToIndex(i);
+                      goToIndex(i);
                     }}
                     aria-label={`Go to view ${i + 1}`}
                     className={`transition-all duration-300 rounded-full ${
@@ -289,7 +264,7 @@ export default function ProductGallery({
             <button
               key={src}
               type="button"
-              onClick={() => scrollToIndex(i)}
+              onClick={() => goToIndex(i)}
               aria-label={`Show view ${i + 1}`}
               aria-pressed={currentIndex === i}
               className={`w-20 overflow-hidden rounded-2xl border-2 transition-all duration-200 ${

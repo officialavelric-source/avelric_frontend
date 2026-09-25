@@ -4,7 +4,7 @@ import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 import { FREE_SHIPPING_THRESHOLD, STANDARD_SHIPPING } from "../../constants/shipping";
 import { Reveal } from "../../components/common";
-import { CartItemRow, FreeShippingBar, MobileCheckoutBar, OrderSummary, SavedItemRow } from "../../components/cart";
+import { CartItemRow, EmptyCartView, FreeShippingBar, MobileCheckoutBar, OrderSummary, SavedItemRow } from "../../components/cart";
 import { analyticsService } from "../../services/analytics";
 
 /**
@@ -65,35 +65,25 @@ export default function Cart() {
     navigate("/checkout");
   };
 
-  if (items.length === 0 && saved.length === 0)
-    return (
-      <div className="mx-auto max-w-3xl px-6 py-32 text-center">
-        <svg viewBox="0 0 24 24" className="mx-auto h-12 w-12 stroke-warmgray" fill="none" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M6 8h12l-1 12H7L6 8Zm3 0V6a3 3 0 0 1 6 0v2" />
-        </svg>
-        <h1 className="mt-6 font-display text-[32px]">Your cart is empty</h1>
-        <p className="mt-3 text-warmgray">The weekly finds are the best place to start.</p>
-        <Link to="/shop" className="label mt-8 inline-block rounded-full bg-softblack px-8 py-4 text-[12px] text-ivory">
-          Explore the collection
-        </Link>
-      </div>
-    );
+  if (items.length === 0 && saved.length === 0) {
+    return <EmptyCartView />;
+  }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 pb-28 md:px-6 md:py-16 lg:pb-16">
+    <div className="mx-auto max-w-7xl px-3.5 sm:px-6 py-6 sm:py-10 pb-32 lg:pb-16">
       <Reveal>
-        <h1 className="font-display text-[32px] md:text-[40px]">
-          Cart {count > 0 && <span className="text-[20px] text-warmgray md:text-[24px]">({count} item{count === 1 ? "" : "s"})</span>}
+        <h1 className="font-display text-[26px] sm:text-[32px] md:text-[40px]">
+          Cart {count > 0 && <span className="text-[18px] sm:text-[20px] text-warmgray md:text-[24px]">({count} item{count === 1 ? "" : "s"})</span>}
         </h1>
       </Reveal>
 
-      <div className="mt-8 grid items-start gap-10 lg:grid-cols-[1.7fr_1fr]">
+      <div className="mt-6 sm:mt-8 grid items-start gap-6 sm:gap-10 lg:grid-cols-[1.7fr_1fr]">
         <div>
           {/* Free shipping progress */}
           {items.length > 0 && <FreeShippingBar subtotal={subtotal} shipping={shipping} />}
 
           {/* Item rows — rendered from CartItem with front images and Shopify sync */}
-          <ul className="mt-5 divide-y divide-softblack/10 rounded-2xl border border-softblack/10 bg-ivory px-5 shadow-[0_2px_16px_-6px_rgba(26,26,26,0.08)]">
+          <ul className="mt-4 sm:mt-5 divide-y divide-softblack/10 rounded-2xl border border-softblack/10 bg-ivory px-3.5 sm:px-5 shadow-[0_2px_16px_-6px_rgba(26,26,26,0.08)]">
             {items.map((item) => (
               <CartItemRow
                 key={item.productId + item.size}

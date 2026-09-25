@@ -19,8 +19,8 @@ export default function Categories({ allProducts: initialProducts }: { allProduc
   }, [initialProducts]);
 
   return (
-    <section className="bg-beige py-20 md:py-24">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="bg-beige py-14 sm:py-20 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading eyebrow="Shop by category" title="Two categories. Nothing that doesn't belong." />
           <Reveal>
@@ -29,7 +29,7 @@ export default function Categories({ allProducts: initialProducts }: { allProduc
             </Link>
           </Reveal>
         </div>
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 max-w-5xl mx-auto">
+        <div className="mt-8 sm:mt-12 grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 max-w-5xl mx-auto">
           {CATEGORIES.map((c, i) => {
             const count = products.filter((p) => p.category === c.slug).length;
             return (
@@ -44,11 +44,11 @@ export default function Categories({ allProducts: initialProducts }: { allProduc
                     />
                   </div>
                   <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-softblack/85 via-softblack/25 to-transparent" />
-                  <span className="absolute inset-x-0 bottom-0 p-6 text-ivory md:p-8">
+                  <span className="absolute inset-x-0 bottom-0 p-5 sm:p-6 md:p-8 text-ivory">
                     <span className="label block text-[10px] uppercase tracking-wider text-ivory/75">
                       {count > 0 ? `${count} piece${count === 1 ? "" : "s"}` : "Curated pieces"}
                     </span>
-                    <span className="mt-1.5 flex items-center justify-between font-display text-[24px] md:text-[28px]">
+                    <span className="mt-1.5 flex items-center justify-between font-display text-[22px] sm:text-[24px] md:text-[28px]">
                       {c.name}
                       <span aria-hidden="true" className="text-[20px] transition-transform duration-300 group-hover:translate-x-1.5">→</span>
                     </span>

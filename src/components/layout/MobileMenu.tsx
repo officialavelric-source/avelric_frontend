@@ -55,7 +55,7 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
           {/* Drawer */}
           <motion.nav
             aria-label="Mobile Navigation"
-            className="relative z-10 flex h-full w-[85%] max-w-[340px] flex-col overflow-y-auto bg-softblack p-6 text-ivory shadow-2xl sm:p-8"
+            className="relative z-10 flex h-full w-[85%] max-w-[340px] flex-col overflow-y-auto bg-softblack p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] text-ivory shadow-2xl sm:p-8"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
@@ -76,7 +76,7 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
 
             {/* Navigation Links */}
             <div className="mt-8 flex flex-col gap-5 sm:gap-6">
-              {[{ label: "Home", to: "/" }, ...NAV_LINKS, { label: "FAQ", to: "/faq" }].map((n, i) => {
+              {[...NAV_LINKS, { label: "FAQ", to: "/faq" }].map((n, i) => {
                 const isActive = pathname === n.to;
                 return (
                   <motion.div

@@ -268,7 +268,7 @@ export default function About() {
 
             {/* The AVELRIC Standard */}
             <Reveal delay={0.1}>
-              <div className="flex h-full flex-col justify-between rounded-3xl border-2 border-softblack bg-softblack p-7 sm:p-9 text-ivory shadow-2xl scale-[1.02]">
+              <div className="flex h-full flex-col justify-between rounded-3xl border-2 border-softblack bg-softblack p-6 sm:p-9 text-ivory shadow-2xl md:scale-[1.02]">
                 <div>
                   <div className="flex items-center justify-between">
                     <span className="rounded-full bg-gold/20 border border-gold/40 px-3 py-1 text-[9.5px] font-semibold uppercase tracking-wider text-gold">
@@ -471,28 +471,6 @@ export default function About() {
             <span className="font-semibold text-softblack">Same-Day Local Delivery:</span> Chandigarh, Mohali, Panchkula &amp; Kharar. All other regions in India delivered within 5–7 business days.
           </div>
 
-          {/* Final Shop CTA */}
-          <div className="mt-14 text-center">
-            <Reveal>
-              <h3 className="font-display text-[22px] uppercase text-softblack sm:text-[26px]">
-                Ready to Upgrade Your Daily Rotation?
-              </h3>
-              <div className="mt-5 flex flex-wrap items-center justify-center gap-4">
-                <Link
-                  to="/shop"
-                  className="rounded-full bg-softblack px-8 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-ivory transition-all hover:bg-gold hover:text-white shadow-md active:scale-95"
-                >
-                  Shop Curated Pieces →
-                </Link>
-                <Link
-                  to="/category/shirts"
-                  className="rounded-full border border-softblack/20 bg-ivory px-7 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-softblack transition-all hover:border-softblack hover:bg-beige"
-                >
-                  View Shirts Edit
-                </Link>
-              </div>
-            </Reveal>
-          </div>
         </div>
       </section>
     </div>

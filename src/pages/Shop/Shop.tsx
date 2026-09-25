@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import { PosterBanner, Reveal } from "../../components/common";
 import { ProductCard, ProductCardSkeleton } from "../../components/product";
 import { ShopFilterBar } from "../../components/forms";
@@ -10,6 +10,8 @@ import type { AppProduct } from "../../types/app";
 
 export default function Shop({ preset }: { preset?: "new" }) {
   const { slug } = useParams<{ slug?: string }>();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   // Shopify product data — null = loading, [] = empty, array = loaded
   const [shopifyProducts, setShopifyProducts] = useState<AppProduct[] | null>(null);
@@ -75,29 +77,30 @@ export default function Shop({ preset }: { preset?: "new" }) {
 
   const crumb = preset === "new" ? "New Arrivals" : category ? category.name : "Shop";
 
+  const isSearchRoute = location.pathname === "/search";
+  const hasSearchParam = searchParams.get("search") === "true" || searchParams.get("focus") === "search";
+  const isSearchMode = Boolean(isSearchRoute || hasSearchParam || q.trim());
+  const showHeader = !category && isSearchMode;
+
   return (
     <div>
-      <ShopFilterBar filters={filters} showCategoryPill={!category} />
+      {showHeader && <ShopFilterBar filters={filters} showCategoryPill={!category} />}
 
-      <div className="mx-auto max-w-7xl px-4 py-10 md:px-6 md:py-14">
-        <Reveal>
-          <p className="label text-warmgray">
-            <Link to="/" className="hover:text-softblack">Home</Link> / {crumb}
-          </p>
-          <h1 className="mt-3 font-display text-[30px] md:text-[38px]">{title}</h1>
-          {!loading && !loadError && (
-            <p className="mt-2.5 max-w-xl text-[15px] text-warmgray">
-              {items.length} piece{items.length === 1 ? "" : "s"}
-              {items.length > 0 && " — every one reviewed in person before listing."}
-            </p>
-          )}
-        </Reveal>
-
-
+      <div className={`mx-auto max-w-7xl px-3 sm:px-4 ${showHeader ? "py-6 sm:py-8 md:py-10" : "py-6 sm:py-8 md:py-12"}`}>
+        {showHeader && q.trim() && (
+          <Reveal>
+            <h1 className="mt-2 font-display text-[22px] sm:text-[26px] md:text-[32px]">{title}</h1>
+            {!loading && !loadError && (
+              <p className="mt-1.5 max-w-xl text-[13.5px] sm:text-[14px] text-warmgray">
+                {items.length} result{items.length === 1 ? "" : "s"} found
+              </p>
+            )}
+          </Reveal>
+        )}
 
         {/* Loading skeleton */}
         {loading && (
-          <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+          <div className={`${showHeader ? "mt-8 sm:mt-10" : "mt-2"} grid grid-cols-2 gap-x-3 sm:gap-x-5 gap-y-6 sm:gap-y-10 md:grid-cols-3 lg:grid-cols-4`}>
             {Array.from({ length: 8 }).map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
@@ -106,7 +109,7 @@ export default function Shop({ preset }: { preset?: "new" }) {
 
         {/* API error state */}
         {!loading && loadError && (
-          <div className="mt-10 rounded-2xl border border-red-100 bg-red-50 px-8 py-20 text-center">
+          <div className={`${showHeader ? "mt-10" : "mt-2"} rounded-2xl border border-red-100 bg-red-50 px-8 py-20 text-center`}>
             <p className="font-display text-2xl text-softblack">Something went wrong</p>
             <p className="mt-3 text-[14px] text-warmgray">{loadError}</p>
             <button
@@ -120,7 +123,7 @@ export default function Shop({ preset }: { preset?: "new" }) {
 
         {/* Shopify returned 0 products (store has no products yet) */}
         {!loading && !loadError && shopifyProducts?.length === 0 && !q && activeCount(filters) === 0 && (
-          <div className="mt-10 rounded-2xl bg-beige px-8 py-20 text-center">
+          <div className={`${showHeader ? "mt-10" : "mt-2"} rounded-2xl bg-beige px-8 py-20 text-center`}>
             <p className="font-display text-2xl">No products available</p>
             <p className="mt-3 text-warmgray">
               We're preparing the collection. Check back soon.
@@ -130,7 +133,7 @@ export default function Shop({ preset }: { preset?: "new" }) {
 
         {/* Filter/search returned 0 results (products exist but nothing matches) */}
         {!loading && !loadError && items.length === 0 && (shopifyProducts?.length ?? 0) > 0 && (
-          <div className="mt-10 rounded-2xl bg-beige px-8 py-20 text-center">
+          <div className={`${showHeader ? "mt-10" : "mt-2"} rounded-2xl bg-beige px-8 py-20 text-center`}>
             <p className="font-display text-2xl">
               {q ? `Nothing matches "${q.trim()}"` : "Nothing matches these filters"}
             </p>
@@ -145,7 +148,7 @@ export default function Shop({ preset }: { preset?: "new" }) {
 
         {/* Product grid — only rendered when we have actual Shopify products */}
         {!loading && !loadError && items.length > 0 && (
-          <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+          <div className={`${showHeader ? "mt-8 sm:mt-10" : "mt-2"} grid grid-cols-2 gap-x-3 sm:gap-x-5 gap-y-6 sm:gap-y-10 md:grid-cols-3 lg:grid-cols-4`}>
             {items.map((p, i) => (
               <Reveal key={p.id} delay={Math.min(i, 5) * 0.05}>
                 <ProductCard product={p} eager={i < 4} />

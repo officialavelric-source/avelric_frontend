@@ -104,20 +104,20 @@ export default function UploadClothPhotoModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="upload-photo-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-softblack/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-softblack/50 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleClose();
       }}
     >
       <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-softblack/10 bg-ivory shadow-2xl animate-fade-in max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-softblack/10 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-softblack/10 px-4 sm:px-6 py-3.5 sm:py-4">
           <div>
-            <h2 id="upload-photo-title" className="font-display text-[22px] uppercase tracking-wide text-softblack font-semibold">
+            <h2 id="upload-photo-title" className="font-display text-[19px] sm:text-[22px] uppercase tracking-wide text-softblack font-semibold">
               Attach Photos of Your Product
             </h2>
             {productTitle && (
-              <p className="mt-0.5 truncate text-[12px] text-warmgray max-w-[340px]">
+              <p className="mt-0.5 truncate text-[11.5px] sm:text-[12px] text-warmgray max-w-[280px] sm:max-w-[340px]">
                 {productTitle}
               </p>
             )}
@@ -125,7 +125,7 @@ export default function UploadClothPhotoModal({
           <button
             onClick={handleClose}
             aria-label="Close"
-            className="grid h-8 w-8 place-items-center rounded-full text-warmgray hover:bg-beige hover:text-softblack transition-colors"
+            className="grid h-8 w-8 place-items-center rounded-full text-warmgray hover:bg-beige hover:text-softblack transition-colors shrink-0"
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6L6 18M6 6l12 12" />
@@ -134,7 +134,7 @@ export default function UploadClothPhotoModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-4 flex-1">
+        <form onSubmit={handleSubmit} className="overflow-y-auto p-4 sm:p-6 space-y-4 flex-1">
           {error && (
             <div className="rounded-lg bg-red-50 p-3 text-[13px] text-red-600 border border-red-200">
               {error}
@@ -240,18 +240,18 @@ export default function UploadClothPhotoModal({
           </div>
 
           {/* Actions */}
-          <div className="pt-3 flex items-center justify-end gap-3 border-t border-softblack/10">
+          <div className="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 border-t border-softblack/10">
             <button
               type="button"
               onClick={handleClose}
-              className="label rounded-full border border-softblack/20 px-5 py-2.5 text-[11px] uppercase tracking-wider text-softblack hover:border-softblack transition-colors"
+              className="label rounded-full border border-softblack/20 px-5 py-2.5 text-[11px] uppercase tracking-wider text-softblack hover:border-softblack transition-colors text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !photoUrl}
-              className="label rounded-full bg-softblack hover:bg-gold hover:text-softblack px-7 py-3 text-[11px] uppercase tracking-wider text-ivory transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.98] disabled:opacity-50"
+              className="label rounded-full bg-softblack hover:bg-gold hover:text-softblack px-7 py-3 text-[11px] uppercase tracking-wider text-ivory transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.98] disabled:opacity-50 text-center"
             >
               {loading ? "Attaching…" : "Attach photo"}
             </button>

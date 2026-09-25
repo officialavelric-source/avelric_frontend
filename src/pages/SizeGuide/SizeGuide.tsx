@@ -8,21 +8,21 @@ const TABLES = [
 
 export default function SizeGuide() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16 md:py-24">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16 md:py-24">
       <SectionHeading
         eyebrow="Size guide"
         title="We measure garments, not bodies"
         sub="Lay a similar garment you own flat, measure it, and compare with the tables below. All figures in inches."
       />
       {TABLES.map((t) => (
-        <Reveal key={t.h} className="mt-12">
-          <h2 className="font-display text-[22px]">{t.h}</h2>
-          <div className="mt-5 overflow-x-auto rounded-2xl border border-softblack/10">
-            <table className="w-full text-left text-[14.5px]">
+        <Reveal key={t.h} className="mt-10 sm:mt-12">
+          <h2 className="font-display text-[20px] sm:text-[22px]">{t.h}</h2>
+          <div className="mt-4 sm:mt-5 overflow-x-auto rounded-2xl border border-softblack/10 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <table className="w-full min-w-[300px] text-left text-[13.5px] sm:text-[14.5px]">
               <thead>
                 <tr className="bg-beige">
                   {t.cols.map((c) => (
-                    <th key={c} className="label px-5 py-4 text-[10.5px] font-medium text-warmgray">{c}</th>
+                    <th key={c} className="label px-3.5 sm:px-5 py-3 sm:py-4 text-[10px] sm:text-[10.5px] font-medium text-warmgray">{c}</th>
                   ))}
                 </tr>
               </thead>
@@ -30,7 +30,7 @@ export default function SizeGuide() {
                 {t.rows.map((r) => (
                   <tr key={r[0]}>
                     {r.map((cell, ci) => (
-                      <td key={ci} className={`px-5 py-3.5 ${ci === 0 ? "font-medium" : "text-softblack/80"}`}>{cell}</td>
+                      <td key={ci} className={`px-3.5 sm:px-5 py-3 sm:py-3.5 ${ci === 0 ? "font-medium" : "text-softblack/80"}`}>{cell}</td>
                     ))}
                   </tr>
                 ))}
@@ -39,7 +39,7 @@ export default function SizeGuide() {
           </div>
         </Reveal>
       ))}
-      <p className="mt-10 text-[14.5px] leading-relaxed text-warmgray">
+      <p className="mt-8 sm:mt-10 text-[13.5px] sm:text-[14.5px] leading-relaxed text-warmgray break-words">
         AVELRIC shirts are cut exclusively in sizes M, L, and XL. Jeans are cut in sizes 30, 32, and 34. Between two sizes? For relaxed fits, take the smaller one; for regular fits, the larger. Or email us at officialavelric@gmail.com with your measurements — we'll help you pick the perfect fit.
       </p>
     </div>

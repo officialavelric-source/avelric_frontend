@@ -45,13 +45,10 @@ export default function ShopFilterBar({
 
   /* navbar search icon se aane par input autofocus */
   useEffect(() => {
-    if (params.get("focus") === "search") {
+    if (params.get("focus") === "search" || params.get("search") === "true") {
       searchRef.current?.focus();
-      params.delete("focus");
-      setParams(params, { replace: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [params]);
 
   /* Hide when scrolling down, show when scrolling up */
   useEffect(() => {
@@ -112,9 +109,9 @@ export default function ShopFilterBar({
           transform: visible ? "translateY(0)" : "translateY(calc(-100% - 72px))",
         }}
       >
-        <div className="mx-auto max-w-7xl px-4 py-3 md:px-6">
+        <div className="mx-auto max-w-7xl px-3 py-2.5 sm:px-4 sm:py-3 md:px-6">
           {/* search row */}
-          <div className="flex items-center gap-2.5 rounded-full border border-softblack/20 bg-beige/50 px-4 py-2.5 transition-colors focus-within:border-softblack">
+          <div className="flex items-center gap-2 rounded-full border border-softblack/20 bg-beige/50 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-colors focus-within:border-softblack">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" className="h-4 w-4 shrink-0 text-warmgray" aria-hidden="true">
               <path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm10 2-4.35-4.35" />
             </svg>
@@ -122,20 +119,20 @@ export default function ShopFilterBar({
               ref={searchRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search — oxford shirt, raw denim, harrington…"
+              placeholder="Search — oxford shirt, denim, jacket…"
               aria-label="Search products"
-              className="w-full bg-transparent text-[14px] placeholder:text-warmgray/70 focus:outline-none"
+              className="w-full bg-transparent text-[13px] sm:text-[14px] placeholder:text-warmgray/70 focus:outline-none"
             />
             {q && (
-              <button onClick={() => setQ("")} aria-label="Clear search" className="shrink-0 text-warmgray hover:text-softblack">
+              <button onClick={() => setQ("")} aria-label="Clear search" className="shrink-0 p-1 text-warmgray hover:text-softblack">
                 <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 6l12 12M18 6L6 18" /></svg>
               </button>
             )}
           </div>
 
           {/* category quick-pills + filter trigger */}
-          <div className="mt-3 flex items-center gap-2">
-            <div className="flex flex-1 items-center gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="mt-2.5 sm:mt-3 flex items-center gap-2">
+            <div className="flex flex-1 items-center gap-1.5 sm:gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-3 px-3 sm:mx-0 sm:px-0">
               {showCategoryPill && (
                 <>
                   <button

@@ -36,7 +36,7 @@ export default function ProductRow({
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16 md:py-24">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <SectionHeading eyebrow={eyebrow} title={title} sub={sub} />
         <Reveal className="flex items-center gap-4">
@@ -94,7 +94,7 @@ export default function ProductRow({
 
       {/* Mobile phone responsiveness: 2 rows of 2 (4 items total) with More button linking directly to component */}
       <div className="block md:hidden mt-8">
-        <div className="grid grid-cols-2 gap-x-3.5 gap-y-6">
+        <div className="grid grid-cols-2 gap-x-3 sm:gap-x-3.5 gap-y-5 sm:gap-y-6">
           {items.slice(0, 4).map((p, i) => (
             <Reveal key={p.id} delay={Math.min(i, 3) * 0.05}>
               <ProductCard product={p as AppProduct} />

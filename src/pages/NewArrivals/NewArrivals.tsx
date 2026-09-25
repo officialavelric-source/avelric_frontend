@@ -46,13 +46,13 @@ export default function NewArrivals() {
           className="absolute inset-0 h-full w-full object-cover opacity-35"
         />
         <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-softblack/80 via-softblack/40 to-transparent" />
-        <div className="relative mx-auto max-w-7xl px-6 py-16 text-ivory md:py-24">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16 text-ivory md:py-24">
           <Reveal>
             <p className="label text-ivory/60">
               <Link to="/" className="hover:text-ivory">Home</Link> / New Arrivals
             </p>
-            <h1 className="mt-3 font-display text-[32px] md:text-[44px]">Just In</h1>
-            <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ivory/75">
+            <h1 className="mt-2 sm:mt-3 font-display text-[28px] sm:text-[32px] md:text-[44px]">Just In</h1>
+            <p className="mt-3 sm:mt-4 max-w-xl text-[14px] sm:text-[15px] leading-relaxed text-ivory/75">
               Every Friday we list the pieces that survived that week's market visits. Latest first —
               small batches, so the newest drop is also the fullest size run.
             </p>
@@ -60,29 +60,29 @@ export default function NewArrivals() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
+      <div className="mx-auto max-w-7xl px-3.5 sm:px-6 py-8 sm:py-12 md:py-16">
 
         {/* Loading skeleton */}
         {loading && (
-          <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-3 sm:gap-x-5 gap-y-6 sm:gap-y-12 md:grid-cols-3 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
           </div>
         )}
 
         {/* Error state */}
         {!loading && loadError && (
-          <div className="rounded-2xl border border-red-100 bg-red-50 px-8 py-20 text-center">
-            <p className="font-display text-2xl text-softblack">Something went wrong</p>
-            <p className="mt-3 text-[14px] text-warmgray">{loadError}</p>
+          <div className="rounded-2xl border border-red-100 bg-red-50 px-6 py-14 text-center">
+            <p className="font-display text-xl sm:text-2xl text-softblack">Something went wrong</p>
+            <p className="mt-2 text-[13px] sm:text-[14px] text-warmgray">{loadError}</p>
           </div>
         )}
 
         {/* Empty state — store has no products */}
         {!loading && !loadError && products?.length === 0 && (
-          <div className="rounded-2xl bg-beige px-8 py-20 text-center">
-            <p className="font-display text-2xl">No new arrivals yet</p>
-            <p className="mt-3 text-warmgray">Check back Friday for the latest additions.</p>
-            <Link to="/shop" className="label mt-8 inline-block rounded-full bg-softblack px-7 py-3.5 text-[11px] text-ivory">
+          <div className="rounded-2xl bg-beige px-6 py-14 text-center">
+            <p className="font-display text-xl sm:text-2xl">No new arrivals yet</p>
+            <p className="mt-2 text-[13px] sm:text-[14px] text-warmgray">Check back Friday for the latest additions.</p>
+            <Link to="/shop" className="label mt-6 sm:mt-8 inline-block rounded-full bg-softblack px-7 py-3.5 text-[11px] text-ivory">
               Browse all products
             </Link>
           </div>
@@ -90,13 +90,13 @@ export default function NewArrivals() {
 
         {/* Products grid */}
         {!loading && !loadError && products && products.length > 0 && (
-          <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-3 sm:gap-x-5 gap-y-6 sm:gap-y-12 md:grid-cols-3 lg:grid-cols-4">
             {products.map((p, i) => (
               <Reveal key={p.id} delay={Math.min(i, 5) * 0.05}>
                 <div>
-                  <p className="label mb-2.5 flex items-center gap-2 text-[9.5px] text-warmgray">
+                  <p className="label mb-2 sm:mb-2.5 flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[9.5px] text-warmgray">
                     {p.addedAt === justInCutoff && (
-                      <span className="rounded-full bg-softblack px-2.5 py-1 text-ivory">Just In</span>
+                      <span className="rounded-full bg-softblack px-2 py-0.5 sm:px-2.5 sm:py-1 text-ivory">Just In</span>
                     )}
                     Listed {fmtDate(p.addedAt)}
                   </p>

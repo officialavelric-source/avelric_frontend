@@ -124,12 +124,12 @@ export default function OrderDetails() {
 
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="font-display text-[30px] sm:text-[38px] text-softblack">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <h1 className="font-display text-[24px] sm:text-[30px] md:text-[38px] text-softblack">
                   Order {order.name}
                 </h1>
                 <span
-                  className={`rounded-full px-3 py-1 text-[10.5px] font-semibold uppercase tracking-wider ${
+                  className={`rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 text-[9.5px] sm:text-[10.5px] font-semibold uppercase tracking-wider ${
                     isPaid
                       ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
                       : "bg-amber-50 text-amber-800 border border-amber-200"
@@ -138,7 +138,7 @@ export default function OrderDetails() {
                   {order.financialStatus}
                 </span>
                 <span
-                  className={`rounded-full px-3 py-1 text-[10.5px] font-semibold uppercase tracking-wider ${
+                  className={`rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 text-[9.5px] sm:text-[10.5px] font-semibold uppercase tracking-wider ${
                     isFulfilled
                       ? "bg-softblack text-ivory"
                       : "bg-softblack/10 text-softblack"
@@ -147,18 +147,18 @@ export default function OrderDetails() {
                   {order.fulfillmentStatus}
                 </span>
               </div>
-              <p className="mt-2 text-[13px] text-warmgray">
+              <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[13px] text-warmgray">
                 Placed on {formattedDate} at {formattedTime}
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
               {order.statusPageUrl && (
                 <a
                   href={order.statusPageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="label inline-flex items-center gap-1.5 rounded-full border border-softblack/15 bg-white px-5 py-2.5 text-[11px] text-softblack transition-all hover:bg-softblack hover:text-ivory shadow-xs"
+                  className="label inline-flex items-center gap-1.5 rounded-full border border-softblack/15 bg-white px-4 sm:px-5 py-2 sm:py-2.5 text-[10.5px] sm:text-[11px] text-softblack transition-all hover:bg-softblack hover:text-ivory shadow-xs"
                 >
                   <span>Shopify Order Status</span>
                   <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2">
@@ -168,7 +168,7 @@ export default function OrderDetails() {
               )}
               <Link
                 to="/account/orders"
-                className="label inline-flex items-center gap-1.5 rounded-full border border-softblack/15 px-5 py-2.5 text-[11px] text-softblack transition-colors hover:bg-beige"
+                className="label inline-flex items-center gap-1.5 rounded-full border border-softblack/15 px-4 sm:px-5 py-2 sm:py-2.5 text-[10.5px] sm:text-[11px] text-softblack transition-colors hover:bg-beige"
               >
                 <span>All Orders</span>
               </Link>

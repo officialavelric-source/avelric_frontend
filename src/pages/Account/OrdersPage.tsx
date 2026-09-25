@@ -137,15 +137,15 @@ export default function OrdersPage() {
                 return (
                   <div
                     key={order.id}
-                    className="group rounded-3xl border border-softblack/10 bg-white/70 p-6 sm:p-8 transition-all hover:border-softblack/20 hover:shadow-[0_4px_24px_-8px_rgba(26,26,26,0.08)]"
+                    className="group rounded-2xl sm:rounded-3xl border border-softblack/10 bg-white/70 p-4 sm:p-8 transition-all hover:border-softblack/20 hover:shadow-[0_4px_24px_-8px_rgba(26,26,26,0.08)]"
                   >
                     {/* Top Row: Order Name, Date, Status Badges */}
-                    <div className="flex flex-wrap items-center justify-between gap-4 border-b border-softblack/10 pb-5">
+                    <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 border-b border-softblack/10 pb-4 sm:pb-5">
                       <div>
-                        <div className="flex items-center gap-3">
-                          <h2 className="font-display text-[20px] text-softblack">{order.name}</h2>
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                          <h2 className="font-display text-[18px] sm:text-[20px] text-softblack">{order.name}</h2>
                           <span
-                            className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+                            className={`rounded-full px-2 sm:px-2.5 py-0.5 text-[9.5px] sm:text-[10px] font-semibold uppercase tracking-wider ${
                               isPaid
                                 ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
                                 : "bg-amber-50 text-amber-800 border border-amber-200"
@@ -154,7 +154,7 @@ export default function OrdersPage() {
                             {order.financialStatus}
                           </span>
                           <span
-                            className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+                            className={`rounded-full px-2 sm:px-2.5 py-0.5 text-[9.5px] sm:text-[10px] font-semibold uppercase tracking-wider ${
                               isFulfilled
                                 ? "bg-softblack text-ivory"
                                 : "bg-softblack/10 text-softblack"
@@ -163,12 +163,12 @@ export default function OrdersPage() {
                             {order.fulfillmentStatus}
                           </span>
                         </div>
-                        <p className="mt-1 text-[12.5px] text-warmgray">Ordered on {formattedDate}</p>
+                        <p className="mt-1 text-[11.5px] sm:text-[12.5px] text-warmgray">Ordered on {formattedDate}</p>
                       </div>
 
                       <div className="text-right">
-                        <p className="label text-[11px] text-warmgray">Total</p>
-                        <p className="font-display text-[18px] text-softblack">
+                        <p className="label text-[10px] sm:text-[11px] text-warmgray">Total</p>
+                        <p className="font-display text-[16px] sm:text-[18px] text-softblack">
                           {order.currencyCode} {parseFloat(order.totalAmount).toFixed(2)}
                         </p>
                       </div>
@@ -206,12 +206,12 @@ export default function OrdersPage() {
                     </div>
 
                     {/* Bottom: Action link to full dossier */}
-                    <div className="mt-2 flex items-center justify-end border-t border-softblack/10 pt-4">
+                    <div className="mt-2 flex items-center justify-stretch sm:justify-end border-t border-softblack/10 pt-4">
                       <Link
                         to={detailPath}
-                        className="label inline-flex items-center gap-2 rounded-full border border-softblack/15 bg-transparent px-5 py-2.5 text-[11px] text-softblack transition-all hover:bg-softblack hover:text-ivory"
+                        className="label w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-softblack/15 bg-transparent px-5 py-2.5 text-[11px] text-softblack transition-all hover:bg-softblack hover:text-ivory"
                       >
-                        <span>View Order Dossier & Tracking</span>
+                        <span>View Order Dossier &amp; Tracking</span>
                         <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                         </svg>

@@ -41,21 +41,21 @@ export default function CustomerPhotosSection({
   }, [productId]);
 
   return (
-    <section className="mt-20 border-t border-softblack/10 pt-16">
+    <section className="mt-14 sm:mt-20 border-t border-softblack/10 pt-10 sm:pt-16">
       {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
         <div>
           <p className="label text-warmgray">Customer Looks</p>
-          <h2 className="mt-2 font-display text-[26px] md:text-[32px]">
+          <h2 className="mt-2 font-display text-[24px] sm:text-[26px] md:text-[32px]">
             Photos of your cloth
           </h2>
-          <p className="mt-1.5 text-[14px] text-warmgray max-w-xl">
+          <p className="mt-1.5 text-[13.5px] sm:text-[14px] text-warmgray max-w-xl">
             Real photos shared by clients showing the garment in natural light, fit on body, and fabric texture.
           </p>
         </div>
         <button
           onClick={() => setModalOpen(true)}
-          className="label flex items-center gap-2 rounded-full border border-softblack bg-softblack px-5 py-2.5 text-[11px] text-ivory hover:bg-softblack/90 transition-colors shadow-sm"
+          className="label flex items-center justify-center gap-2 rounded-full border border-softblack bg-softblack px-5 py-2.5 text-[11px] text-ivory hover:bg-softblack/90 transition-colors shadow-sm w-full sm:w-auto"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
@@ -67,7 +67,7 @@ export default function CustomerPhotosSection({
 
       {/* Gallery / Photos Grid */}
       {photos.length > 0 ? (
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {photos.map((p) => (
             <button
               key={p.id}

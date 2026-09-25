@@ -42,7 +42,7 @@ export default function FilterSortModal({
             role="dialog"
             aria-modal="true"
             aria-label="Filter and sort"
-            className="max-h-[85vh] w-full overflow-y-auto rounded-t-3xl bg-ivory p-6 pb-8 md:max-w-md md:rounded-3xl"
+            className="max-h-[90vh] sm:max-h-[85vh] w-full overflow-y-auto rounded-t-3xl bg-ivory p-4 sm:p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:max-w-md md:rounded-3xl"
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
@@ -50,8 +50,8 @@ export default function FilterSortModal({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-xl">Filter &amp; Sort</h2>
-              <button onClick={onClose} aria-label="Close" className="grid h-9 w-9 place-items-center rounded-full transition-colors hover:bg-beige">
+              <h2 className="font-display text-lg sm:text-xl">Filter &amp; Sort</h2>
+              <button onClick={onClose} aria-label="Close" className="grid h-9 w-9 place-items-center rounded-full transition-colors hover:bg-beige active:bg-beige/80">
                 <Icon label="Close" path="M6 6l12 12M18 6L6 18" className="h-4 w-4" />
               </button>
             </div>

@@ -10,6 +10,7 @@ import {
   OverviewPanel,
   SettingsPanel,
 } from "../../components/account";
+import SignInView from "../../components/auth/SignInView";
 
 const TAB_ICONS: Record<AccountTabId, (props: { className?: string }) => JSX.Element> = {
   overview: GridIcon,
@@ -34,30 +35,7 @@ export default function Account() {
 
   // Unauthenticated / Sign-in required state
   if (status === "unauthenticated" || !customer) {
-    return (
-      <div className="mx-auto max-w-xl px-6 py-20 text-center">
-        <Reveal>
-          <div className="rounded-3xl border border-softblack/10 bg-beige px-8 py-14 shadow-[0_4px_24px_-10px_rgba(26,26,26,0.12)]">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-softblack text-ivory">
-              <UserIcon className="h-7 w-7" />
-            </div>
-            <h1 className="mt-6 font-display text-[28px] text-softblack">Sign In to Your Account</h1>
-            <p className="mt-3 text-[14px] leading-relaxed text-warmgray">
-              Access your order history, saved shipping addresses, and personal recommendations securely via Shopify Customer Accounts.
-            </p>
-            <button
-              onClick={() => login()}
-              className="label mt-8 inline-flex items-center gap-2 rounded-full bg-softblack px-9 py-4 text-[11px] text-ivory transition-transform hover:scale-[1.03] active:scale-[0.98]"
-            >
-              Sign In with Shopify
-            </button>
-            <p className="mt-5 text-[11.5px] text-warmgray/80">
-              Secured with OAuth 2.0 & PKCE encryption. Passwordless sign in.
-            </p>
-          </div>
-        </Reveal>
-      </div>
-    );
+    return <SignInView onLogin={() => login()} />;
   }
 
   const initials = customer.displayName
@@ -70,30 +48,30 @@ export default function Account() {
     : "CU";
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-14 md:py-20">
+    <div className="mx-auto max-w-6xl px-3.5 sm:px-6 py-10 sm:py-14 md:py-20">
       {/* page header */}
       <Reveal>
-        <div className="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-softblack/10 bg-beige px-7 py-8 shadow-[0_2px_20px_-8px_rgba(26,26,26,0.1)] md:px-9">
-          <div className="flex items-center gap-5">
-            <span className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full bg-softblack font-display text-[24px] text-ivory shadow-[0_4px_18px_-4px_rgba(26,26,26,0.35)] ring-4 ring-ivory">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 sm:gap-6 rounded-2xl sm:rounded-3xl border border-softblack/10 bg-beige px-4 sm:px-7 py-5 sm:py-8 shadow-[0_2px_20px_-8px_rgba(26,26,26,0.1)] md:px-9">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <span className="flex h-14 w-14 sm:h-[72px] sm:w-[72px] shrink-0 items-center justify-center rounded-full bg-softblack font-display text-[20px] sm:text-[24px] text-ivory shadow-[0_4px_18px_-4px_rgba(26,26,26,0.35)] ring-4 ring-ivory">
               {initials}
             </span>
-            <div>
-              <p className="label text-warmgray">Verified Account</p>
-              <h1 className="mt-1 font-display text-[26px] leading-tight md:text-[32px]">{customer.displayName}</h1>
-              {customer.email && <p className="mt-1 text-[13px] text-warmgray">{customer.email}</p>}
+            <div className="min-w-0">
+              <p className="label text-warmgray text-[10px] sm:text-[11px]">Verified Account</p>
+              <h1 className="mt-0.5 sm:mt-1 font-display text-[22px] sm:text-[26px] leading-tight md:text-[32px] truncate">{customer.displayName}</h1>
+              {customer.email && <p className="mt-0.5 sm:mt-1 text-[12px] sm:text-[13px] text-warmgray truncate">{customer.email}</p>}
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 border-t sm:border-t-0 border-softblack/10 pt-3 sm:pt-0">
             <button
               onClick={logout}
-              className="label shrink-0 rounded-full border border-softblack/25 bg-ivory px-5 py-2.5 text-[11px] transition-colors hover:border-softblack"
+              className="label shrink-0 rounded-full border border-softblack/25 bg-ivory px-4 sm:px-5 py-2 sm:py-2.5 text-[10.5px] sm:text-[11px] transition-colors hover:border-softblack"
             >
               Sign out
             </button>
             <Link
               to="/shop"
-              className="label shrink-0 rounded-full bg-softblack px-5 py-2.5 text-[11px] text-ivory transition-opacity hover:opacity-90"
+              className="label shrink-0 rounded-full bg-softblack px-4 sm:px-5 py-2 sm:py-2.5 text-[10.5px] sm:text-[11px] text-ivory transition-opacity hover:opacity-90"
             >
               Continue shopping →
             </Link>
@@ -101,9 +79,9 @@ export default function Account() {
         </div>
       </Reveal>
 
-      <div className="mt-10 grid gap-10 md:grid-cols-[220px_1fr] md:gap-14">
-        {/* sidebar tabs — mobile horizontal pills */}
-        <nav aria-label="Account sections" className="flex gap-2 overflow-x-auto pb-1 md:flex-col md:gap-1 md:pb-0">
+      <div className="mt-8 sm:mt-10 grid gap-8 sm:gap-10 md:grid-cols-[220px_1fr] md:gap-14">
+        {/* sidebar tabs — mobile horizontal pills with edge bleeding */}
+        <nav aria-label="Account sections" className="flex gap-2 overflow-x-auto pb-1 md:flex-col md:gap-1 md:pb-0 -mx-3.5 px-3.5 sm:mx-0 sm:px-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {ACCOUNT_TABS.map((t) => {
             const TabIcon = TAB_ICONS[t.id];
             return (
@@ -111,7 +89,7 @@ export default function Account() {
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 aria-current={tab === t.id ? "page" : undefined}
-                className={`label flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-full px-5 py-3 text-left text-[10.5px] transition-colors md:rounded-xl ${
+                className={`label flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-left text-[10.5px] transition-colors md:rounded-xl ${
                   tab === t.id ? "bg-softblack text-ivory" : "text-warmgray hover:bg-beige hover:text-softblack"
                 }`}
               >

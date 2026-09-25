@@ -194,26 +194,26 @@ export default function WriteReviewModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="write-review-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/60 backdrop-blur-sm transition-opacity"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6 md:p-8 bg-black/60 backdrop-blur-sm transition-opacity"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleClose();
       }}
     >
-      <div className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-neutral-200/80 bg-[#FCFBF8] shadow-2xl animate-fade-in flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl sm:rounded-3xl border border-neutral-200/80 bg-[#FCFBF8] shadow-2xl animate-fade-in flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-neutral-200/70 px-8 py-6 bg-white/70">
+        <div className="flex items-start justify-between border-b border-neutral-200/70 px-4 py-4 sm:px-8 sm:py-6 bg-white/70">
           <div>
-            <span className="text-[11px] uppercase tracking-[0.25em] font-medium text-neutral-500 block">
+            <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] font-medium text-neutral-500 block">
               Avelric Atelier · Client Feedback
             </span>
             <h2
               id="write-review-title"
-              className="mt-1 font-display text-[26px] sm:text-[28px] uppercase tracking-wide text-neutral-900 font-semibold"
+              className="mt-1 font-display text-[22px] sm:text-[28px] uppercase tracking-wide text-neutral-900 font-semibold"
             >
               Write a Review
             </h2>
             {productTitle && (
-              <p className="mt-0.5 truncate text-[13px] text-neutral-500 max-w-md">
+              <p className="mt-0.5 truncate text-[12px] sm:text-[13px] text-neutral-500 max-w-xs sm:max-w-md">
                 {productTitle}
               </p>
             )}
@@ -221,7 +221,7 @@ export default function WriteReviewModal({
           <button
             onClick={handleClose}
             aria-label="Close modal"
-            className="grid h-10 w-10 place-items-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-900 hover:text-white transition-all duration-200"
+            className="grid h-9 w-9 sm:h-10 sm:w-10 place-items-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-900 hover:text-white transition-all duration-200 shrink-0"
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6L6 18M6 6l12 12" />
@@ -230,7 +230,7 @@ export default function WriteReviewModal({
         </div>
 
         {/* Form Body with generous spacing */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto px-8 py-7 space-y-6 flex-1">
+        <form onSubmit={handleSubmit} className="overflow-y-auto px-4 py-5 sm:px-8 sm:py-7 space-y-5 sm:space-y-6 flex-1">
           {error && (
             <div className="rounded-2xl bg-red-50/90 p-4 text-[13.5px] text-red-700 border border-red-200/80 flex items-center gap-3 animate-fade-in">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 shrink-0 text-red-500">
@@ -479,18 +479,18 @@ export default function WriteReviewModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-3 flex items-center justify-end gap-3 border-t border-softblack/10">
+          <div className="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 border-t border-softblack/10">
             <button
               type="button"
               onClick={handleClose}
-              className="label rounded-full border border-softblack/20 px-6 py-3 text-[11px] uppercase tracking-wider text-softblack hover:border-softblack transition-colors"
+              className="label rounded-full border border-softblack/20 px-6 py-3 text-[11px] uppercase tracking-wider text-softblack hover:border-softblack transition-colors text-center"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || uploadingPhotos}
-              className="label rounded-full bg-softblack hover:bg-gold hover:text-softblack px-8 py-3 text-[11px] uppercase tracking-wider text-ivory shadow-sm hover:shadow-md transition-all duration-300 active:scale-[0.98] disabled:opacity-50"
+              className="label rounded-full bg-softblack hover:bg-gold hover:text-softblack px-8 py-3 text-[11px] uppercase tracking-wider text-ivory shadow-sm hover:shadow-md transition-all duration-300 active:scale-[0.98] disabled:opacity-50 text-center"
             >
               {loading ? "Publishing…" : "Publish Review"}
             </button>

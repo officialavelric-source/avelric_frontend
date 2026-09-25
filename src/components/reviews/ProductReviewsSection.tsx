@@ -219,7 +219,7 @@ export default function ProductReviewsSection({
       }`}
     >
       {/* Editorial Header */}
-      <div className="flex flex-wrap items-end justify-between gap-6 pb-8 border-b border-neutral-200/80">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-neutral-200/80">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-[#B8860B]" />
@@ -227,19 +227,19 @@ export default function ProductReviewsSection({
               Avelric Atelier · Client Verdicts
             </span>
           </div>
-          <h2 className="font-display text-[26px] sm:text-[34px] uppercase tracking-wide text-neutral-900 font-semibold">
+          <h2 className="font-display text-[24px] sm:text-[34px] uppercase tracking-wide text-neutral-900 font-semibold">
             Patron Reviews & Experiences
           </h2>
-          <p className="mt-1.5 text-[14px] text-neutral-500 font-light max-w-xl leading-relaxed">
+          <p className="mt-1.5 text-[13.5px] sm:text-[14px] text-neutral-500 font-light max-w-xl leading-relaxed">
             Authentic impressions on fabric drape, silhouette proportions, and artisanal finishing.
           </p>
         </div>
 
         {/* Action CTAs */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
           <button
             onClick={() => setModalOpen(true)}
-            className="group flex items-center gap-2.5 rounded-full bg-neutral-900 px-6 py-3 text-[11.5px] uppercase tracking-widest font-medium text-white transition-all duration-300 hover:bg-black hover:shadow-lg hover:shadow-neutral-900/10 active:scale-[0.98]"
+            className="group flex flex-1 sm:flex-initial items-center justify-center gap-2.5 rounded-full bg-neutral-900 px-5 sm:px-6 py-3 text-[11px] sm:text-[11.5px] uppercase tracking-widest font-medium text-white transition-all duration-300 hover:bg-black hover:shadow-lg hover:shadow-neutral-900/10 active:scale-[0.98]"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-12">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -249,7 +249,7 @@ export default function ProductReviewsSection({
           </button>
           <button
             onClick={() => setPhotoModalOpen(true)}
-            className="flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-5 py-3 text-[11.5px] uppercase tracking-widest font-medium text-neutral-800 transition-all duration-300 hover:border-black hover:bg-neutral-50 shadow-2xs"
+            className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-full border border-neutral-300 bg-white px-4 sm:px-5 py-3 text-[11px] sm:text-[11.5px] uppercase tracking-widest font-medium text-neutral-800 transition-all duration-300 hover:border-black hover:bg-neutral-50 shadow-2xs"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5">
               <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
@@ -260,7 +260,7 @@ export default function ProductReviewsSection({
           {onClose && (
             <button
               onClick={onClose}
-              className="rounded-full border border-neutral-200 px-4 py-3 text-[11.5px] uppercase tracking-wider text-neutral-500 hover:text-black transition-colors"
+              className="rounded-full border border-neutral-200 px-4 py-3 text-[11px] sm:text-[11.5px] uppercase tracking-wider text-neutral-500 hover:text-black transition-colors"
             >
               ✕ Close
             </button>
@@ -270,12 +270,12 @@ export default function ProductReviewsSection({
 
       {/* Populated Scorecard OR Minimal Empty State */}
       {hasReviews ? (
-        <div className="mt-8 rounded-3xl border border-neutral-200/90 bg-[#FAF9F6] p-7 sm:p-9 shadow-xs">
+        <div className="mt-8 rounded-3xl border border-neutral-200/90 bg-[#FAF9F6] p-5 sm:p-9 shadow-xs">
           <div className="grid gap-8 md:grid-cols-2 md:items-center">
             {/* Left: Overall Rating & Recommendation */}
             <div className="md:border-r md:border-neutral-200/80 md:pr-8">
               <div className="flex items-baseline gap-3">
-                <span className="font-display text-[56px] sm:text-[64px] font-bold leading-none text-neutral-900 tracking-tight">
+                <span className="font-display text-[44px] sm:text-[64px] font-bold leading-none text-neutral-900 tracking-tight">
                   {(summary.averageRating || (reviews[0]?.rating ?? 5)).toFixed(1)}
                 </span>
                 <span className="text-[20px] font-light text-neutral-400">/ 5.0</span>
@@ -553,7 +553,7 @@ export default function ProductReviewsSection({
                 return (
                   <article
                     key={r.id}
-                    className="flex flex-col justify-between rounded-3xl border border-neutral-200/90 bg-white p-7 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all duration-300 hover:border-neutral-400 hover:shadow-md"
+                    className="flex flex-col justify-between rounded-3xl border border-neutral-200/90 bg-white p-5 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all duration-300 hover:border-neutral-400 hover:shadow-md"
                   >
                     <div>
                       {/* Author Header */}

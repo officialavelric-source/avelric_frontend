@@ -25,8 +25,8 @@ export default function Bestsellers({ allProducts }: { allProducts: AppProduct[]
   };
 
   return (
-    <section className="bg-beige py-20 md:py-24">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="bg-beige py-14 sm:py-20 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading eyebrow="Bestsellers" title="Rated highest by people who bought them" />
           <div className="flex items-center gap-4">
@@ -83,7 +83,7 @@ export default function Bestsellers({ allProducts }: { allProducts: AppProduct[]
             <p className="py-10 text-center text-[14px] text-warmgray">No jeans found.</p>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-x-3.5 gap-y-6">
+              <div className="grid grid-cols-2 gap-x-3 sm:gap-x-3.5 gap-y-5 sm:gap-y-6">
                 {items.slice(0, 4).map((p, i) => (
                   <Reveal key={p.id} delay={Math.min(i, 3) * 0.05}>
                     <ProductCard product={p} />

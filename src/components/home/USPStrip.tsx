@@ -42,11 +42,18 @@ const ITEMS = [
 export default function USPStrip() {
   return (
     <div className="border-b border-softblack/10 bg-ivory">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-y divide-softblack/10 px-6 md:grid-cols-4 md:divide-y-0">
-        {ITEMS.map((item) => (
-          <div key={item.t} className="flex items-center justify-center gap-2.5 px-3 py-3.5 text-center text-[11.5px] text-softblack/80 md:py-3">
-            <span className="text-softblack/60">{item.icon}</span>
-            {item.t}
+      <div className="mx-auto grid max-w-7xl grid-cols-2 px-3 sm:px-6 md:grid-cols-4">
+        {ITEMS.map((item, idx) => (
+          <div
+            key={item.t}
+            className={`flex items-center justify-center gap-2 px-2.5 sm:px-3 py-3 text-center text-[10.5px] sm:text-[11.5px] text-softblack/80 md:py-3.5 ${
+              idx % 2 === 1 ? "border-l border-softblack/10 md:border-l-0" : ""
+            } ${idx >= 2 ? "border-t border-softblack/10 md:border-t-0" : ""} ${
+              idx > 0 ? "md:border-l md:border-softblack/10" : ""
+            }`}
+          >
+            <span className="shrink-0 text-softblack/60">{item.icon}</span>
+            <span className="leading-tight">{item.t}</span>
           </div>
         ))}
       </div>

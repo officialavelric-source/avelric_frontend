@@ -41,7 +41,7 @@ export default function Collections() {
 
   return (
     <div>
-      <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
+      <div className="mx-auto max-w-7xl px-3.5 sm:px-6 py-8 sm:py-12 md:py-16">
         <Reveal>
           <p className="label text-warmgray">
             <Link to="/" className="hover:text-softblack">
@@ -49,10 +49,10 @@ export default function Collections() {
             </Link>{" "}
             / Collections
           </p>
-          <h1 className="mt-3 font-display text-[32px] md:text-[40px]">
+          <h1 className="mt-2 sm:mt-3 font-display text-[26px] sm:text-[32px] md:text-[40px]">
             Collections
           </h1>
-          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-warmgray">
+          <p className="mt-2.5 sm:mt-3 max-w-2xl text-[14px] sm:text-[15px] leading-relaxed text-warmgray">
             Curated edits, not endless scrolling. Each collection is a small
             story — picked around a season, a fabric, or the pieces people keep
             re-ordering.
@@ -60,13 +60,13 @@ export default function Collections() {
         </Reveal>
 
         {/* Quick jump chips */}
-        <Reveal className="mt-8">
-          <div className="flex flex-wrap gap-2.5">
+        <Reveal className="mt-6 sm:mt-8">
+          <div className="flex flex-wrap gap-2">
             {COLLECTIONS.map((c) => (
               <a
                 key={c.slug}
                 href={`#${c.slug}`}
-                className="label rounded-full border border-softblack/25 px-4 py-2.5 text-[10.5px] transition-colors hover:border-softblack hover:bg-softblack hover:text-ivory"
+                className="label rounded-full border border-softblack/25 px-3.5 py-2 text-[10px] sm:text-[10.5px] transition-colors hover:border-softblack hover:bg-softblack hover:text-ivory"
               >
                 {c.title}
               </a>
@@ -76,15 +76,15 @@ export default function Collections() {
 
         {/* Error state */}
         {loadError && (
-          <div className="mt-10 rounded-2xl border border-red-100 bg-red-50 px-8 py-20 text-center">
-            <p className="font-display text-2xl text-softblack">
+          <div className="mt-8 rounded-2xl border border-red-100 bg-red-50 px-6 py-14 text-center">
+            <p className="font-display text-xl sm:text-2xl text-softblack">
               Something went wrong
             </p>
-            <p className="mt-3 text-[14px] text-warmgray">{loadError}</p>
+            <p className="mt-2 text-[13px] sm:text-[14px] text-warmgray">{loadError}</p>
           </div>
         )}
 
-        <div className="mt-14 space-y-20 md:space-y-24">
+        <div className="mt-10 sm:mt-14 space-y-16 md:space-y-24">
           {COLLECTIONS.map((c, ci) => {
             let products: AppProduct[] = loading
               ? []
@@ -106,7 +106,7 @@ export default function Collections() {
             return (
               <section key={c.slug} id={c.slug} className="scroll-mt-32">
                 <Reveal>
-                  <div className="relative overflow-hidden rounded-[24px] bg-softblack">
+                  <div className="relative overflow-hidden rounded-[20px] sm:rounded-[24px] bg-softblack">
                     <img
                       src={c.image}
                       alt=""
@@ -118,12 +118,12 @@ export default function Collections() {
                       aria-hidden="true"
                       className="absolute inset-0 bg-gradient-to-r from-softblack/80 via-softblack/40 to-transparent"
                     />
-                    <div className="relative px-7 py-14 md:px-12 md:py-20">
-                      <p className="label text-ivory/60">{c.eyebrow}</p>
-                      <h2 className="mt-3 max-w-lg font-display text-[28px] leading-tight text-ivory md:text-[36px]">
+                    <div className="relative px-5 py-10 sm:px-7 sm:py-14 md:px-12 md:py-20">
+                      <p className="label text-[10px] sm:text-[11px] text-ivory/60">{c.eyebrow}</p>
+                      <h2 className="mt-2 sm:mt-3 max-w-lg font-display text-[22px] sm:text-[28px] leading-tight text-ivory md:text-[36px]">
                         {c.title}
                       </h2>
-                      <p className="mt-4 max-w-lg text-[14.5px] leading-relaxed text-ivory/75">
+                      <p className="mt-3 sm:mt-4 max-w-lg text-[13px] sm:text-[14.5px] leading-relaxed text-ivory/75">
                         {c.story}
                       </p>
                     </div>
@@ -132,7 +132,7 @@ export default function Collections() {
 
                 {/* Loading skeleton */}
                 {loading && !loadError && (
-                  <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4">
+                  <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-x-3 sm:gap-x-5 gap-y-6 sm:gap-y-10 lg:grid-cols-4">
                     {Array.from({ length: 4 }).map((_, i) => (
                       <ProductCardSkeleton key={i} />
                     ))}
@@ -141,7 +141,7 @@ export default function Collections() {
 
                 {/* Products found */}
                 {!loading && products.length > 0 && (
-                  <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-10 lg:grid-cols-4">
+                  <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-x-3 sm:gap-x-5 gap-y-6 sm:gap-y-10 lg:grid-cols-4">
                     {products.map((p, i) => (
                       <Reveal key={p.id} delay={Math.min(i, 3) * 0.06}>
                         <ProductCard product={p} />

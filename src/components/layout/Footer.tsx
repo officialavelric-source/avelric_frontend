@@ -47,19 +47,19 @@ export default function Footer() {
   return (
     <footer className="bg-ivory pt-4">
       <StitchDivider />
-      <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_2.2fr]">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16">
+        <div className="grid gap-10 sm:gap-12 lg:grid-cols-[1.2fr_2.2fr]">
           {/* brand + newsletter + social */}
           <div>
             <p className="font-display text-[22px] tracking-[0.28em]">AVELRIC</p>
-            <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-warmgray">
+            <p className="mt-4 max-w-sm text-[14.5px] sm:text-[15px] leading-relaxed text-warmgray">
               A curated menswear store. We search the market, compare the makers, and list only
               what passes our quality check — so you don't have to search at all.
             </p>
-            <form onSubmit={submit} className="mt-8 max-w-sm">
+            <form onSubmit={submit} className="mt-7 sm:mt-8 max-w-sm">
               <label htmlFor="nl" className="label text-warmgray">Join the list</label>
               {done ? (
-                <p className="mt-3 text-[15px]">You're on the list. First look at every weekly drop.</p>
+                <p className="mt-3 text-[14.5px] sm:text-[15px]">You're on the list. First look at every weekly drop.</p>
               ) : (
                 <div className="mt-3 flex border-b border-softblack/25">
                   <input
@@ -69,9 +69,9 @@ export default function Footer() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full bg-transparent pb-2.5 text-[15px] placeholder:text-softblack/30 focus:outline-none"
+                    className="w-full min-w-0 bg-transparent pb-2.5 text-[14.5px] sm:text-[15px] placeholder:text-softblack/30 focus:outline-none"
                   />
-                  <button className="label pb-2.5 text-[11px] hover:opacity-60" type="submit">
+                  <button className="label shrink-0 pb-2.5 text-[11px] hover:opacity-60" type="submit">
                     Subscribe
                   </button>
                 </div>
@@ -83,7 +83,7 @@ export default function Footer() {
               <a
                 href="mailto:officialavelric@gmail.com"
                 onClick={() => analyticsService.trackContactEmail({ placement: "footer" })}
-                className="mt-1.5 inline-block text-[14.5px] font-medium text-softblack transition-opacity hover:opacity-70"
+                className="mt-1.5 inline-block text-[14px] sm:text-[14.5px] font-medium text-softblack transition-opacity hover:opacity-70 break-all"
               >
                 officialavelric@gmail.com
               </a>
@@ -125,14 +125,14 @@ export default function Footer() {
           </div>
 
           {/* link columns */}
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-6 sm:gap-10 sm:grid-cols-4">
             {FOOTER_COLS.map((c) => (
               <nav key={c.h} aria-label={c.h}>
                 <p className="label text-warmgray">{c.h}</p>
                 <ul className="mt-4 space-y-2.5">
                   {c.links.map((l) => (
                     <li key={l.to + l.t}>
-                      <Link to={l.to} className="text-[14px] text-softblack/80 transition-colors hover:text-softblack">
+                      <Link to={l.to} className="text-[13.5px] sm:text-[14px] text-softblack/80 transition-colors hover:text-softblack">
                         {l.t}
                       </Link>
                     </li>
@@ -144,14 +144,14 @@ export default function Footer() {
         </div>
 
         {/* trust strip */}
-        <div className="mt-14 grid gap-4 rounded-2xl bg-beige px-6 py-5 text-[13px] text-softblack/80 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 sm:mt-14 grid gap-3.5 sm:gap-4 rounded-2xl bg-beige p-4 sm:px-6 sm:py-5 text-[12.5px] sm:text-[13px] text-softblack/80 sm:grid-cols-2 lg:grid-cols-4">
           <p className="flex items-center gap-2.5"><TruckIcon className="h-[18px] w-[18px] shrink-0 text-softblack/60" /> Same day: Chandigarh, Kharar, Mohali, Panchkula (7–9d elsewhere)</p>
           <p className="flex items-center gap-2.5"><ReturnIcon className="h-[18px] w-[18px] shrink-0 text-softblack/60" /> 7-day easy returns</p>
           <p className="flex items-center gap-2.5"><CashIcon className="h-[18px] w-[18px] shrink-0 text-softblack/60" /> COD available across India</p>
           <p className="flex items-center gap-2.5"><ShieldCheckIcon className="h-[18px] w-[18px] shrink-0 text-softblack/60" /> Quality-checked twice before dispatch</p>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 border-t border-softblack/10 pt-6 text-[13px] text-warmgray sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-2.5 sm:gap-3 border-t border-softblack/10 pt-6 text-[12.5px] sm:text-[13px] text-warmgray sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 AVELRIC. Chandigarh, India.</p>
           <p className="label text-[10px]">UPI · Cards · Net Banking · COD</p>
         </div>

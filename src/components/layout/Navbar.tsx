@@ -34,13 +34,15 @@ export default function Navbar() {
      baaki har page (light ivory/beige) aur scroll ke baad → dark text.
      Scroll par colorless backdrop-blur — section ke color se blend hota hai. */
   const isHome = pathname === "/";
-  const dark = !isHome || scrolled;
+  const isAuthPage = (pathname === "/account" || pathname === "/account/login") && !isAuthenticated;
+  const isDarkHero = (isHome || isAuthPage) && !scrolled;
+  const dark = !isDarkHero;
 
-  const linkTone = dark ? "text-softblack/70 hover:text-softblack" : "text-ivory/75 hover:text-ivory";
-  const linkActive = dark ? "text-softblack" : "text-ivory";
+  const linkTone = dark ? "text-softblack/70 hover:text-softblack" : "text-ivory/80 hover:text-ivory";
+  const linkActive = dark ? "text-softblack font-medium" : "text-ivory font-medium";
   const underline = dark ? "bg-softblack" : "bg-ivory";
   const badge = dark ? "bg-softblack text-ivory" : "bg-ivory text-softblack";
-  const hint = dark ? "text-softblack/40" : "text-ivory/50";
+  const hint = dark ? "text-softblack/40" : "text-ivory/60";
 
   return (
     <motion.header
@@ -59,6 +61,7 @@ export default function Navbar() {
             <NavLink
               key={n.label}
               to={n.to}
+              end={n.to === "/"}
               className={({ isActive }) =>
                 `group label relative text-[10.5px] transition-colors ${isActive ? linkActive : linkTone}`
               }
@@ -90,7 +93,7 @@ export default function Navbar() {
         {/* right: icons */}
         <div className="flex items-center justify-self-end gap-0.5 sm:gap-1 md:gap-2">
           <button
-            onClick={() => navigate("/shop?focus=search")}
+            onClick={() => navigate("/shop?search=true")}
             className="flex items-center gap-2 p-1.5 sm:p-2 transition-opacity hover:opacity-60 focus:outline-none"
             aria-label="Search the collection"
           >
